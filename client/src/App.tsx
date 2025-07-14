@@ -1,0 +1,68 @@
+import { Suspense, useEffect } from "react";
+import { useCoinGame } from "./lib/stores/useCoinGame";
+import { useAudio } from "./lib/stores/useAudio";
+import StartScreen from "./components/Game/StartScreen";
+import GameScreen from "./components/Game/GameScreen";
+import GameOverScreen from "./components/Game/GameOverScreen";
+import VictoryScreen from "./components/Game/VictoryScreen";
+import LeaderboardScreen from "./components/Game/LeaderboardScreen";
+import "@fontsource/inter";
+
+function App() {
+  const { gameState } = useCoinGame();
+  const { setBackgroundMusic, setHitSound, setSuccessSound } = useAudio();
+
+  // Initialize audio on component mount
+  useEffect(() => {
+    const backgroundMusic = new Audio("/sounds/background.mp3");
+    const hitSound = new Audio("/sounds/hit.mp3");
+    const successSound = new Audio("/sounds/success.mp3");
+
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.3;
+
+    setBackgroundMusic(backgroundMusic);
+    setHitSound(hitSound);
+    setSuccessSound(successSound);
+  }, [setBackgroundMusic, setHitSound, setSuccessSound]);
+
+  const renderScreen = () => {
+    switch (gameState) {
+      case "start":
+        return <StartScreen />;
+      case "playing":
+        return <GameScreen />;
+      case "gameOver":
+        return <GameOverScreen />;
+      case "victory":
+        return <VictoryScreen />;
+      case "leaderboard":
+        return <LeaderboardScreen />;
+      default:
+        return <StartScreen />;
+    }
+  };
+
+  return (
+    <div 
+      style={{ 
+        width: '100vw', 
+        height: '100vh', 
+        position: 'relative', 
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 100%)',
+        fontFamily: 'Inter, sans-serif'
+      }}
+    >
+      <Suspense fallback={
+        <div className="flex items-center justify-center w-full h-full">
+          <div className="text-2xl font-bold text-blue-600">Loading...</div>
+        </div>
+      }>
+        {renderScreen()}
+      </Suspense>
+    </div>
+  );
+}
+
+export default App;
