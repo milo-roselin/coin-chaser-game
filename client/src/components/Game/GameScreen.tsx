@@ -22,14 +22,8 @@ export default function GameScreen() {
       {/* Game Canvas */}
       <GameCanvas />
 
-      {/* HUD Overlay */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
-        {/* Score Display */}
-        <div className="bg-black/70 text-white px-4 py-2 rounded-lg font-bold pointer-events-auto">
-          <div className="text-sm">Score: {score}</div>
-          <div className="text-sm">Coins: {coinsCollected}</div>
-        </div>
-
+      {/* HUD Overlay - moved to top-right to avoid blocking level display */}
+      <div className="absolute top-4 right-4 flex flex-col gap-2 items-end pointer-events-none">
         {/* Control Buttons */}
         <div className="flex gap-2 pointer-events-auto">
           <Button
@@ -48,6 +42,12 @@ export default function GameScreen() {
           >
             <Home className="h-4 w-4" />
           </Button>
+        </div>
+
+        {/* Score Display - moved below buttons */}
+        <div className="bg-black/70 text-white px-4 py-2 rounded-lg font-bold pointer-events-auto">
+          <div className="text-sm text-right">Score: {score}</div>
+          <div className="text-sm text-right">Coins: {coinsCollected}</div>
         </div>
       </div>
 
