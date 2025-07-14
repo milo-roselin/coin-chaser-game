@@ -4,7 +4,7 @@ import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { ArrowRight, Home } from "lucide-react";
 
 export default function NextLevelScreen() {
-  const { score, coinsCollected, resetGame, nextLevel, currentLevel } = useCoinGame();
+  const { score, coinsCollected, resetGame, nextLevel, currentLevel, totalScore } = useCoinGame();
 
   const handleNextLevel = () => {
     nextLevel();
@@ -26,12 +26,24 @@ export default function NextLevelScreen() {
       {/* Score Card */}
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
         <CardContent className="p-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Level {currentLevel} Results</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Level {currentLevel} Complete!</h2>
           <div className="space-y-2 mb-4">
             <div className="text-3xl font-bold text-purple-600">{score}</div>
             <div className="text-lg text-gray-600">
               Coins Collected: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
+            <div className="text-sm text-gray-500 border-t pt-2">
+              Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
+            </div>
+          </div>
+          
+          <div className="bg-green-50 p-3 rounded-lg mb-4">
+            <p className="text-sm font-semibold text-green-700">
+              🎉 Checkpoint Saved!
+            </p>
+            <p className="text-xs text-green-600">
+              You can continue from Level {currentLevel + 1} anytime
+            </p>
           </div>
           
           <div className="bg-purple-50 p-3 rounded-lg">

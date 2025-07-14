@@ -7,7 +7,7 @@ import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { Trophy, Home, Upload } from "lucide-react";
 
 export default function VictoryScreen() {
-  const { score, coinsCollected, resetGame } = useCoinGame();
+  const { score, coinsCollected, resetGame, totalScore } = useCoinGame();
   const { addScore } = useLeaderboard();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
@@ -16,7 +16,7 @@ export default function VictoryScreen() {
     if (playerName.trim()) {
       addScore({
         name: playerName.trim(),
-        score,
+        score: totalScore,
         coins: coinsCollected,
         date: new Date().toISOString()
       });
@@ -48,6 +48,9 @@ export default function VictoryScreen() {
             <div className="text-3xl font-bold text-blue-600">{score}</div>
             <div className="text-lg text-gray-600">
               Coins Collected: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
+            </div>
+            <div className="text-sm text-gray-500 border-t pt-2">
+              Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
             </div>
           </div>
 

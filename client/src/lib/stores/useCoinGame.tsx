@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector, persist } from "zustand/middleware";
 
 export type GameState = "start" | "playing" | "gameOver" | "victory" | "leaderboard" | "nextLevel";
 
@@ -9,10 +9,14 @@ interface CoinGameState {
   coinsCollected: number;
   playerPosition: { x: number; y: number };
   currentLevel: number;
+  highestLevelUnlocked: number;
+  totalScore: number;
   
   // Actions
   startGame: () => void;
+  startFromLevel: (level: number) => void;
   resetGame: () => void;
+  resetProgress: () => void;
   endGame: () => void;
   winGame: () => void;
   showLeaderboard: () => void;
@@ -24,75 +28,118 @@ interface CoinGameState {
 }
 
 export const useCoinGame = create<CoinGameState>()(
-  subscribeWithSelector((set, get) => ({
-    gameState: "start",
-    score: 0,
-    coinsCollected: 0,
-    playerPosition: { x: 50, y: 300 },
-    currentLevel: 1,
-    
-    startGame: () => {
-      set({ 
-        gameState: "playing",
-        score: 0,
-        coinsCollected: 0,
-        playerPosition: { x: 50, y: 300 },
-        currentLevel: 1
-      });
-    },
-    
-    resetGame: () => {
-      set({ 
-        gameState: "start",
-        score: 0,
-        coinsCollected: 0,
-        playerPosition: { x: 50, y: 300 },
-        currentLevel: 1
-      });
-    },
-    
-    endGame: () => {
-      set((state) => ({
-        gameState: state.gameState === "playing" ? "gameOver" : state.gameState
-      }));
-    },
-    
-    winGame: () => {
-      set((state) => ({
-        gameState: state.gameState === "playing" ? "nextLevel" : state.gameState
-      }));
-    },
-    
-    showLeaderboard: () => {
-      set({ gameState: "leaderboard" });
-    },
-    
-    showNextLevel: () => {
-      set({ gameState: "nextLevel" });
-    },
-    
-    nextLevel: () => {
-      set((state) => ({
-        gameState: "playing",
-        currentLevel: state.currentLevel + 1,
-        playerPosition: { x: 50, y: 300 }
-      }));
-    },
-    
-    updateScore: (points: number) => {
-      set((state) => ({ 
-        score: state.score + points 
-      }));
-    },
-    
-    updateCoinsCollected: () => {
-      set((state) => ({ 
-        coinsCollected: state.coinsCollected + 1 
-      }));
-    },
-    
-    setPlayerPosition: (x: number, y: number) => {
-      set({ playerPosition: { x, y } });
+  persist(
+    subscribeWithSelector((set, get) => ({
+      gameState: "start",
+      score: 0,
+      coinsCollected: 0,
+      playerPosition: { x: 50, y: 300 },
+      currentLevel: 1,
+      highestLevelUnlocked: 1,
+      totalScore: 0,
+      
+      startGame: () => {
+        set({ 
+          gameState: "playing",
+          score: 0,
+          coinsCollected: 0,
+          playerPosition: { x: 50, y: 300 },
+          currentLevel: 1
+        });
+      },
+      
+      startFromLevel: (level: number) => {
+        set({ 
+          gameState: "playing",
+          score: 0,
+          coinsCollected: 0,
+          playerPosition: { x: 50, y: 300 },
+          currentLevel: level
+        });
+      },
+      
+      resetGame: () => {
+        set((state) => ({ 
+          gameState: "start",
+          score: 0,
+          coinsCollected: 0,
+          playerPosition: { x: 50, y: 300 },
+          currentLevel: 1,
+          // Keep checkpoint progress
+          highestLevelUnlocked: state.highestLevelUnlocked,
+          totalScore: state.totalScore
+        }));
+      },
+      
+      resetProgress: () => {
+        set({ 
+          gameState: "start",
+          score: 0,
+          coinsCollected: 0,
+          playerPosition: { x: 50, y: 300 },
+          currentLevel: 1,
+          highestLevelUnlocked: 1,
+          totalScore: 0
+        });
+      },
+      
+      endGame: () => {
+        set((state) => ({
+          gameState: state.gameState === "playing" ? "gameOver" : state.gameState
+        }));
+      },
+      
+      winGame: () => {
+        set((state) => {
+          const newLevel = state.currentLevel + 1;
+          const newTotalScore = state.totalScore + state.score;
+          return {
+            gameState: state.gameState === "playing" ? "nextLevel" : state.gameState,
+            highestLevelUnlocked: Math.max(state.highestLevelUnlocked, newLevel),
+            totalScore: newTotalScore
+          };
+        });
+      },
+      
+      showLeaderboard: () => {
+        set({ gameState: "leaderboard" });
+      },
+      
+      showNextLevel: () => {
+        set({ gameState: "nextLevel" });
+      },
+      
+      nextLevel: () => {
+        set((state) => ({
+          gameState: "playing",
+          currentLevel: state.currentLevel + 1,
+          playerPosition: { x: 50, y: 300 }
+        }));
+      },
+      
+      updateScore: (points: number) => {
+        set((state) => ({ 
+          score: state.score + points 
+        }));
+      },
+      
+      updateCoinsCollected: () => {
+        set((state) => ({ 
+          coinsCollected: state.coinsCollected + 1 
+        }));
+      },
+      
+      setPlayerPosition: (x: number, y: number) => {
+        set({ playerPosition: { x, y } });
+      }
+    })),
+    {
+      name: "coin-game-checkpoint",
+      version: 1,
+      partialize: (state) => ({
+        highestLevelUnlocked: state.highestLevelUnlocked,
+        totalScore: state.totalScore
+      })
     }
-  }))
+  )
 );

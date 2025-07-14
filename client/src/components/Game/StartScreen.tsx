@@ -5,15 +5,25 @@ import { useAudio } from "@/lib/stores/useAudio";
 import { Trophy, Play, Volume2, VolumeX } from "lucide-react";
 
 export default function StartScreen() {
-  const { startGame, showLeaderboard } = useCoinGame();
+  const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute } = useAudio();
 
   const handleStartGame = () => {
     startGame();
   };
 
+  const handleContinue = () => {
+    startFromLevel(highestLevelUnlocked);
+  };
+
   const handleShowLeaderboard = () => {
     showLeaderboard();
+  };
+
+  const handleResetProgress = () => {
+    if (confirm("Reset all progress? This will delete your checkpoint and start from Level 1.")) {
+      resetProgress();
+    }
   };
 
   return (
@@ -23,6 +33,16 @@ export default function StartScreen() {
         <div className="text-6xl mb-4">🪙</div>
         <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
         <p className="text-lg text-gray-600">Collect coins, avoid obstacles!</p>
+        {highestLevelUnlocked > 1 && (
+          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
+            <p className="text-sm font-semibold text-purple-700">
+              Checkpoint: Level {highestLevelUnlocked} Unlocked
+            </p>
+            <p className="text-xs text-purple-600">
+              Total Score: {totalScore.toLocaleString()}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Main Menu Card */}
@@ -34,8 +54,18 @@ export default function StartScreen() {
             className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
           >
             <Play className="mr-2 h-6 w-6" />
-            Play Game
+            New Game
           </Button>
+
+          {highestLevelUnlocked > 1 && (
+            <Button 
+              onClick={handleContinue}
+              size="lg"
+              className="w-full text-xl py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
+            >
+              🌀 Continue from Level {highestLevelUnlocked}
+            </Button>
+          )}
 
           <Button 
             onClick={handleShowLeaderboard}
@@ -56,6 +86,17 @@ export default function StartScreen() {
             {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
             {isMuted ? "Unmute" : "Mute"} Sound
           </Button>
+
+          {highestLevelUnlocked > 1 && (
+            <Button 
+              onClick={handleResetProgress}
+              variant="outline"
+              size="sm"
+              className="w-full text-sm py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg"
+            >
+              Reset Progress
+            </Button>
+          )}
         </CardContent>
       </Card>
 
