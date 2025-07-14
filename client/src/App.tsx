@@ -11,13 +11,15 @@ import "@fontsource/inter";
 
 function App() {
   const { gameState } = useCoinGame();
-  const { setBackgroundMusic, setHitSound, setSuccessSound } = useAudio();
+  const { setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound } = useAudio();
 
   // Initialize audio on component mount
   useEffect(() => {
     const backgroundMusic = new Audio("/sounds/background.mp3");
     const hitSound = new Audio("/sounds/hit.mp3");
     const successSound = new Audio("/sounds/success.mp3");
+    const explosionSound = new Audio("/sounds/explosion.mp3");
+    const coinSound = new Audio("/sounds/coin.mp3");
 
     backgroundMusic.loop = true;
     backgroundMusic.volume = 0.3;
@@ -25,7 +27,9 @@ function App() {
     setBackgroundMusic(backgroundMusic);
     setHitSound(hitSound);
     setSuccessSound(successSound);
-  }, [setBackgroundMusic, setHitSound, setSuccessSound]);
+    setExplosionSound(explosionSound);
+    setCoinSound(coinSound);
+  }, [setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound]);
 
   const renderScreen = () => {
     switch (gameState) {

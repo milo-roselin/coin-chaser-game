@@ -17,7 +17,7 @@ export default function GameCanvas() {
     setPlayerPosition,
     currentLevel
   } = useCoinGame();
-  const { playHit, playSuccess } = useAudio();
+  const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -54,10 +54,10 @@ export default function GameCanvas() {
         onCoinCollected: (score: number) => {
           updateScore(score);
           updateCoinsCollected();
-          playSuccess();
+          playCoin();
         },
         onObstacleHit: () => {
-          playHit();
+          playExplosion();
           endGame();
         },
         onLevelComplete: () => {

@@ -4,28 +4,38 @@ interface AudioState {
   backgroundMusic: HTMLAudioElement | null;
   hitSound: HTMLAudioElement | null;
   successSound: HTMLAudioElement | null;
+  explosionSound: HTMLAudioElement | null;
+  coinSound: HTMLAudioElement | null;
   isMuted: boolean;
   
   // Setter functions
   setBackgroundMusic: (music: HTMLAudioElement) => void;
   setHitSound: (sound: HTMLAudioElement) => void;
   setSuccessSound: (sound: HTMLAudioElement) => void;
+  setExplosionSound: (sound: HTMLAudioElement) => void;
+  setCoinSound: (sound: HTMLAudioElement) => void;
   
   // Control functions
   toggleMute: () => void;
   playHit: () => void;
   playSuccess: () => void;
+  playExplosion: () => void;
+  playCoin: () => void;
 }
 
 export const useAudio = create<AudioState>((set, get) => ({
   backgroundMusic: null,
   hitSound: null,
   successSound: null,
+  explosionSound: null,
+  coinSound: null,
   isMuted: true, // Start muted by default
   
   setBackgroundMusic: (music) => set({ backgroundMusic: music }),
   setHitSound: (sound) => set({ hitSound: sound }),
   setSuccessSound: (sound) => set({ successSound: sound }),
+  setExplosionSound: (sound) => set({ explosionSound: sound }),
+  setCoinSound: (sound) => set({ coinSound: sound }),
   
   toggleMute: () => {
     const { isMuted } = get();
@@ -68,6 +78,38 @@ export const useAudio = create<AudioState>((set, get) => ({
       successSound.currentTime = 0;
       successSound.play().catch(error => {
         console.log("Success sound play prevented:", error);
+      });
+    }
+  },
+  
+  playExplosion: () => {
+    const { explosionSound, isMuted } = get();
+    if (explosionSound) {
+      if (isMuted) {
+        console.log("Explosion sound skipped (muted)");
+        return;
+      }
+      
+      const soundClone = explosionSound.cloneNode() as HTMLAudioElement;
+      soundClone.volume = 0.5;
+      soundClone.play().catch(error => {
+        console.log("Explosion sound play prevented:", error);
+      });
+    }
+  },
+  
+  playCoin: () => {
+    const { coinSound, isMuted } = get();
+    if (coinSound) {
+      if (isMuted) {
+        console.log("Coin sound skipped (muted)");
+        return;
+      }
+      
+      const soundClone = coinSound.cloneNode() as HTMLAudioElement;
+      soundClone.volume = 0.4;
+      soundClone.play().catch(error => {
+        console.log("Coin sound play prevented:", error);
       });
     }
   }
