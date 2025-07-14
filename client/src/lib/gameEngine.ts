@@ -37,6 +37,8 @@ export class GameEngine {
   private coinClusters: { x: number; y: number; coinsCollected: number; totalCoins: number }[] = [];
   private clustersCompleted = 0;
   private level = 1;
+  private score = 0;
+  private coinsCollected = 0;
 
   constructor(
     private canvasWidth: number, 
@@ -76,6 +78,8 @@ export class GameEngine {
     this.obstacles = [];
     this.coinClusters = [];
     this.clustersCompleted = 0;
+    this.score = 0;
+    this.coinsCollected = 0;
 
     // Generate coins in clusters
     const numClusters = 3 + this.level; // More clusters in higher levels
@@ -335,6 +339,8 @@ export class GameEngine {
           }
         }
         
+        this.score += 100;
+        this.coinsCollected++;
         this.callbacks.onCoinCollected(100);
         return false;
       }
