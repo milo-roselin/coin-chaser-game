@@ -70,26 +70,60 @@ export class GameEngine {
     this.coins = [];
     this.obstacles = [];
 
-    // Generate coins
-    for (let i = 0; i < 15; i++) {
-      this.coins.push({
-        x: 100 + Math.random() * (this.levelWidth - 200),
-        y: 100 + Math.random() * (this.canvasHeight - 200),
-        width: 20,
-        height: 20,
-        color: '#F59E0B',
-        type: 'coin'
+    // Generate coins in clusters
+    const coinClusters = 5;
+    for (let cluster = 0; cluster < coinClusters; cluster++) {
+      const clusterX = 200 + (cluster * (this.levelWidth - 400)) / (coinClusters - 1);
+      const clusterY = this.canvasHeight / 2 + (Math.random() - 0.5) * 200;
+      
+      // 3 coins per cluster
+      for (let i = 0; i < 3; i++) {
+        this.coins.push({
+          x: clusterX + (Math.random() - 0.5) * 120,
+          y: clusterY + (Math.random() - 0.5) * 80,
+          width: 20,
+          height: 20,
+          color: '#F59E0B',
+          type: 'coin'
+        });
+      }
+    }
+
+    // Generate TNT bombs that patrol around coin clusters
+    for (let i = 0; i < 8; i++) {
+      // Choose a random coin cluster to patrol around
+      const targetCluster = Math.floor(Math.random() * coinClusters);
+      const clusterX = 200 + (targetCluster * (this.levelWidth - 400)) / (coinClusters - 1);
+      const clusterY = this.canvasHeight / 2 + (Math.random() - 0.5) * 200;
+      
+      // Create circular patrol around the cluster
+      const patrolRadius = 80 + Math.random() * 60;
+      const startAngle = Math.random() * Math.PI * 2;
+      
+      this.obstacles.push({
+        x: clusterX + Math.cos(startAngle) * patrolRadius,
+        y: clusterY + Math.sin(startAngle) * patrolRadius,
+        width: 35,
+        height: 35,
+        color: '#8B4513',
+        type: 'obstacle',
+        vx: 1 + Math.random() * 1.5, // circular movement speed
+        vy: 1 + Math.random() * 1.5,
+        patrolStartX: clusterX, // center X of circular patrol
+        patrolStartY: clusterY, // center Y of circular patrol
+        patrolEndX: patrolRadius, // using this as radius
+        patrolEndY: startAngle // using this as current angle
       });
     }
 
-    // Generate moving TNT obstacles
-    for (let i = 0; i < 10; i++) {
+    // Add some linear patrolling TNT bombs between clusters
+    for (let i = 0; i < 4; i++) {
       const x = 150 + Math.random() * (this.levelWidth - 300);
       const y = 80 + Math.random() * (this.canvasHeight - 160);
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
       
       if (patrolType === 'horizontal') {
-        const patrolRange = 100 + Math.random() * 150;
+        const patrolRange = 150 + Math.random() * 200;
         const patrolStartX = Math.max(50, x - patrolRange / 2);
         const patrolEndX = Math.min(this.levelWidth - 50, x + patrolRange / 2);
         
@@ -100,7 +134,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: 1 + Math.random() * 2, // random speed between 1-3
+          vx: 1.5 + Math.random() * 2,
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -108,7 +142,7 @@ export class GameEngine {
           patrolEndY: y
         });
       } else {
-        const patrolRange = 80 + Math.random() * 120;
+        const patrolRange = 100 + Math.random() * 150;
         const patrolStartY = Math.max(50, y - patrolRange / 2);
         const patrolEndY = Math.min(this.canvasHeight - 50, y + patrolRange / 2);
         
@@ -120,7 +154,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: 1 + Math.random() * 2, // random speed between 1-3
+          vy: 1.5 + Math.random() * 2,
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -205,29 +239,54 @@ export class GameEngine {
     // Update moving obstacles
     this.obstacles.forEach(obstacle => {
       if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
-        // Move obstacle
-        obstacle.x += obstacle.vx;
-        obstacle.y += obstacle.vy;
-        
-        // Check boundaries and reverse direction if needed
-        if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
-          if (obstacle.x <= obstacle.patrolStartX || obstacle.x + obstacle.width >= obstacle.patrolEndX) {
-            obstacle.vx = -obstacle.vx;
+        // Check if this is a circular patrol (around coins)
+        if (obstacle.patrolEndX !== undefined && obstacle.patrolEndY !== undefined && 
+            obstacle.patrolStartX !== undefined && obstacle.patrolStartY !== undefined &&
+            obstacle.patrolEndX < 200) { // radius is stored in patrolEndX for circular patrol
+          
+          // Circular movement around coin clusters
+          const centerX = obstacle.patrolStartX;
+          const centerY = obstacle.patrolStartY;
+          const radius = obstacle.patrolEndX;
+          let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
+          
+          // Update angle for circular movement
+          angle += 0.02 + Math.random() * 0.01; // variable speed
+          obstacle.patrolEndY = angle;
+          
+          // Calculate new position
+          obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
+          obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
+          
+          // Update velocity for movement indicators
+          obstacle.vx = Math.cos(angle + Math.PI / 2) * 2;
+          obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
+          
+        } else {
+          // Linear movement (existing code)
+          obstacle.x += obstacle.vx;
+          obstacle.y += obstacle.vy;
+          
+          // Check boundaries and reverse direction if needed
+          if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
+            if (obstacle.x <= obstacle.patrolStartX || obstacle.x + obstacle.width >= obstacle.patrolEndX) {
+              obstacle.vx = -obstacle.vx;
+            }
           }
-        }
-        
-        if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
-          if (obstacle.y <= obstacle.patrolStartY || obstacle.y + obstacle.height >= obstacle.patrolEndY) {
-            obstacle.vy = -obstacle.vy;
+          
+          if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
+            if (obstacle.y <= obstacle.patrolStartY || obstacle.y + obstacle.height >= obstacle.patrolEndY) {
+              obstacle.vy = -obstacle.vy;
+            }
           }
-        }
-        
-        // Ensure obstacles stay within their patrol bounds
-        if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
-          obstacle.x = Math.max(obstacle.patrolStartX, Math.min(obstacle.patrolEndX - obstacle.width, obstacle.x));
-        }
-        if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
-          obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+          
+          // Ensure obstacles stay within their patrol bounds
+          if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
+            obstacle.x = Math.max(obstacle.patrolStartX, Math.min(obstacle.patrolEndX - obstacle.width, obstacle.x));
+          }
+          if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
+            obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+          }
         }
       }
     });
@@ -407,17 +466,58 @@ export class GameEngine {
   }
 
   private drawGoal(ctx: CanvasRenderingContext2D) {
-    // Draw flag pole
-    ctx.fillStyle = '#8B5D3B';
-    ctx.fillRect(this.goal.x + 5, this.goal.y, 5, this.goal.height);
+    const centerX = this.goal.x + this.goal.width / 2;
+    const centerY = this.goal.y + this.goal.height / 2;
+    const time = Date.now() * 0.005; // for animation
     
-    // Draw flag
-    ctx.fillStyle = this.goal.color;
-    ctx.fillRect(this.goal.x + 10, this.goal.y, this.goal.width - 15, 30);
+    // Draw outer portal ring
+    ctx.strokeStyle = '#10B981';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+    ctx.stroke();
     
-    // Add flag pattern
-    ctx.fillStyle = '#059669';
-    ctx.fillRect(this.goal.x + 10, this.goal.y + 10, this.goal.width - 15, 10);
+    // Draw inner swirling energy
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2 + time;
+      const radius = 15 + Math.sin(time * 2 + i) * 5;
+      
+      ctx.fillStyle = `hsl(${120 + i * 10}, 70%, ${50 + Math.sin(time + i) * 20}%)`;
+      ctx.beginPath();
+      ctx.arc(
+        centerX + Math.cos(angle) * radius, 
+        centerY + Math.sin(angle) * radius, 
+        3, 0, Math.PI * 2
+      );
+      ctx.fill();
+    }
+    
+    // Draw central vortex
+    ctx.fillStyle = '#065F46';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw portal particles
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2 + time * 0.5;
+      const radius = 35 + Math.sin(time * 3 + i) * 8;
+      
+      ctx.fillStyle = `rgba(16, 185, 129, ${0.3 + Math.sin(time * 2 + i) * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(
+        centerX + Math.cos(angle) * radius, 
+        centerY + Math.sin(angle) * radius, 
+        2, 0, Math.PI * 2
+      );
+      ctx.fill();
+    }
+    
+    // Draw portal text
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('EXIT', centerX, centerY - 50);
   }
 
   private drawUI(ctx: CanvasRenderingContext2D) {
