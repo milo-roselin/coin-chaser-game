@@ -91,7 +91,8 @@ export const useAudio = create<AudioState>((set, get) => ({
       }
       
       const soundClone = explosionSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.5;
+      soundClone.volume = 0.8; // Louder and more dramatic
+      soundClone.playbackRate = 0.7; // Slower for deeper, longer explosion
       soundClone.play().catch(error => {
         console.log("Explosion sound play prevented:", error);
       });
@@ -107,7 +108,8 @@ export const useAudio = create<AudioState>((set, get) => ({
       }
       
       const soundClone = coinSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.4;
+      soundClone.volume = 0.7; // Clear and bright
+      soundClone.playbackRate = 1.3; // Faster and higher pitch for cha-ching effect
       soundClone.play().catch(error => {
         console.log("Coin sound play prevented:", error);
       });
