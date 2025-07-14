@@ -7,6 +7,12 @@ export interface GameObject {
   height: number;
   color: string;
   type: 'player' | 'coin' | 'obstacle' | 'goal';
+  vx?: number; // velocity x
+  vy?: number; // velocity y
+  patrolStartX?: number; // patrol start position
+  patrolEndX?: number; // patrol end position
+  patrolStartY?: number; // patrol start position
+  patrolEndY?: number; // patrol end position
 }
 
 export interface GameCallbacks {
@@ -76,16 +82,51 @@ export class GameEngine {
       });
     }
 
-    // Generate obstacles
-    for (let i = 0; i < 8; i++) {
-      this.obstacles.push({
-        x: 150 + Math.random() * (this.levelWidth - 300),
-        y: 80 + Math.random() * (this.canvasHeight - 160),
-        width: 40,
-        height: 40,
-        color: '#DC2626',
-        type: 'obstacle'
-      });
+    // Generate moving TNT obstacles
+    for (let i = 0; i < 10; i++) {
+      const x = 150 + Math.random() * (this.levelWidth - 300);
+      const y = 80 + Math.random() * (this.canvasHeight - 160);
+      const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
+      
+      if (patrolType === 'horizontal') {
+        const patrolRange = 100 + Math.random() * 150;
+        const patrolStartX = Math.max(50, x - patrolRange / 2);
+        const patrolEndX = Math.min(this.levelWidth - 50, x + patrolRange / 2);
+        
+        this.obstacles.push({
+          x: patrolStartX,
+          y,
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: 1 + Math.random() * 2, // random speed between 1-3
+          vy: 0,
+          patrolStartX,
+          patrolEndX,
+          patrolStartY: y,
+          patrolEndY: y
+        });
+      } else {
+        const patrolRange = 80 + Math.random() * 120;
+        const patrolStartY = Math.max(50, y - patrolRange / 2);
+        const patrolEndY = Math.min(this.canvasHeight - 50, y + patrolRange / 2);
+        
+        this.obstacles.push({
+          x,
+          y: patrolStartY,
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: 0,
+          vy: 1 + Math.random() * 2, // random speed between 1-3
+          patrolStartX: x,
+          patrolEndX: x,
+          patrolStartY,
+          patrolEndY
+        });
+      }
     }
 
     // Ensure no obstacles are too close to player start or goal
@@ -160,6 +201,36 @@ export class GameEngine {
     // Keep player in bounds
     this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
     this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+
+    // Update moving obstacles
+    this.obstacles.forEach(obstacle => {
+      if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
+        // Move obstacle
+        obstacle.x += obstacle.vx;
+        obstacle.y += obstacle.vy;
+        
+        // Check boundaries and reverse direction if needed
+        if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
+          if (obstacle.x <= obstacle.patrolStartX || obstacle.x + obstacle.width >= obstacle.patrolEndX) {
+            obstacle.vx = -obstacle.vx;
+          }
+        }
+        
+        if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
+          if (obstacle.y <= obstacle.patrolStartY || obstacle.y + obstacle.height >= obstacle.patrolEndY) {
+            obstacle.vy = -obstacle.vy;
+          }
+        }
+        
+        // Ensure obstacles stay within their patrol bounds
+        if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
+          obstacle.x = Math.max(obstacle.patrolStartX, Math.min(obstacle.patrolEndX - obstacle.width, obstacle.x));
+        }
+        if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
+          obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+        }
+      }
+    });
 
     // Update camera to follow player
     this.cameraX = Math.max(0, Math.min(
@@ -287,18 +358,52 @@ export class GameEngine {
   }
 
   private drawObstacle(ctx: CanvasRenderingContext2D, obstacle: GameObject) {
-    ctx.fillStyle = obstacle.color;
+    // Draw TNT barrel body
+    ctx.fillStyle = obstacle.color; // Brown color
     ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     
-    // Add spikes pattern
-    ctx.fillStyle = '#B91C1C';
+    // Add TNT bands
+    ctx.fillStyle = '#654321';
+    ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, 4);
+    ctx.fillRect(obstacle.x, obstacle.y + 16, obstacle.width, 4);
+    ctx.fillRect(obstacle.x, obstacle.y + 24, obstacle.width, 4);
+    
+    // Add TNT text
+    ctx.fillStyle = '#FF0000';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('TNT', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 3);
+    
+    // Add fuse (small line on top)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(obstacle.x, obstacle.y + obstacle.height);
-    for (let i = 0; i < obstacle.width; i += 8) {
-      ctx.lineTo(obstacle.x + i + 4, obstacle.y);
-      ctx.lineTo(obstacle.x + i + 8, obstacle.y + obstacle.height);
-    }
+    ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
+    ctx.lineTo(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8);
+    ctx.stroke();
+    
+    // Add spark at fuse tip
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8, 2, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Add movement indicator (arrow showing direction)
+    if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 8px Arial';
+      ctx.textAlign = 'center';
+      
+      if (obstacle.vx > 0) {
+        ctx.fillText('→', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vx < 0) {
+        ctx.fillText('←', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vy > 0) {
+        ctx.fillText('↓', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vy < 0) {
+        ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      }
+    }
   }
 
   private drawGoal(ctx: CanvasRenderingContext2D) {

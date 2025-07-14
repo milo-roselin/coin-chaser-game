@@ -64,7 +64,7 @@ export default function StartScreen() {
         <p className="text-sm text-gray-600 mb-2">How to Play:</p>
         <p className="text-xs text-gray-500">
           Use arrow keys or WASD to move your character. You can also tap and hold to move. 
-          Collect coins and avoid red obstacles. Reach the end to win!
+          Collect coins and avoid moving TNT bombs. Reach the end to win!
         </p>
       </div>
     </div>
