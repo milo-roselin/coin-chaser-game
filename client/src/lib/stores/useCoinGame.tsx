@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-export type GameState = "start" | "playing" | "gameOver" | "victory" | "leaderboard";
+export type GameState = "start" | "playing" | "gameOver" | "victory" | "leaderboard" | "nextLevel";
 
 interface CoinGameState {
   gameState: GameState;
   score: number;
   coinsCollected: number;
   playerPosition: { x: number; y: number };
+  currentLevel: number;
   
   // Actions
   startGame: () => void;
@@ -15,6 +16,8 @@ interface CoinGameState {
   endGame: () => void;
   winGame: () => void;
   showLeaderboard: () => void;
+  showNextLevel: () => void;
+  nextLevel: () => void;
   updateScore: (points: number) => void;
   updateCoinsCollected: () => void;
   setPlayerPosition: (x: number, y: number) => void;
@@ -26,13 +29,15 @@ export const useCoinGame = create<CoinGameState>()(
     score: 0,
     coinsCollected: 0,
     playerPosition: { x: 50, y: 300 },
+    currentLevel: 1,
     
     startGame: () => {
       set({ 
         gameState: "playing",
         score: 0,
         coinsCollected: 0,
-        playerPosition: { x: 50, y: 300 }
+        playerPosition: { x: 50, y: 300 },
+        currentLevel: 1
       });
     },
     
@@ -41,7 +46,8 @@ export const useCoinGame = create<CoinGameState>()(
         gameState: "start",
         score: 0,
         coinsCollected: 0,
-        playerPosition: { x: 50, y: 300 }
+        playerPosition: { x: 50, y: 300 },
+        currentLevel: 1
       });
     },
     
@@ -53,12 +59,24 @@ export const useCoinGame = create<CoinGameState>()(
     
     winGame: () => {
       set((state) => ({
-        gameState: state.gameState === "playing" ? "victory" : state.gameState
+        gameState: state.gameState === "playing" ? "nextLevel" : state.gameState
       }));
     },
     
     showLeaderboard: () => {
       set({ gameState: "leaderboard" });
+    },
+    
+    showNextLevel: () => {
+      set({ gameState: "nextLevel" });
+    },
+    
+    nextLevel: () => {
+      set((state) => ({
+        gameState: "playing",
+        currentLevel: state.currentLevel + 1,
+        playerPosition: { x: 50, y: 300 }
+      }));
     },
     
     updateScore: (points: number) => {

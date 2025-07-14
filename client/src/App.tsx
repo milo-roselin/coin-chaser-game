@@ -6,6 +6,7 @@ import GameScreen from "./components/Game/GameScreen";
 import GameOverScreen from "./components/Game/GameOverScreen";
 import VictoryScreen from "./components/Game/VictoryScreen";
 import LeaderboardScreen from "./components/Game/LeaderboardScreen";
+import NextLevelScreen from "./components/Game/NextLevelScreen.tsx";
 import "@fontsource/inter";
 
 function App() {
@@ -38,6 +39,8 @@ function App() {
         return <VictoryScreen />;
       case "leaderboard":
         return <LeaderboardScreen />;
+      case "nextLevel":
+        return <NextLevelScreen />;
       default:
         return <StartScreen />;
     }

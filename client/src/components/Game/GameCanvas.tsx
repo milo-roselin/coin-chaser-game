@@ -14,7 +14,8 @@ export default function GameCanvas() {
     endGame, 
     winGame,
     playerPosition,
-    setPlayerPosition
+    setPlayerPosition,
+    currentLevel
   } = useCoinGame();
   const { playHit, playSuccess } = useAudio();
 
@@ -65,7 +66,8 @@ export default function GameCanvas() {
         onPlayerMove: (x: number, y: number) => {
           setPlayerPosition(x, y);
         }
-      }
+      },
+      currentLevel
     );
 
     // Add keyboard event listeners

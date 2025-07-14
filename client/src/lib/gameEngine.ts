@@ -34,13 +34,18 @@ export class GameEngine {
   private levelWidth: number;
   private cameraX = 0;
   private keys: { [key: string]: boolean } = {};
+  private coinClusters: { x: number; y: number; coinsCollected: number; totalCoins: number }[] = [];
+  private clustersCompleted = 0;
+  private level = 1;
 
   constructor(
     private canvasWidth: number, 
     private canvasHeight: number,
-    callbacks: GameCallbacks
+    callbacks: GameCallbacks,
+    level: number = 1
   ) {
     this.callbacks = callbacks;
+    this.level = level;
     this.levelWidth = canvasWidth * 3; // Level is 3 screens wide
 
     // Initialize player
@@ -59,7 +64,7 @@ export class GameEngine {
       y: canvasHeight / 2 - 40,
       width: 60,
       height: 80,
-      color: '#10B981',
+      color: '#8B5CF6',
       type: 'goal'
     };
 
@@ -69,12 +74,22 @@ export class GameEngine {
   private generateLevel() {
     this.coins = [];
     this.obstacles = [];
+    this.coinClusters = [];
+    this.clustersCompleted = 0;
 
     // Generate coins in clusters
-    const coinClusters = 5;
-    for (let cluster = 0; cluster < coinClusters; cluster++) {
-      const clusterX = 200 + (cluster * (this.levelWidth - 400)) / (coinClusters - 1);
+    const numClusters = 3 + this.level; // More clusters in higher levels
+    for (let cluster = 0; cluster < numClusters; cluster++) {
+      const clusterX = 300 + (cluster * (this.levelWidth - 600)) / (numClusters - 1);
       const clusterY = this.canvasHeight / 2 + (Math.random() - 0.5) * 200;
+      
+      // Track cluster info
+      this.coinClusters.push({
+        x: clusterX,
+        y: clusterY,
+        coinsCollected: 0,
+        totalCoins: 3
+      });
       
       // 3 coins per cluster
       for (let i = 0; i < 3; i++) {
@@ -89,12 +104,13 @@ export class GameEngine {
       }
     }
 
-    // Generate TNT bombs that patrol around coin clusters
-    for (let i = 0; i < 8; i++) {
+    // Generate TNT bombs that patrol around coin clusters (more in higher levels)
+    const tntPerCluster = 1 + Math.floor(this.level / 2); // More TNT per cluster in higher levels
+    for (let i = 0; i < numClusters * tntPerCluster; i++) {
       // Choose a random coin cluster to patrol around
-      const targetCluster = Math.floor(Math.random() * coinClusters);
-      const clusterX = 200 + (targetCluster * (this.levelWidth - 400)) / (coinClusters - 1);
-      const clusterY = this.canvasHeight / 2 + (Math.random() - 0.5) * 200;
+      const targetCluster = Math.floor(Math.random() * numClusters);
+      const clusterX = this.coinClusters[targetCluster].x;
+      const clusterY = this.coinClusters[targetCluster].y;
       
       // Create circular patrol around the cluster
       const patrolRadius = 80 + Math.random() * 60;
@@ -116,9 +132,10 @@ export class GameEngine {
       });
     }
 
-    // Add some linear patrolling TNT bombs between clusters
-    for (let i = 0; i < 4; i++) {
-      const x = 150 + Math.random() * (this.levelWidth - 300);
+    // Add some linear patrolling TNT bombs between clusters (more in higher levels)
+    const linearTnt = 2 + this.level;
+    for (let i = 0; i < linearTnt; i++) {
+      const x = 250 + Math.random() * (this.levelWidth - 500); // Avoid starting area
       const y = 80 + Math.random() * (this.canvasHeight - 160);
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
       
@@ -134,7 +151,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: 1.5 + Math.random() * 2,
+          vx: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -154,7 +171,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: 1.5 + Math.random() * 2,
+          vy: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -165,7 +182,7 @@ export class GameEngine {
 
     // Ensure no obstacles are too close to player start or goal
     this.obstacles = this.obstacles.filter(obs => 
-      obs.x > 120 && obs.x < this.levelWidth - 150
+      obs.x > 200 && obs.x < this.levelWidth - 150 // Larger safe zone at start
     );
   }
 
@@ -300,9 +317,24 @@ export class GameEngine {
     // Notify callback of player movement
     this.callbacks.onPlayerMove(this.player.x, this.player.y);
 
-    // Check coin collisions
+    // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
       if (checkCollision(this.player, coin)) {
+        // Find which cluster this coin belongs to
+        for (let i = 0; i < this.coinClusters.length; i++) {
+          const cluster = this.coinClusters[i];
+          const distance = Math.sqrt(
+            Math.pow(coin.x - cluster.x, 2) + Math.pow(coin.y - cluster.y, 2)
+          );
+          if (distance < 100) {
+            cluster.coinsCollected++;
+            if (cluster.coinsCollected === cluster.totalCoins) {
+              this.clustersCompleted++;
+            }
+            break;
+          }
+        }
+        
         this.callbacks.onCoinCollected(100);
         return false;
       }
@@ -317,10 +349,12 @@ export class GameEngine {
       }
     }
 
-    // Check goal collision
+    // Check goal collision (only if at least one cluster is completed)
     if (checkCollision(this.player, this.goal)) {
-      this.callbacks.onLevelComplete();
-      return;
+      if (this.clustersCompleted > 0) {
+        this.callbacks.onLevelComplete();
+        return;
+      }
     }
   }
 
@@ -469,9 +503,10 @@ export class GameEngine {
     const centerX = this.goal.x + this.goal.width / 2;
     const centerY = this.goal.y + this.goal.height / 2;
     const time = Date.now() * 0.005; // for animation
+    const canEnter = this.clustersCompleted > 0;
     
-    // Draw outer portal ring
-    ctx.strokeStyle = '#10B981';
+    // Draw outer portal ring (purple theme)
+    ctx.strokeStyle = canEnter ? '#8B5CF6' : '#6B7280';
     ctx.lineWidth = 6;
     ctx.beginPath();
     ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
@@ -482,7 +517,11 @@ export class GameEngine {
       const angle = (i / 8) * Math.PI * 2 + time;
       const radius = 15 + Math.sin(time * 2 + i) * 5;
       
-      ctx.fillStyle = `hsl(${120 + i * 10}, 70%, ${50 + Math.sin(time + i) * 20}%)`;
+      if (canEnter) {
+        ctx.fillStyle = `hsl(${270 + i * 10}, 70%, ${50 + Math.sin(time + i) * 20}%)`;
+      } else {
+        ctx.fillStyle = `hsl(0, 0%, ${30 + Math.sin(time + i) * 10}%)`;
+      }
       ctx.beginPath();
       ctx.arc(
         centerX + Math.cos(angle) * radius, 
@@ -493,7 +532,7 @@ export class GameEngine {
     }
     
     // Draw central vortex
-    ctx.fillStyle = '#065F46';
+    ctx.fillStyle = canEnter ? '#5B21B6' : '#374151';
     ctx.beginPath();
     ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
     ctx.fill();
@@ -503,7 +542,11 @@ export class GameEngine {
       const angle = (i / 12) * Math.PI * 2 + time * 0.5;
       const radius = 35 + Math.sin(time * 3 + i) * 8;
       
-      ctx.fillStyle = `rgba(16, 185, 129, ${0.3 + Math.sin(time * 2 + i) * 0.3})`;
+      if (canEnter) {
+        ctx.fillStyle = `rgba(139, 92, 246, ${0.3 + Math.sin(time * 2 + i) * 0.3})`;
+      } else {
+        ctx.fillStyle = `rgba(107, 114, 128, ${0.1 + Math.sin(time * 2 + i) * 0.1})`;
+      }
       ctx.beginPath();
       ctx.arc(
         centerX + Math.cos(angle) * radius, 
@@ -514,10 +557,16 @@ export class GameEngine {
     }
     
     // Draw portal text
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = canEnter ? '#FFFFFF' : '#9CA3AF';
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('EXIT', centerX, centerY - 50);
+    if (canEnter) {
+      ctx.fillText('PORTAL', centerX, centerY - 50);
+    } else {
+      ctx.fillText('LOCKED', centerX, centerY - 50);
+      ctx.font = 'bold 8px Arial';
+      ctx.fillText('Complete a cluster', centerX, centerY + 55);
+    }
   }
 
   private drawUI(ctx: CanvasRenderingContext2D) {
@@ -528,14 +577,23 @@ export class GameEngine {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.fillRect(20, 20, barWidth, 10);
     
-    ctx.fillStyle = '#10B981';
+    ctx.fillStyle = '#8B5CF6';
     ctx.fillRect(20, 20, barWidth * progress, 10);
+    
+    // Draw cluster completion status
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(20, 35, 200, 25);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Level ${this.level} | Clusters: ${this.clustersCompleted}/${this.coinClusters.length}`, 25, 52);
     
     // Draw mini-map
     const miniMapWidth = 150;
     const miniMapHeight = 30;
     const miniMapX = this.canvasWidth - miniMapWidth - 20;
-    const miniMapY = 40;
+    const miniMapY = 70;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
@@ -547,7 +605,8 @@ export class GameEngine {
     
     // Goal position on mini-map
     const goalMiniX = miniMapX + (this.goal.x / this.levelWidth) * miniMapWidth;
-    ctx.fillStyle = '#10B981';
+    const canEnter = this.clustersCompleted > 0;
+    ctx.fillStyle = canEnter ? '#8B5CF6' : '#6B7280';
     ctx.fillRect(goalMiniX - 2, miniMapY + miniMapHeight / 2 - 2, 4, 4);
   }
 }
