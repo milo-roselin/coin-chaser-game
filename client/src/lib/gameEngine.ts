@@ -570,30 +570,56 @@ export class GameEngine {
   }
 
   private drawUI(ctx: CanvasRenderingContext2D) {
-    // Draw progress bar
-    const progress = Math.min(1, this.player.x / (this.levelWidth - 100));
+    // Draw UI elements like level, score, coins collected, etc.
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign = "left";
+    
+    // Level display
+    ctx.fillText(`Level: ${this.level}`, 20, 40);
+    
+    // Score
+    ctx.fillText(`Score: ${this.score}`, 20, 70);
+    
+    // Coins collected vs total coins in level
+    const totalCoins = this.coins.length + this.coinsCollected;
+    ctx.fillText(`Coins: ${this.coinsCollected}/${totalCoins}`, 20, 100);
+    
+    // Progress indicator
+    const progress = this.clustersCompleted / this.coinClusters.length;
+    const progressBarWidth = 200;
+    const progressBarHeight = 10;
+    const progressBarX = 20;
+    const progressBarY = 120;
+    
+    // Progress bar background
+    ctx.fillStyle = "#ddd";
+    ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+    
+    // Progress bar fill
+    ctx.fillStyle = "#4CAF50";
+    ctx.fillRect(progressBarX, progressBarY, progressBarWidth * progress, progressBarHeight);
+    
+    // Progress text
+    ctx.fillStyle = "#333";
+    ctx.font = "14px Arial";
+    ctx.fillText(`Clusters: ${this.clustersCompleted}/${this.coinClusters.length}`, progressBarX, progressBarY + 25);
+    
+    // Draw level progress bar  
+    const levelProgress = Math.min(1, this.player.x / (this.levelWidth - 100));
     const barWidth = this.canvasWidth - 40;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(20, 20, barWidth, 10);
+    ctx.fillRect(20, 160, barWidth, 10);
     
     ctx.fillStyle = '#8B5CF6';
-    ctx.fillRect(20, 20, barWidth * progress, 10);
-    
-    // Draw cluster completion status
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(20, 35, 200, 25);
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Level ${this.level} | Clusters: ${this.clustersCompleted}/${this.coinClusters.length}`, 25, 52);
+    ctx.fillRect(20, 160, barWidth * levelProgress, 10);
     
     // Draw mini-map
     const miniMapWidth = 150;
     const miniMapHeight = 30;
     const miniMapX = this.canvasWidth - miniMapWidth - 20;
-    const miniMapY = 70;
+    const miniMapY = 20;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
