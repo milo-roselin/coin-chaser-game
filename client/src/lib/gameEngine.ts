@@ -27,6 +27,7 @@ export class GameEngine {
   private isTouching = false;
   private levelWidth: number;
   private cameraX = 0;
+  private keys: { [key: string]: boolean } = {};
 
   constructor(
     private canvasWidth: number, 
@@ -109,9 +110,38 @@ export class GameEngine {
     this.touchPosition = null;
   }
 
+  public handleKeyDown(key: string) {
+    this.keys[key] = true;
+  }
+
+  public handleKeyUp(key: string) {
+    this.keys[key] = false;
+  }
+
   public update() {
-    // Move player towards touch position
-    if (this.isTouching && this.touchPosition) {
+    const speed = 5;
+    
+    // Handle keyboard input
+    if (this.keys['ArrowUp'] || this.keys['KeyW']) {
+      this.player.y -= speed;
+    }
+    if (this.keys['ArrowDown'] || this.keys['KeyS']) {
+      this.player.y += speed;
+    }
+    if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
+      this.player.x -= speed;
+    }
+    if (this.keys['ArrowRight'] || this.keys['KeyD']) {
+      this.player.x += speed;
+    }
+    
+    // Move player towards touch position (if no keyboard input)
+    const hasKeyboardInput = this.keys['ArrowUp'] || this.keys['ArrowDown'] || 
+                           this.keys['ArrowLeft'] || this.keys['ArrowRight'] ||
+                           this.keys['KeyW'] || this.keys['KeyA'] || 
+                           this.keys['KeyS'] || this.keys['KeyD'];
+    
+    if (!hasKeyboardInput && this.isTouching && this.touchPosition) {
       const worldTouchX = this.touchPosition.x + this.cameraX;
       const worldTouchY = this.touchPosition.y;
       
@@ -121,9 +151,9 @@ export class GameEngine {
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 5) {
-        const speed = 3;
-        this.player.x += (dx / distance) * speed;
-        this.player.y += (dy / distance) * speed;
+        const touchSpeed = 3;
+        this.player.x += (dx / distance) * touchSpeed;
+        this.player.y += (dy / distance) * touchSpeed;
       }
     }
 

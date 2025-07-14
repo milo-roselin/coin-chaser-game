@@ -13,7 +13,7 @@ export default function TouchControls() {
   return (
     <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
       <div className="bg-black/50 text-white text-center py-2 px-4 rounded-lg text-sm">
-        Tap and hold to move • Collect yellow coins • Avoid red obstacles
+        Use arrow keys or WASD to move • Tap and hold also works • Collect yellow coins • Avoid red obstacles
       </div>
     </div>
   );

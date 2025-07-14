@@ -68,11 +68,29 @@ export default function GameCanvas() {
       }
     );
 
+    // Add keyboard event listeners
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameEngineRef.current) {
+        gameEngineRef.current.handleKeyDown(e.code);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (gameEngineRef.current) {
+        gameEngineRef.current.handleKeyUp(e.code);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
     // Start game loop
     animationFrameRef.current = requestAnimationFrame(gameLoop);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
