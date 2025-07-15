@@ -156,18 +156,22 @@ export default function GameCanvas() {
         onTouchEnd={handleTouchEnd}
       />
       
-      {/* Pause Button - only show when not paused */}
-      {!isPaused && (
-        <button
+      {/* Clickable pause overlay when paused */}
+      {isPaused && (
+        <div
           onClick={handlePauseClick}
-          className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg hover:bg-opacity-70 transition-all z-10"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer z-20"
           style={{ touchAction: "manipulation" }}
         >
-          <div className="flex items-center space-x-1">
-            <div className="w-1 h-4 bg-white"></div>
-            <div className="w-1 h-4 bg-white"></div>
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="w-5 h-24 bg-white"></div>
+              <div className="w-5 h-24 bg-white"></div>
+            </div>
+            <div className="text-white text-2xl font-bold mb-2">PAUSED</div>
+            <div className="text-white text-base">Click here or press SPACE/ESC to resume</div>
           </div>
-        </button>
+        </div>
       )}
     </div>
   );

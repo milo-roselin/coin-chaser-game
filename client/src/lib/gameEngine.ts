@@ -433,9 +433,10 @@ export class GameEngine {
     // Draw UI elements (not affected by camera)
     this.drawUI(ctx);
     
-    // Draw pause overlay if paused
+    // Draw pause overlay background if paused (UI will handle the rest)
     if (this.isPaused) {
-      this.drawPauseOverlay(ctx);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     }
   }
 
@@ -703,36 +704,5 @@ export class GameEngine {
     ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
   }
 
-  private drawPauseOverlay(ctx: CanvasRenderingContext2D) {
-    // Semi-transparent dark overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    
-    // Draw pause symbol in center
-    const centerX = this.canvasWidth / 2;
-    const centerY = this.canvasHeight / 2;
-    const pauseWidth = 80;
-    const pauseHeight = 100;
-    const barWidth = 20;
-    const barGap = 20;
-    
-    // Draw two vertical bars to represent pause
-    ctx.fillStyle = '#FFFFFF';
-    
-    // Left bar
-    ctx.fillRect(centerX - barGap / 2 - barWidth, centerY - pauseHeight / 2, barWidth, pauseHeight);
-    
-    // Right bar
-    ctx.fillRect(centerX + barGap / 2, centerY - pauseHeight / 2, barWidth, pauseHeight);
-    
-    // Draw "PAUSED" text below
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('PAUSED', centerX, centerY + pauseHeight / 2 + 40);
-    
-    // Draw instruction text
-    ctx.font = '16px Arial';
-    ctx.fillText('Press SPACE or ESC to resume', centerX, centerY + pauseHeight / 2 + 70);
-  }
+
 }
