@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { GameEngine } from "@/lib/gameEngine";
@@ -7,6 +7,7 @@ export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const { 
     updateScore, 
@@ -74,6 +75,10 @@ export default function GameCanvas() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameEngineRef.current) {
         gameEngineRef.current.handleKeyDown(e.code);
+        // Update pause state when space or escape is pressed
+        if (e.code === 'Space' || e.code === 'Escape') {
+          setIsPaused(prev => !prev);
+        }
       }
     };
 
@@ -136,6 +141,7 @@ export default function GameCanvas() {
   const handlePauseClick = () => {
     if (gameEngineRef.current) {
       gameEngineRef.current.togglePause();
+      setIsPaused(!isPaused);
     }
   };
 
@@ -150,17 +156,19 @@ export default function GameCanvas() {
         onTouchEnd={handleTouchEnd}
       />
       
-      {/* Pause Button */}
-      <button
-        onClick={handlePauseClick}
-        className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg hover:bg-opacity-70 transition-all z-10"
-        style={{ touchAction: "manipulation" }}
-      >
-        <div className="flex items-center space-x-1">
-          <div className="w-1 h-4 bg-white"></div>
-          <div className="w-1 h-4 bg-white"></div>
-        </div>
-      </button>
+      {/* Pause Button - only show when not paused */}
+      {!isPaused && (
+        <button
+          onClick={handlePauseClick}
+          className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg hover:bg-opacity-70 transition-all z-10"
+          style={{ touchAction: "manipulation" }}
+        >
+          <div className="flex items-center space-x-1">
+            <div className="w-1 h-4 bg-white"></div>
+            <div className="w-1 h-4 bg-white"></div>
+          </div>
+        </button>
+      )}
     </div>
   );
 }
