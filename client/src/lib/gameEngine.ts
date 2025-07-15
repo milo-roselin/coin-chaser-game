@@ -42,6 +42,7 @@ export class GameEngine {
   private isPaused = false;
   private animationFrame = 0;
   private isMoving = false;
+  private facingDirection = 1; // 1 for right, -1 for left
 
   constructor(
     private canvasWidth: number, 
@@ -307,6 +308,12 @@ export class GameEngine {
     this.isMoving = moveX !== 0 || moveY !== 0;
     if (this.isMoving) {
       this.animationFrame += 0.3;
+      // Update facing direction based on horizontal movement
+      if (moveX > 0) {
+        this.facingDirection = 1; // Moving right
+      } else if (moveX < 0) {
+        this.facingDirection = -1; // Moving left
+      }
     }
 
     // Keep player in bounds
@@ -492,6 +499,16 @@ export class GameEngine {
     // Enable anti-aliasing for smoother curves
     ctx.imageSmoothingEnabled = true;
     
+    // Save the current transformation matrix
+    ctx.save();
+    
+    // Apply horizontal flip if facing left
+    if (this.facingDirection === -1) {
+      ctx.translate(centerX, 0);
+      ctx.scale(-1, 1);
+      ctx.translate(-centerX, 0);
+    }
+    
     // Draw top hat with rounded edges
     ctx.fillStyle = '#1A1A1A';
     ctx.beginPath();
@@ -556,26 +573,31 @@ export class GameEngine {
     ctx.arc(centerX, y + 26, 1, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw animated legs
+    // Draw animated legs with directional movement
     ctx.fillStyle = '#2F4F4F'; // Same color as suit
     
     if (this.isMoving) {
       // Create running animation with leg alternation
-      const legCycle = Math.sin(this.animationFrame) * 3; // 3 pixel movement range
-      const legOffset = Math.abs(legCycle) * 0.5; // Subtle forward/back movement
+      const legCycle = Math.sin(this.animationFrame) * 4; // Increased movement range
+      const forwardOffset = Math.sin(this.animationFrame + Math.PI / 2) * 2; // Forward/back movement
       
-      // Left leg (opposite phase)
-      ctx.fillRect(centerX - 6 + (legCycle > 0 ? legOffset : -legOffset), y + h - 4, 4, 8);
-      // Right leg (opposite phase)
-      ctx.fillRect(centerX + 2 + (legCycle < 0 ? legOffset : -legOffset), y + h - 4, 4, 8);
+      // Left leg - alternating with enhanced movement
+      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Slight vertical bounce
+      ctx.fillRect(leftLegX, leftLegY, 4, 8);
+      
+      // Right leg - opposite phase
+      const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Slight vertical bounce
+      ctx.fillRect(rightLegX, rightLegY, 4, 8);
       
       // Draw animated black shoes
       ctx.fillStyle = '#000000';
       ctx.beginPath();
-      ctx.roundRect(centerX - 8 + (legCycle > 0 ? legOffset : -legOffset), y + h + 3, 8, 3, 1); // Left shoe
+      ctx.roundRect(leftLegX - 2, leftLegY + 7, 8, 3, 1); // Left shoe
       ctx.fill();
       ctx.beginPath();
-      ctx.roundRect(centerX + 0 + (legCycle < 0 ? legOffset : -legOffset), y + h + 3, 8, 3, 1); // Right shoe
+      ctx.roundRect(rightLegX - 2, rightLegY + 7, 8, 3, 1); // Right shoe
       ctx.fill();
     } else {
       // Static legs when not moving
@@ -591,6 +613,9 @@ export class GameEngine {
       ctx.roundRect(centerX + 0, y + h + 3, 8, 3, 1); // Right shoe
       ctx.fill();
     }
+    
+    // Restore the transformation matrix
+    ctx.restore();
     
     // Reset text alignment
     ctx.textAlign = 'left';
