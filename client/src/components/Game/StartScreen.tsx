@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
@@ -25,6 +26,58 @@ export default function StartScreen() {
       resetProgress();
     }
   };
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return; // Don't trigger if typing in input
+      
+      switch (e.key.toLowerCase()) {
+        case 'n':
+        case 'enter':
+          e.preventDefault();
+          handleStartGame();
+          break;
+        case 'c':
+          if (highestLevelUnlocked > 1) {
+            e.preventDefault();
+            handleContinue();
+          }
+          break;
+        case 'l':
+          e.preventDefault();
+          handleShowLeaderboard();
+          break;
+        case 'm':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'r':
+          if (highestLevelUnlocked > 1) {
+            e.preventDefault();
+            handleResetProgress();
+          }
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          const level = parseInt(e.key);
+          if (level <= highestLevelUnlocked) {
+            e.preventDefault();
+            startFromLevel(level);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-4">
@@ -55,6 +108,7 @@ export default function StartScreen() {
           >
             <Play className="mr-2 h-6 w-6" />
             New Game
+            <span className="ml-auto text-sm opacity-75">[N]</span>
           </Button>
 
           {highestLevelUnlocked > 1 && (
@@ -64,6 +118,7 @@ export default function StartScreen() {
               className="w-full text-xl py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
             >
               🌀 Continue from Level {highestLevelUnlocked}
+              <span className="ml-auto text-sm opacity-75">[C]</span>
             </Button>
           )}
 
@@ -75,6 +130,7 @@ export default function StartScreen() {
           >
             <Trophy className="mr-2 h-5 w-5" />
             Leaderboard
+            <span className="ml-auto text-sm opacity-75">[L]</span>
           </Button>
 
           <Button 
@@ -85,6 +141,7 @@ export default function StartScreen() {
           >
             {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
             {isMuted ? "Unmute" : "Mute"} Sound
+            <span className="ml-auto text-sm opacity-75">[M]</span>
           </Button>
 
           {highestLevelUnlocked > 1 && (
@@ -95,6 +152,7 @@ export default function StartScreen() {
               className="w-full text-sm py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg"
             >
               Reset Progress
+              <span className="ml-auto text-xs opacity-75">[R]</span>
             </Button>
           )}
         </CardContent>
@@ -120,6 +178,7 @@ export default function StartScreen() {
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}
                     disabled={!isUnlocked}
+                    title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
                   >
                     {isUnlocked ? level : <Lock className="h-3 w-3" />}
                   </Button>
@@ -128,6 +187,8 @@ export default function StartScreen() {
             </div>
             <p className="text-xs text-gray-500 text-center">
               Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
+              <br />
+              <span className="text-xs opacity-75">Press 1-9 keys for quick access</span>
             </p>
           </CardContent>
         </Card>

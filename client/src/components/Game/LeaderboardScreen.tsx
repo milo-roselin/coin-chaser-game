@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
@@ -11,6 +12,24 @@ export default function LeaderboardScreen() {
   const handleBack = () => {
     resetGame();
   };
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
+      
+      switch (e.key.toLowerCase()) {
+        case 'b':
+        case 'escape':
+        case 'h':
+          e.preventDefault();
+          handleBack();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleBack]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -41,6 +60,7 @@ export default function LeaderboardScreen() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
+          <span className="ml-auto text-xs opacity-75">[B]</span>
         </Button>
 
         <div className="text-center">

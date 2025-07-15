@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,45 @@ export default function VictoryScreen() {
   const handleHome = () => {
     resetGame();
   };
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
+      
+      switch (e.key.toLowerCase()) {
+        case 'h':
+        case 'escape':
+          e.preventDefault();
+          handleHome();
+          break;
+        case 's':
+        case 'enter':
+          if (!scoreSubmitted && playerName.trim()) {
+            e.preventDefault();
+            handleSubmitScore();
+          }
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          const level = parseInt(e.key);
+          if (level <= highestLevelUnlocked) {
+            e.preventDefault();
+            startFromLevel(level);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleHome, handleSubmitScore, scoreSubmitted, playerName, startFromLevel, highestLevelUnlocked]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-4">
@@ -70,6 +109,7 @@ export default function VictoryScreen() {
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Submit Score
+                <span className="ml-auto text-sm opacity-75">[S]</span>
               </Button>
             </div>
           ) : (
@@ -100,6 +140,7 @@ export default function VictoryScreen() {
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}
                     disabled={!isUnlocked}
+                    title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
                   >
                     {isUnlocked ? level : <Lock className="h-3 w-3" />}
                   </Button>
@@ -108,6 +149,8 @@ export default function VictoryScreen() {
             </div>
             <p className="text-xs text-gray-500 text-center">
               Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
+              <br />
+              <span className="text-xs opacity-75">Press 1-9 keys for quick access</span>
             </p>
           </CardContent>
         </Card>
@@ -122,6 +165,7 @@ export default function VictoryScreen() {
         >
           <Home className="mr-2 h-6 w-6" />
           Back to Menu
+          <span className="ml-auto text-sm opacity-75">[H]</span>
         </Button>
       </div>
     </div>
