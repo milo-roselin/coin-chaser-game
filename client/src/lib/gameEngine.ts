@@ -40,6 +40,8 @@ export class GameEngine {
   private score = 0;
   private coinsCollected = 0;
   private isPaused = false;
+  private animationFrame = 0;
+  private isMoving = false;
 
   constructor(
     private canvasWidth: number, 
@@ -256,19 +258,25 @@ export class GameEngine {
     }
     
     const speed = 5;
+    let moveX = 0;
+    let moveY = 0;
     
     // Handle keyboard input
     if (this.keys['ArrowUp'] || this.keys['KeyW']) {
       this.player.y -= speed;
+      moveY = -speed;
     }
     if (this.keys['ArrowDown'] || this.keys['KeyS']) {
       this.player.y += speed;
+      moveY = speed;
     }
     if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
       this.player.x -= speed;
+      moveX = -speed;
     }
     if (this.keys['ArrowRight'] || this.keys['KeyD']) {
       this.player.x += speed;
+      moveX = speed;
     }
     
     // Move player towards touch position (if no keyboard input)
@@ -288,9 +296,17 @@ export class GameEngine {
       
       if (distance > 5) {
         const touchSpeed = 3;
-        this.player.x += (dx / distance) * touchSpeed;
-        this.player.y += (dy / distance) * touchSpeed;
+        moveX = (dx / distance) * touchSpeed;
+        moveY = (dy / distance) * touchSpeed;
+        this.player.x += moveX;
+        this.player.y += moveY;
       }
+    }
+    
+    // Check if player is moving and update animation
+    this.isMoving = moveX !== 0 || moveY !== 0;
+    if (this.isMoving) {
+      this.animationFrame += 0.3;
     }
 
     // Keep player in bounds
@@ -540,19 +556,41 @@ export class GameEngine {
     ctx.arc(centerX, y + 26, 1, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw legs
+    // Draw animated legs
     ctx.fillStyle = '#2F4F4F'; // Same color as suit
-    ctx.fillRect(centerX - 6, y + h - 4, 4, 8); // Left leg
-    ctx.fillRect(centerX + 2, y + h - 4, 4, 8); // Right leg
     
-    // Draw black shoes
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.roundRect(centerX - 8, y + h + 3, 8, 3, 1); // Left shoe
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(centerX + 0, y + h + 3, 8, 3, 1); // Right shoe
-    ctx.fill();
+    if (this.isMoving) {
+      // Create running animation with leg alternation
+      const legCycle = Math.sin(this.animationFrame) * 3; // 3 pixel movement range
+      const legOffset = Math.abs(legCycle) * 0.5; // Subtle forward/back movement
+      
+      // Left leg (opposite phase)
+      ctx.fillRect(centerX - 6 + (legCycle > 0 ? legOffset : -legOffset), y + h - 4, 4, 8);
+      // Right leg (opposite phase)
+      ctx.fillRect(centerX + 2 + (legCycle < 0 ? legOffset : -legOffset), y + h - 4, 4, 8);
+      
+      // Draw animated black shoes
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.roundRect(centerX - 8 + (legCycle > 0 ? legOffset : -legOffset), y + h + 3, 8, 3, 1); // Left shoe
+      ctx.fill();
+      ctx.beginPath();
+      ctx.roundRect(centerX + 0 + (legCycle < 0 ? legOffset : -legOffset), y + h + 3, 8, 3, 1); // Right shoe
+      ctx.fill();
+    } else {
+      // Static legs when not moving
+      ctx.fillRect(centerX - 6, y + h - 4, 4, 8); // Left leg
+      ctx.fillRect(centerX + 2, y + h - 4, 4, 8); // Right leg
+      
+      // Draw static black shoes
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.roundRect(centerX - 8, y + h + 3, 8, 3, 1); // Left shoe
+      ctx.fill();
+      ctx.beginPath();
+      ctx.roundRect(centerX + 0, y + h + 3, 8, 3, 1); // Right shoe
+      ctx.fill();
+    }
     
     // Reset text alignment
     ctx.textAlign = 'left';
