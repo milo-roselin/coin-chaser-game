@@ -651,18 +651,34 @@ export class GameEngine {
     const miniMapX = (this.canvasWidth - miniMapWidth) / 2;
     const miniMapY = 20;
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    // Dark background with border
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
     
-    // Player position on mini-map
-    const playerMiniX = miniMapX + (this.player.x / this.levelWidth) * miniMapWidth;
-    ctx.fillStyle = '#4F46E5';
-    ctx.fillRect(playerMiniX - 2, miniMapY + miniMapHeight / 2 - 2, 4, 4);
+    // Add border for better definition
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
     
-    // Goal position on mini-map
+    // Player position on mini-map (bigger and more vibrant)
+    const playerMiniX = miniMapX + (this.player.x / this.levelWidth) * miniMapWidth;
+    ctx.fillStyle = '#3B82F6'; // Brighter blue
+    ctx.fillRect(playerMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
+    
+    // Add white outline for better visibility
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(playerMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
+    
+    // Goal position on mini-map (bigger and more vibrant)
     const goalMiniX = miniMapX + (this.goal.x / this.levelWidth) * miniMapWidth;
     const canEnter = this.clustersCompleted > 0;
-    ctx.fillStyle = canEnter ? '#8B5CF6' : '#6B7280';
-    ctx.fillRect(goalMiniX - 2, miniMapY + miniMapHeight / 2 - 2, 4, 4);
+    ctx.fillStyle = canEnter ? '#A855F7' : '#9CA3AF'; // Brighter purple or gray
+    ctx.fillRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
+    
+    // Add white outline for goal too
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
   }
 }
