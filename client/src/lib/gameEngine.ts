@@ -531,11 +531,7 @@ export class GameEngine {
     ctx.fill();
     ctx.fillRect(centerX - 1, y + 17, 2, 3);
     
-    // Draw money bag (no symbol)
-    ctx.fillStyle = '#8B4513';
-    ctx.beginPath();
-    ctx.arc(x + w - 6, y + 12, 4, 0, Math.PI * 2);
-    ctx.fill();
+
     
     // Add suit buttons
     ctx.fillStyle = '#FFD700';
