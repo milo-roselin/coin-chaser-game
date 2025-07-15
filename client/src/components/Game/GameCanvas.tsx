@@ -1,9 +1,9 @@
-import { useRef, useEffect, useCallback, useState } from "react";
+import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { GameEngine } from "@/lib/gameEngine";
 
-export default function GameCanvas() {
+const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -145,6 +145,11 @@ export default function GameCanvas() {
     }
   };
 
+  // Expose toggle pause function to parent component
+  useImperativeHandle(ref, () => ({
+    togglePause: handlePauseClick
+  }));
+
   return (
     <div className="absolute inset-0">
       <canvas
@@ -175,4 +180,8 @@ export default function GameCanvas() {
       )}
     </div>
   );
-}
+});
+
+GameCanvas.displayName = "GameCanvas";
+
+export default GameCanvas;

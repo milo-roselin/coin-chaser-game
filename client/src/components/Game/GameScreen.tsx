@@ -7,10 +7,13 @@ import { Pause, Home } from "lucide-react";
 
 export default function GameScreen() {
   const { resetGame } = useCoinGame();
+  const gameCanvasRef = useRef<{ togglePause: () => void } | null>(null);
 
   const handlePause = () => {
-    // For now, just go back to start screen
-    resetGame();
+    // Trigger pause in the game engine
+    if (gameCanvasRef.current) {
+      gameCanvasRef.current.togglePause();
+    }
   };
 
   const handleHome = () => {
@@ -20,7 +23,7 @@ export default function GameScreen() {
   return (
     <div className="relative w-full h-full">
       {/* Game Canvas */}
-      <GameCanvas />
+      <GameCanvas ref={gameCanvasRef} />
 
       {/* Control Buttons - top-right corner */}
       <div className="absolute top-4 right-4 flex gap-2 pointer-events-none">
