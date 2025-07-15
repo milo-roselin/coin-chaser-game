@@ -19,7 +19,7 @@ export default function GameOverScreen() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      console.log('GameOver - Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+
       
       const key = e.key.toLowerCase();
       const code = e.code;

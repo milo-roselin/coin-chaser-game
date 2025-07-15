@@ -7,13 +7,38 @@ import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { Trophy, Home, Upload, Lock } from "lucide-react";
 
 export default function VictoryScreen() {
-  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel } = useCoinGame();
+  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel } = useCoinGame();
   const { addScore } = useLeaderboard();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
+  // Auto-submit score when screen loads
+  useEffect(() => {
+    const savedName = localStorage.getItem('playerName');
+    if (savedName) {
+      setPlayerName(savedName);
+      addScore({
+        name: savedName,
+        score: totalScore,
+        coins: coinsCollected,
+        date: new Date().toISOString()
+      });
+      setScoreSubmitted(true);
+    } else {
+      // Auto-submit with default name if no name saved
+      addScore({
+        name: 'Anonymous',
+        score: totalScore,
+        coins: coinsCollected,
+        date: new Date().toISOString()
+      });
+      setScoreSubmitted(true);
+    }
+  }, [addScore, totalScore, coinsCollected]);
+
   const handleSubmitScore = () => {
     if (playerName.trim()) {
+      localStorage.setItem('playerName', playerName.trim());
       addScore({
         name: playerName.trim(),
         score: totalScore,
@@ -32,7 +57,7 @@ export default function VictoryScreen() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      console.log('Victory - Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+
       
       const key = e.key.toLowerCase();
       const code = e.code;
@@ -45,7 +70,7 @@ export default function VictoryScreen() {
       }
       
       // Handle submit score keys
-      if ((key === 's' || code === 'KeyS' || key === 'enter' || code === 'Enter' || e.keyCode === 13) && !scoreSubmitted && playerName.trim()) {
+      if ((key === 's' || code === 'KeyS' || key === 'enter' || code === 'Enter' || e.keyCode === 13) && playerName.trim()) {
         e.preventDefault();
         handleSubmitScore();
         return;
@@ -80,8 +105,10 @@ export default function VictoryScreen() {
       {/* Victory Message */}
       <div className="mb-8 text-center">
         <div className="text-6xl mb-4">🎉</div>
-        <h1 className="text-4xl font-bold text-green-600 mb-2">You Win!</h1>
-        <p className="text-lg text-gray-600">Congratulations on completing the level!</p>
+        <h1 className="text-4xl font-bold text-green-600 mb-2">Level {currentLevel} Complete!</h1>
+        <p className="text-lg text-gray-600">
+          Score automatically saved to leaderboard!
+        </p>
       </div>
 
       {/* Score Card */}
@@ -101,30 +128,38 @@ export default function VictoryScreen() {
             </div>
           </div>
 
-          {!scoreSubmitted ? (
-            <div className="space-y-4">
+          <div className="space-y-4">
+            <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
+              <Trophy className="mr-2 h-5 w-5" />
+              Score saved to leaderboard!
+            </div>
+            
+            <div className="border-t pt-4">
+              <p className="text-sm text-gray-600 mb-2">Want to update your name?</p>
               <Input
                 placeholder="Enter your name"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
                 maxLength={20}
-                className="text-center"
+                className="text-center mb-2"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && playerName.trim()) {
+                    handleSubmitScore();
+                  }
+                }}
               />
               <Button
                 onClick={handleSubmitScore}
                 disabled={!playerName.trim()}
+                size="sm"
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
               >
                 <Upload className="mr-2 h-4 w-4" />
-                Submit Score
+                Update Name
                 <span className="ml-auto text-sm opacity-75">[S]</span>
               </Button>
             </div>
-          ) : (
-            <div className="text-green-600 font-semibold">
-              ✅ Score submitted successfully!
-            </div>
-          )}
+          </div>
         </CardContent>
       </Card>
 

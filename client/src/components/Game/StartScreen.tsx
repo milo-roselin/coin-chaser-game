@@ -32,7 +32,7 @@ export default function StartScreen() {
       // Skip if typing in input field
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      console.log('Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+
       
       const key = e.key.toLowerCase();
       const code = e.code;

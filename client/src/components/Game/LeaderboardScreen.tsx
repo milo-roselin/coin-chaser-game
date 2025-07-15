@@ -17,7 +17,7 @@ export default function LeaderboardScreen() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      console.log('Leaderboard - Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+
       
       const key = e.key.toLowerCase();
       const code = e.code;

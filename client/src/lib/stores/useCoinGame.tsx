@@ -94,7 +94,7 @@ export const useCoinGame = create<CoinGameState>()(
           const newLevel = state.currentLevel + 1;
           const newTotalScore = state.totalScore + state.score;
           return {
-            gameState: state.gameState === "playing" ? "nextLevel" : state.gameState,
+            gameState: state.gameState === "playing" ? "victory" : state.gameState,
             highestLevelUnlocked: Math.max(state.highestLevelUnlocked, newLevel),
             totalScore: newTotalScore
           };
