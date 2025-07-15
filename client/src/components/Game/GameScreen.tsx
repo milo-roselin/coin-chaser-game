@@ -20,6 +20,20 @@ export default function GameScreen() {
     resetGame();
   };
 
+  // Add keyboard shortcuts for home button
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === 'h' || e.key === 'H') {
+        handleHome();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
   return (
     <div className="relative w-full h-full">
       {/* Game Canvas */}
@@ -32,6 +46,7 @@ export default function GameScreen() {
           size="sm"
           variant="outline"
           className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
+          title="Pause Game (SPACE or ESC)"
         >
           <Pause className="h-4 w-4" />
         </Button>
@@ -40,6 +55,7 @@ export default function GameScreen() {
           size="sm"
           variant="outline"
           className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
+          title="Back to Menu (H)"
         >
           <Home className="h-4 w-4" />
         </Button>
