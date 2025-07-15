@@ -515,21 +515,6 @@ export class GameEngine {
     ctx.arc(centerX + 3, y + 6, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw monocle
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(centerX + 3, y + 6, 3, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    // Draw monocle chain
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(centerX + 6, y + 6);
-    ctx.lineTo(centerX + 8, y + 10);
-    ctx.stroke();
-    
     // Draw body (suit) with rounded corners
     ctx.fillStyle = '#2F4F4F';
     ctx.beginPath();
@@ -552,15 +537,11 @@ export class GameEngine {
     ctx.fill();
     ctx.fillRect(centerX - 1, y + 17, 2, 3);
     
-    // Draw money bag with $ symbol
+    // Draw money bag (no symbol)
     ctx.fillStyle = '#8B4513';
     ctx.beginPath();
     ctx.arc(x + w - 6, y + 12, 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#FFD700';
-    ctx.font = 'bold 6px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('$', x + w - 6, y + 14);
     
     // Add suit buttons
     ctx.fillStyle = '#FFD700';
