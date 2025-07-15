@@ -39,6 +39,7 @@ export class GameEngine {
   private level = 1;
   private score = 0;
   private coinsCollected = 0;
+  private isPaused = false;
 
   constructor(
     private canvasWidth: number, 
@@ -231,6 +232,12 @@ export class GameEngine {
   }
 
   public handleKeyDown(key: string) {
+    // Handle pause key
+    if (key === 'Space' || key === 'Escape') {
+      this.togglePause();
+      return;
+    }
+    
     this.keys[key] = true;
   }
 
@@ -238,7 +245,16 @@ export class GameEngine {
     this.keys[key] = false;
   }
 
+  public togglePause() {
+    this.isPaused = !this.isPaused;
+  }
+
   public update() {
+    // Don't update game state if paused
+    if (this.isPaused) {
+      return;
+    }
+    
     const speed = 5;
     
     // Handle keyboard input
@@ -416,6 +432,11 @@ export class GameEngine {
 
     // Draw UI elements (not affected by camera)
     this.drawUI(ctx);
+    
+    // Draw pause overlay if paused
+    if (this.isPaused) {
+      this.drawPauseOverlay(ctx);
+    }
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
@@ -680,5 +701,38 @@ export class GameEngine {
     ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 1;
     ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
+  }
+
+  private drawPauseOverlay(ctx: CanvasRenderingContext2D) {
+    // Semi-transparent dark overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    
+    // Draw pause symbol in center
+    const centerX = this.canvasWidth / 2;
+    const centerY = this.canvasHeight / 2;
+    const pauseWidth = 80;
+    const pauseHeight = 100;
+    const barWidth = 20;
+    const barGap = 20;
+    
+    // Draw two vertical bars to represent pause
+    ctx.fillStyle = '#FFFFFF';
+    
+    // Left bar
+    ctx.fillRect(centerX - barGap / 2 - barWidth, centerY - pauseHeight / 2, barWidth, pauseHeight);
+    
+    // Right bar
+    ctx.fillRect(centerX + barGap / 2, centerY - pauseHeight / 2, barWidth, pauseHeight);
+    
+    // Draw "PAUSED" text below
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSED', centerX, centerY + pauseHeight / 2 + 40);
+    
+    // Draw instruction text
+    ctx.font = '16px Arial';
+    ctx.fillText('Press SPACE or ESC to resume', centerX, centerY + pauseHeight / 2 + 70);
   }
 }

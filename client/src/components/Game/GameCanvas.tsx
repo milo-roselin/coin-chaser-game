@@ -133,14 +133,34 @@ export default function GameCanvas() {
     }
   };
 
+  const handlePauseClick = () => {
+    if (gameEngineRef.current) {
+      gameEngineRef.current.togglePause();
+    }
+  };
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 touch-none"
-      style={{ touchAction: "none" }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    />
+    <div className="absolute inset-0">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 touch-none"
+        style={{ touchAction: "none" }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      />
+      
+      {/* Pause Button */}
+      <button
+        onClick={handlePauseClick}
+        className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg hover:bg-opacity-70 transition-all z-10"
+        style={{ touchAction: "manipulation" }}
+      >
+        <div className="flex items-center space-x-1">
+          <div className="w-1 h-4 bg-white"></div>
+          <div className="w-1 h-4 bg-white"></div>
+        </div>
+      </button>
+    </div>
   );
 }
