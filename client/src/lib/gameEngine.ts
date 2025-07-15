@@ -468,10 +468,6 @@ export class GameEngine {
     ctx.fillStyle = '#22C55E';
     ctx.fillRect(0, 0, this.levelWidth, this.canvasHeight);
 
-    // Draw path
-    ctx.fillStyle = '#92A3B7';
-    ctx.fillRect(0, this.canvasHeight / 2 - 30, this.levelWidth, 60);
-
     // Draw grid pattern
     ctx.strokeStyle = '#16A34A';
     ctx.lineWidth = 1;
