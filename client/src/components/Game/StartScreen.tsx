@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
@@ -8,6 +8,8 @@ import { Trophy, Play, Volume2, VolumeX, Lock } from "lucide-react";
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute } = useAudio();
+  const [levelInput, setLevelInput] = useState("");
+  const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const handleStartGame = () => {
     // Enable audio context on user interaction
@@ -81,29 +83,52 @@ export default function StartScreen() {
         return;
       }
       
-      // Handle number keys (multiple ways for Microsoft keyboards)
-      const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-      const numberCodes = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9'];
+      // Handle number keys for multi-digit input
+      const numberKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      const numberCodes = ['Digit0', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9'];
       
-      let level = 0;
+      let digit = '';
       if (numberKeys.includes(key)) {
-        level = parseInt(key);
+        digit = key;
       } else if (numberCodes.includes(code)) {
-        level = parseInt(code.replace('Digit', ''));
-      } else if (e.keyCode >= 49 && e.keyCode <= 57) {
-        level = e.keyCode - 48;
+        digit = code.replace('Digit', '');
+      } else if (e.keyCode >= 48 && e.keyCode <= 57) {
+        digit = String(e.keyCode - 48);
       }
       
-      if (level > 0 && level <= highestLevelUnlocked) {
+      if (digit !== '') {
         e.preventDefault();
-        startFromLevel(level);
+        
+        // Clear existing timeout
+        if (inputTimeout) {
+          clearTimeout(inputTimeout);
+        }
+        
+        const newInput = levelInput + digit;
+        setLevelInput(newInput);
+        
+        // Set timeout to execute level selection after 1 second
+        const timeout = setTimeout(() => {
+          const level = parseInt(newInput);
+          if (level > 0 && level <= highestLevelUnlocked) {
+            startFromLevel(level);
+          }
+          setLevelInput("");
+        }, 1000);
+        
+        setInputTimeout(timeout);
         return;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      if (inputTimeout) {
+        clearTimeout(inputTimeout);
+      }
+    };
+  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-4">
@@ -214,7 +239,10 @@ export default function StartScreen() {
             <p className="text-xs text-gray-500 text-center">
               Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
               <br />
-              <span className="text-xs opacity-75">Press 1-9 keys for quick access</span>
+              <span className="text-xs opacity-75">
+                Type level number (e.g., press 1 then 7 for Level 17)
+                {levelInput && <span className="ml-2 text-blue-600 font-semibold">Typing: {levelInput}...</span>}
+              </span>
             </p>
           </CardContent>
         </Card>
