@@ -29,49 +29,69 @@ export default function StartScreen() {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return; // Don't trigger if typing in input
+      // Skip if typing in input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      switch (e.key.toLowerCase()) {
-        case 'n':
-        case 'enter':
-          e.preventDefault();
-          handleStartGame();
-          break;
-        case 'c':
-          if (highestLevelUnlocked > 1) {
-            e.preventDefault();
-            handleContinue();
-          }
-          break;
-        case 'l':
-          e.preventDefault();
-          handleShowLeaderboard();
-          break;
-        case 'm':
-          e.preventDefault();
-          toggleMute();
-          break;
-        case 'r':
-          if (highestLevelUnlocked > 1) {
-            e.preventDefault();
-            handleResetProgress();
-          }
-          break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          const level = parseInt(e.key);
-          if (level <= highestLevelUnlocked) {
-            e.preventDefault();
-            startFromLevel(level);
-          }
-          break;
+      console.log('Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+      
+      const key = e.key.toLowerCase();
+      const code = e.code;
+      
+      // Handle Enter key (multiple ways for Microsoft keyboards)
+      if (key === 'enter' || code === 'Enter' || e.keyCode === 13) {
+        e.preventDefault();
+        handleStartGame();
+        return;
+      }
+      
+      // Handle letter keys
+      if (key === 'n' || code === 'KeyN') {
+        e.preventDefault();
+        handleStartGame();
+        return;
+      }
+      
+      if ((key === 'c' || code === 'KeyC') && highestLevelUnlocked > 1) {
+        e.preventDefault();
+        handleContinue();
+        return;
+      }
+      
+      if (key === 'l' || code === 'KeyL') {
+        e.preventDefault();
+        handleShowLeaderboard();
+        return;
+      }
+      
+      if (key === 'm' || code === 'KeyM') {
+        e.preventDefault();
+        toggleMute();
+        return;
+      }
+      
+      if ((key === 'r' || code === 'KeyR') && highestLevelUnlocked > 1) {
+        e.preventDefault();
+        handleResetProgress();
+        return;
+      }
+      
+      // Handle number keys (multiple ways for Microsoft keyboards)
+      const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      const numberCodes = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9'];
+      
+      let level = 0;
+      if (numberKeys.includes(key)) {
+        level = parseInt(key);
+      } else if (numberCodes.includes(code)) {
+        level = parseInt(code.replace('Digit', ''));
+      } else if (e.keyCode >= 49 && e.keyCode <= 57) {
+        level = e.keyCode - 48;
+      }
+      
+      if (level > 0 && level <= highestLevelUnlocked) {
+        e.preventDefault();
+        startFromLevel(level);
+        return;
       }
     };
 

@@ -15,15 +15,18 @@ export default function LeaderboardScreen() {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      switch (e.key.toLowerCase()) {
-        case 'b':
-        case 'escape':
-        case 'h':
-          e.preventDefault();
-          handleBack();
-          break;
+      console.log('Leaderboard - Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+      
+      const key = e.key.toLowerCase();
+      const code = e.code;
+      
+      // Handle back keys
+      if (key === 'b' || code === 'KeyB' || key === 'escape' || code === 'Escape' || e.keyCode === 27 || key === 'h' || code === 'KeyH') {
+        e.preventDefault();
+        handleBack();
+        return;
       }
     };
 

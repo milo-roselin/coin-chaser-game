@@ -17,35 +17,44 @@ export default function GameOverScreen() {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      switch (e.key.toLowerCase()) {
-        case 'r':
-        case 'enter':
-        case ' ':
-          e.preventDefault();
-          handleRetry();
-          break;
-        case 'h':
-        case 'escape':
-          e.preventDefault();
-          handleHome();
-          break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          const level = parseInt(e.key);
-          if (level <= highestLevelUnlocked) {
-            e.preventDefault();
-            startFromLevel(level);
-          }
-          break;
+      console.log('GameOver - Key pressed:', e.key, 'Code:', e.code, 'KeyCode:', e.keyCode);
+      
+      const key = e.key.toLowerCase();
+      const code = e.code;
+      
+      // Handle retry keys
+      if (key === 'r' || code === 'KeyR' || key === 'enter' || code === 'Enter' || e.keyCode === 13 || key === ' ' || code === 'Space' || e.keyCode === 32) {
+        e.preventDefault();
+        handleRetry();
+        return;
+      }
+      
+      // Handle home/escape keys
+      if (key === 'h' || code === 'KeyH' || key === 'escape' || code === 'Escape' || e.keyCode === 27) {
+        e.preventDefault();
+        handleHome();
+        return;
+      }
+      
+      // Handle number keys
+      const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      const numberCodes = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9'];
+      
+      let level = 0;
+      if (numberKeys.includes(key)) {
+        level = parseInt(key);
+      } else if (numberCodes.includes(code)) {
+        level = parseInt(code.replace('Digit', ''));
+      } else if (e.keyCode >= 49 && e.keyCode <= 57) {
+        level = e.keyCode - 48;
+      }
+      
+      if (level > 0 && level <= highestLevelUnlocked) {
+        e.preventDefault();
+        startFromLevel(level);
+        return;
       }
     };
 
