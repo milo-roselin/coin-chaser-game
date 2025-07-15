@@ -91,8 +91,8 @@ export const useAudio = create<AudioState>((set, get) => ({
       }
       
       const soundClone = explosionSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.8; // Louder and more dramatic
-      soundClone.playbackRate = 0.7; // Slower for deeper, longer explosion
+      soundClone.volume = 0.6; // Slightly lower volume for custom sound
+      soundClone.playbackRate = 1.0; // Normal speed for custom sound
       soundClone.play().catch(error => {
         console.log("Explosion sound play prevented:", error);
       });

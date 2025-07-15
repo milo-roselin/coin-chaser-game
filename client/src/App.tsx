@@ -18,7 +18,7 @@ function App() {
     const backgroundMusic = new Audio("/sounds/background.mp3");
     const hitSound = new Audio("/sounds/hit.mp3");
     const successSound = new Audio("/sounds/success.mp3");
-    const explosionSound = new Audio("/sounds/explosion.mp3");
+    const explosionSound = new Audio("/attached_assets/explosion-6055_1752612347276.mp3");
     const coinSound = new Audio("/sounds/coin.mp3");
 
     backgroundMusic.loop = true;
