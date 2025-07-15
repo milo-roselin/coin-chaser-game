@@ -81,11 +81,25 @@ export class GameEngine {
     this.score = 0;
     this.coinsCollected = 0;
 
-    // Generate coins in clusters
+    // Generate coins in clusters with better spacing
     const numClusters = 3 + this.level; // More clusters in higher levels
+    const minDistance = 400; // Minimum distance between clusters
+    const clusterPositions: Array<{x: number, y: number}> = [];
+    
     for (let cluster = 0; cluster < numClusters; cluster++) {
-      const clusterX = 300 + (cluster * (this.levelWidth - 600)) / (numClusters - 1);
-      const clusterY = this.canvasHeight / 2 + (Math.random() - 0.5) * 200;
+      let clusterX, clusterY;
+      let attempts = 0;
+      
+      // Find a position that's not too close to existing clusters
+      do {
+        clusterX = 300 + Math.random() * (this.levelWidth - 800);
+        clusterY = 100 + Math.random() * (this.canvasHeight - 200);
+        attempts++;
+      } while (attempts < 50 && clusterPositions.some(pos => 
+        Math.sqrt((pos.x - clusterX) ** 2 + (pos.y - clusterY) ** 2) < minDistance
+      ));
+      
+      clusterPositions.push({x: clusterX, y: clusterY});
       
       // Track cluster info
       this.coinClusters.push({
@@ -95,11 +109,11 @@ export class GameEngine {
         totalCoins: 3
       });
       
-      // 3 coins per cluster
+      // 3 coins per cluster with wider spread
       for (let i = 0; i < 3; i++) {
         this.coins.push({
-          x: clusterX + (Math.random() - 0.5) * 120,
-          y: clusterY + (Math.random() - 0.5) * 80,
+          x: clusterX + (Math.random() - 0.5) * 160, // Wider spread
+          y: clusterY + (Math.random() - 0.5) * 120, // Wider spread
           width: 20,
           height: 20,
           color: '#F59E0B',
@@ -139,8 +153,18 @@ export class GameEngine {
     // Add some linear patrolling TNT bombs between clusters (more in higher levels)
     const linearTnt = 2 + this.level;
     for (let i = 0; i < linearTnt; i++) {
-      const x = 250 + Math.random() * (this.levelWidth - 500); // Avoid starting area
-      const y = 80 + Math.random() * (this.canvasHeight - 160);
+      let x, y;
+      let attempts = 0;
+      
+      // Find positions that are away from coin clusters
+      do {
+        x = 250 + Math.random() * (this.levelWidth - 500);
+        y = 80 + Math.random() * (this.canvasHeight - 160);
+        attempts++;
+      } while (attempts < 20 && clusterPositions.some(pos => 
+        Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2) < 200
+      ));
+      
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
       
       if (patrolType === 'horizontal') {
