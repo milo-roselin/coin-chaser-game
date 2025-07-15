@@ -44,17 +44,22 @@ export const useAudio = create<AudioState>((set, get) => ({
     // Update the muted state
     set({ isMuted: newMutedState });
     
-    // If unmuting, try to initialize audio context
-    if (!newMutedState) {
-      const { explosionSound } = get();
-      if (explosionSound) {
-        explosionSound.muted = false;
-        explosionSound.load();
-      }
-    }
-    
     // Log the change
     console.log(`Sound ${newMutedState ? 'muted' : 'unmuted'}`);
+    
+    // Test explosion sound when unmuting
+    if (!newMutedState) {
+      setTimeout(() => {
+        const { explosionSound } = get();
+        if (explosionSound) {
+          console.log("Testing explosion sound...");
+          explosionSound.currentTime = 0;
+          explosionSound.play().catch(error => {
+            console.log("Explosion test failed:", error);
+          });
+        }
+      }, 500);
+    }
   },
   
   playHit: () => {

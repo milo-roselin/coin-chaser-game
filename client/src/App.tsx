@@ -15,24 +15,38 @@ function App() {
 
   // Initialize audio on component mount
   useEffect(() => {
-    const initializeAudio = async () => {
+    const initializeAudio = () => {
       try {
+        // Create audio objects with proper error handling
         const backgroundMusic = new Audio("/sounds/background.mp3");
         const hitSound = new Audio("/sounds/hit.mp3");
         const successSound = new Audio("/sounds/success.mp3");
-        const explosionSound = new Audio("/attached_assets/explosion-6055_1752612347276.mp3");
+        const explosionSound = new Audio("/sounds/custom_explosion.mp3");
         const coinSound = new Audio("/sounds/coin.mp3");
 
-        // Set properties
+        // Set basic properties
         backgroundMusic.loop = true;
         backgroundMusic.volume = 0.3;
-        explosionSound.volume = 0.6;
-        explosionSound.preload = "auto";
+        backgroundMusic.preload = "none";
         
-        // Preload the explosion sound
-        await new Promise((resolve) => {
-          explosionSound.addEventListener('canplaythrough', resolve, { once: true });
-          explosionSound.load();
+        hitSound.preload = "auto";
+        hitSound.volume = 0.3;
+        
+        successSound.preload = "auto";
+        successSound.volume = 0.5;
+        
+        explosionSound.preload = "auto";
+        explosionSound.volume = 0.6;
+        
+        coinSound.preload = "auto";
+        coinSound.volume = 0.7;
+
+        // Add error handlers
+        const audioElements = [backgroundMusic, hitSound, successSound, explosionSound, coinSound];
+        audioElements.forEach(audio => {
+          audio.addEventListener('error', (e) => {
+            console.log(`Audio error for ${audio.src}:`, e);
+          });
         });
 
         setBackgroundMusic(backgroundMusic);
@@ -40,11 +54,10 @@ function App() {
         setSuccessSound(successSound);
         setExplosionSound(explosionSound);
         setCoinSound(coinSound);
+        
+        console.log("Audio system initialized");
       } catch (error) {
         console.log("Audio initialization error:", error);
-        // Fallback to default explosion sound if custom one fails
-        const fallbackExplosion = new Audio("/sounds/explosion.mp3");
-        setExplosionSound(fallbackExplosion);
       }
     };
 
