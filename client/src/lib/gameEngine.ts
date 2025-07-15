@@ -471,52 +471,108 @@ export class GameEngine {
     const y = this.player.y;
     const w = this.player.width;
     const h = this.player.height;
+    const centerX = x + w / 2;
     
-    // Draw top hat
-    ctx.fillStyle = '#1A1A1A'; // Black top hat
-    ctx.fillRect(x + 6, y - 8, w - 12, 8); // Hat brim
-    ctx.fillRect(x + 8, y - 16, w - 16, 8); // Hat top
+    // Enable anti-aliasing for smoother curves
+    ctx.imageSmoothingEnabled = true;
     
-    // Draw head/face (pink skin)
-    ctx.fillStyle = '#FFB6C1'; // Light pink skin
-    ctx.fillRect(x + 4, y + 2, w - 8, h - 14);
-    
-    // Draw mustache
-    ctx.fillStyle = '#8B4513'; // Brown mustache
-    ctx.fillRect(x + 8, y + 12, w - 16, 4);
-    
-    // Draw eyes
-    ctx.fillStyle = '#000000'; // Black eyes
-    ctx.fillRect(x + 8, y + 6, 3, 3);
-    ctx.fillRect(x + 16, y + 6, 3, 3);
-    
-    // Draw monocle on right eye
-    ctx.strokeStyle = '#FFD700'; // Gold monocle
-    ctx.lineWidth = 1;
+    // Draw top hat with rounded edges
+    ctx.fillStyle = '#1A1A1A';
     ctx.beginPath();
-    ctx.arc(x + 17, y + 7, 4, 0, Math.PI * 2);
+    ctx.roundRect(x + 6, y - 8, w - 12, 6, 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y - 16, w - 16, 8, 1);
+    ctx.fill();
+    
+    // Draw head as circle
+    ctx.fillStyle = '#FFB6C1';
+    ctx.beginPath();
+    ctx.arc(centerX, y + 8, 10, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw white collar
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(centerX, y + 16, 8, 0, Math.PI);
+    ctx.fill();
+    
+    // Draw mustache with curves
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 12, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 12, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw eyes as circles
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX - 3, y + 6, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 3, y + 6, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw monocle
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(centerX + 3, y + 6, 3, 0, Math.PI * 2);
     ctx.stroke();
     
-    // Draw body (formal suit)
-    ctx.fillStyle = '#2F4F4F'; // Dark slate gray suit
-    ctx.fillRect(x + 6, y + 18, w - 12, h - 22);
+    // Draw monocle chain
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(centerX + 6, y + 6);
+    ctx.lineTo(centerX + 8, y + 10);
+    ctx.stroke();
+    
+    // Draw body (suit) with rounded corners
+    ctx.fillStyle = '#2F4F4F';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 18, w - 12, h - 20, 2);
+    ctx.fill();
     
     // Draw vest
-    ctx.fillStyle = '#8B0000'; // Dark red vest
-    ctx.fillRect(x + 8, y + 20, w - 16, h - 26);
+    ctx.fillStyle = '#8B0000';
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 20, w - 16, h - 24, 1);
+    ctx.fill();
     
-    // Draw bow tie
-    ctx.fillStyle = '#FF0000'; // Red bow tie
-    ctx.fillRect(x + 10, y + 18, w - 20, 3);
+    // Draw bow tie with curves
+    ctx.fillStyle = '#FF0000';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 18, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 18, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(centerX - 1, y + 17, 2, 3);
     
-    // Draw money bag (if space allows)
-    if (w >= 30) {
-      ctx.fillStyle = '#8B4513'; // Brown money bag
-      ctx.fillRect(x + w - 8, y + 8, 6, 8);
-      ctx.fillStyle = '#FFD700'; // Gold $ sign
-      ctx.font = '8px Arial';
-      ctx.fillText('$', x + w - 6, y + 14);
-    }
+    // Draw money bag with $ symbol
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.arc(x + w - 6, y + 12, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 6px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('$', x + w - 6, y + 14);
+    
+    // Add suit buttons
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(centerX, y + 22, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX, y + 26, 1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Reset text alignment
+    ctx.textAlign = 'left';
   }
 
   private drawCoin(ctx: CanvasRenderingContext2D, coin: GameObject) {
