@@ -645,10 +645,10 @@ export class GameEngine {
     ctx.fillStyle = '#8B5CF6';
     ctx.fillRect(20, 160, barWidth * levelProgress, 10);
     
-    // Draw mini-map
+    // Draw mini-map (centered at top)
     const miniMapWidth = 150;
     const miniMapHeight = 30;
-    const miniMapX = this.canvasWidth - miniMapWidth - 20;
+    const miniMapX = (this.canvasWidth - miniMapWidth) / 2;
     const miniMapY = 20;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
