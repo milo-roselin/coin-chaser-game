@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
-import { Trophy, Home, Upload } from "lucide-react";
+import { Trophy, Home, Upload, Lock } from "lucide-react";
 
 export default function VictoryScreen() {
-  const { score, coinsCollected, resetGame, totalScore } = useCoinGame();
+  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel } = useCoinGame();
   const { addScore } = useLeaderboard();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
@@ -79,6 +79,39 @@ export default function VictoryScreen() {
           )}
         </CardContent>
       </Card>
+
+      {/* Level Selection Grid */}
+      {highestLevelUnlocked > 1 && (
+        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🎯 Play Another Level</h3>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {Array.from({ length: Math.min(highestLevelUnlocked, 10) }, (_, i) => {
+                const level = i + 1;
+                const isUnlocked = level <= highestLevelUnlocked;
+                return (
+                  <Button
+                    key={level}
+                    onClick={() => startFromLevel(level)}
+                    size="sm"
+                    className={`aspect-square text-sm font-bold ${
+                      isUnlocked 
+                        ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    disabled={!isUnlocked}
+                  >
+                    {isUnlocked ? level : <Lock className="h-3 w-3" />}
+                  </Button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-gray-500 text-center">
+              Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action Button */}
       <div className="w-full max-w-md">

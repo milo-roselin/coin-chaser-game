@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { Trophy, Play, Volume2, VolumeX } from "lucide-react";
+import { Trophy, Play, Volume2, VolumeX, Lock } from "lucide-react";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
@@ -99,6 +99,39 @@ export default function StartScreen() {
           )}
         </CardContent>
       </Card>
+
+      {/* Level Selection Grid */}
+      {highestLevelUnlocked > 1 && (
+        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mt-6">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🎯 Level Select</h3>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {Array.from({ length: Math.min(highestLevelUnlocked, 10) }, (_, i) => {
+                const level = i + 1;
+                const isUnlocked = level <= highestLevelUnlocked;
+                return (
+                  <Button
+                    key={level}
+                    onClick={() => startFromLevel(level)}
+                    size="sm"
+                    className={`aspect-square text-sm font-bold ${
+                      isUnlocked 
+                        ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    disabled={!isUnlocked}
+                  >
+                    {isUnlocked ? level : <Lock className="h-3 w-3" />}
+                  </Button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-gray-500 text-center">
+              Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Instructions */}
       <div className="mt-8 text-center max-w-md">
