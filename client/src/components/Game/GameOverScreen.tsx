@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
-import { RotateCcw, Home } from "lucide-react";
+import { RotateCcw, Home, Play, Lock } from "lucide-react";
 
 export default function GameOverScreen() {
-  const { score, coinsCollected, resetGame, startGame } = useCoinGame();
+  const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel } = useCoinGame();
 
   const handleRetry = () => {
-    startGame();
+    startFromLevel(currentLevel);
   };
 
   const handleHome = () => {
@@ -32,9 +32,45 @@ export default function GameOverScreen() {
             <div className="text-lg text-gray-600">
               Coins Collected: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
+            <div className="text-sm text-gray-500 mt-2">
+              Died on Level: <span className="font-semibold">{currentLevel}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Checkpoint Section */}
+      {highestLevelUnlocked > 1 && (
+        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🏃‍♂️ Continue from Checkpoint</h3>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {Array.from({ length: Math.min(highestLevelUnlocked, 10) }, (_, i) => {
+                const level = i + 1;
+                const isUnlocked = level <= highestLevelUnlocked;
+                return (
+                  <Button
+                    key={level}
+                    onClick={() => startFromLevel(level)}
+                    size="sm"
+                    className={`aspect-square text-sm font-bold ${
+                      isUnlocked 
+                        ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    disabled={!isUnlocked}
+                  >
+                    {isUnlocked ? level : <Lock className="h-3 w-3" />}
+                  </Button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-gray-500 text-center">
+              Highest Level Reached: {highestLevelUnlocked}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action Buttons */}
       <div className="space-y-3 w-full max-w-md">
@@ -44,7 +80,7 @@ export default function GameOverScreen() {
           className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
         >
           <RotateCcw className="mr-2 h-6 w-6" />
-          Try Again
+          Try Again (Level {currentLevel})
         </Button>
 
         <Button 
