@@ -43,9 +43,6 @@ export class GameEngine {
   private animationFrame = 0;
   private isMoving = false;
   private facingDirection = 1; // 1 for right, -1 for left
-  private levelCoinsCollected = 0;
-  private slotMachineActivated = false;
-  private portalActive = false;
 
   constructor(
     private canvasWidth: number, 
@@ -87,9 +84,6 @@ export class GameEngine {
     this.clustersCompleted = 0;
     this.score = 0;
     this.coinsCollected = 0;
-    this.levelCoinsCollected = 0;
-    this.slotMachineActivated = false;
-    this.portalActive = false;
 
     // Generate coins in clusters with better spacing
     const numClusters = 3 + this.level; // More clusters in higher levels
@@ -410,15 +404,7 @@ export class GameEngine {
         
         this.score += 100;
         this.coinsCollected++;
-        this.levelCoinsCollected++;
         this.callbacks.onCoinCollected(100);
-        
-        // Check if slot machine should activate
-        if (this.levelCoinsCollected >= 5 && !this.slotMachineActivated) {
-          this.slotMachineActivated = true;
-          this.portalActive = true;
-        }
-        
         return false;
       }
       return true;
@@ -432,9 +418,9 @@ export class GameEngine {
       }
     }
 
-    // Check goal collision (only if portal is active)
+    // Check goal collision (only if at least one cluster is completed)
     if (checkCollision(this.player, this.goal)) {
-      if (this.portalActive) {
+      if (this.clustersCompleted > 0) {
         this.callbacks.onLevelComplete();
         return;
       }
@@ -709,104 +695,69 @@ export class GameEngine {
     const centerX = this.goal.x + this.goal.width / 2;
     const centerY = this.goal.y + this.goal.height / 2;
     const time = Date.now() * 0.005; // for animation
+    const canEnter = this.clustersCompleted > 0;
     
-    if (!this.slotMachineActivated) {
-      // Draw slot machine
-      ctx.fillStyle = '#CD7F32'; // Bronze color
-      ctx.fillRect(this.goal.x, this.goal.y, this.goal.width, this.goal.height);
+    // Draw outer portal ring (purple theme)
+    ctx.strokeStyle = canEnter ? '#8B5CF6' : '#6B7280';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw inner swirling energy
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2 + time;
+      const radius = 15 + Math.sin(time * 2 + i) * 5;
       
-      // Add metallic highlights
-      ctx.fillStyle = '#FFD700'; // Gold highlights
-      ctx.fillRect(this.goal.x + 5, this.goal.y + 5, this.goal.width - 10, 8);
-      ctx.fillRect(this.goal.x + 5, this.goal.y + this.goal.height - 13, this.goal.width - 10, 8);
-      
-      // Draw coin slots (5 slots)
-      for (let i = 0; i < 5; i++) {
-        const slotX = this.goal.x + 8 + i * 9;
-        const slotY = this.goal.y + 20;
-        const filled = i < this.levelCoinsCollected;
-        
-        ctx.fillStyle = filled ? '#FFD700' : '#4A4A4A';
-        ctx.beginPath();
-        ctx.arc(slotX, slotY, 3, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Add coin shine effect if filled
-        if (filled) {
-          ctx.fillStyle = '#FFF8DC';
-          ctx.beginPath();
-          ctx.arc(slotX - 1, slotY - 1, 1, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      if (canEnter) {
+        ctx.fillStyle = `hsl(${270 + i * 10}, 70%, ${50 + Math.sin(time + i) * 20}%)`;
+      } else {
+        ctx.fillStyle = `hsl(0, 0%, ${30 + Math.sin(time + i) * 10}%)`;
       }
-      
-      // Draw lever
-      ctx.strokeStyle = '#8B4513';
-      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(this.goal.x + this.goal.width + 5, this.goal.y + 30);
-      ctx.lineTo(this.goal.x + this.goal.width + 5, this.goal.y + 50);
-      ctx.stroke();
-      
-      // Draw lever handle
-      ctx.fillStyle = '#FF0000';
-      ctx.beginPath();
-      ctx.arc(this.goal.x + this.goal.width + 5, this.goal.y + 50, 4, 0, Math.PI * 2);
+      ctx.arc(
+        centerX + Math.cos(angle) * radius, 
+        centerY + Math.sin(angle) * radius, 
+        3, 0, Math.PI * 2
+      );
       ctx.fill();
+    }
+    
+    // Draw central vortex
+    ctx.fillStyle = canEnter ? '#5B21B6' : '#374151';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw portal particles
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2 + time * 0.5;
+      const radius = 35 + Math.sin(time * 3 + i) * 8;
       
-      // Add text
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 8px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('SLOT', centerX, this.goal.y + 50);
-      ctx.fillText('MACHINE', centerX, this.goal.y + 60);
-      
-      // Show coin requirement
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '10px Arial';
-      ctx.fillText(`${this.levelCoinsCollected}/5 coins`, centerX, this.goal.y - 10);
+      if (canEnter) {
+        ctx.fillStyle = `rgba(139, 92, 246, ${0.3 + Math.sin(time * 2 + i) * 0.3})`;
+      } else {
+        ctx.fillStyle = `rgba(107, 114, 128, ${0.1 + Math.sin(time * 2 + i) * 0.1})`;
+      }
+      ctx.beginPath();
+      ctx.arc(
+        centerX + Math.cos(angle) * radius, 
+        centerY + Math.sin(angle) * radius, 
+        2, 0, Math.PI * 2
+      );
+      ctx.fill();
+    }
+    
+    // Draw portal text
+    ctx.fillStyle = canEnter ? '#FFFFFF' : '#9CA3AF';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    if (canEnter) {
+      ctx.fillText('PORTAL', centerX, centerY - 50);
     } else {
-      // Draw activated portal
-      ctx.strokeStyle = this.portalActive ? '#8B5CF6' : '#6B7280';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
-      ctx.stroke();
-      
-      // Draw inner portal ring
-      ctx.strokeStyle = this.portalActive ? '#A855F7' : '#9CA3AF';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
-      ctx.stroke();
-      
-      // Draw swirling effect inside portal
-      if (this.portalActive) {
-        ctx.strokeStyle = '#C084FC';
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 3; i++) {
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, 10 + i * 3, time + i * 2, time + i * 2 + Math.PI);
-          ctx.stroke();
-        }
-      }
-      
-      // Draw center circle
-      ctx.fillStyle = this.portalActive ? '#DDD6FE' : '#E5E7EB';
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add text indicating portal is active
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('ENTER', centerX, centerY - 45);
-      
-      // Add success message
-      ctx.fillStyle = '#22C55E';
-      ctx.font = '10px Arial';
-      ctx.fillText('Portal Activated!', centerX, centerY + 50);
+      ctx.fillText('LOCKED', centerX, centerY - 50);
+      ctx.font = 'bold 8px Arial';
+      ctx.fillText('Complete a cluster', centerX, centerY + 55);
     }
   }
 
