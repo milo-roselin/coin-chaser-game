@@ -491,14 +491,8 @@ export class GameEngine {
     ctx.arc(centerX, y + 8, 10, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw white collar
+    // Draw mustache with curves (white color)
     ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(centerX, y + 16, 8, 0, Math.PI);
-    ctx.fill();
-    
-    // Draw mustache with curves
-    ctx.fillStyle = '#8B4513';
     ctx.beginPath();
     ctx.ellipse(centerX - 4, y + 12, 3, 1.5, 0, 0, Math.PI * 2);
     ctx.fill();
