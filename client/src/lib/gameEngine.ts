@@ -467,14 +467,56 @@ export class GameEngine {
   }
 
   private drawPlayer(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.player.color;
-    ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+    const x = this.player.x;
+    const y = this.player.y;
+    const w = this.player.width;
+    const h = this.player.height;
     
-    // Add simple face
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(this.player.x + 8, this.player.y + 8, 4, 4);
-    ctx.fillRect(this.player.x + 18, this.player.y + 8, 4, 4);
-    ctx.fillRect(this.player.x + 10, this.player.y + 18, 10, 2);
+    // Draw top hat
+    ctx.fillStyle = '#1A1A1A'; // Black top hat
+    ctx.fillRect(x + 6, y - 8, w - 12, 8); // Hat brim
+    ctx.fillRect(x + 8, y - 16, w - 16, 8); // Hat top
+    
+    // Draw head/face (pink skin)
+    ctx.fillStyle = '#FFB6C1'; // Light pink skin
+    ctx.fillRect(x + 4, y + 2, w - 8, h - 14);
+    
+    // Draw mustache
+    ctx.fillStyle = '#8B4513'; // Brown mustache
+    ctx.fillRect(x + 8, y + 12, w - 16, 4);
+    
+    // Draw eyes
+    ctx.fillStyle = '#000000'; // Black eyes
+    ctx.fillRect(x + 8, y + 6, 3, 3);
+    ctx.fillRect(x + 16, y + 6, 3, 3);
+    
+    // Draw monocle on right eye
+    ctx.strokeStyle = '#FFD700'; // Gold monocle
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x + 17, y + 7, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw body (formal suit)
+    ctx.fillStyle = '#2F4F4F'; // Dark slate gray suit
+    ctx.fillRect(x + 6, y + 18, w - 12, h - 22);
+    
+    // Draw vest
+    ctx.fillStyle = '#8B0000'; // Dark red vest
+    ctx.fillRect(x + 8, y + 20, w - 16, h - 26);
+    
+    // Draw bow tie
+    ctx.fillStyle = '#FF0000'; // Red bow tie
+    ctx.fillRect(x + 10, y + 18, w - 20, 3);
+    
+    // Draw money bag (if space allows)
+    if (w >= 30) {
+      ctx.fillStyle = '#8B4513'; // Brown money bag
+      ctx.fillRect(x + w - 8, y + 8, 6, 8);
+      ctx.fillStyle = '#FFD700'; // Gold $ sign
+      ctx.font = '8px Arial';
+      ctx.fillText('$', x + w - 6, y + 14);
+    }
   }
 
   private drawCoin(ctx: CanvasRenderingContext2D, coin: GameObject) {
