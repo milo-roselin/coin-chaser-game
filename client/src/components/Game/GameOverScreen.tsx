@@ -114,30 +114,32 @@ export default function GameOverScreen() {
 
       {/* Checkpoint Section */}
       {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-2xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🏃‍♂️ Continue from Checkpoint</h3>
-            <div className="grid grid-cols-8 gap-3 mb-4">
-              {Array.from({ length: highestLevelUnlocked }, (_, i) => {
-                const level = i + 1;
-                const isUnlocked = level <= highestLevelUnlocked;
-                return (
-                  <Button
-                    key={level}
-                    onClick={() => startFromLevel(level)}
-                    size="default"
-                    className={`aspect-square text-base font-bold min-h-12 ${
-                      isUnlocked 
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    }`}
-                    disabled={!isUnlocked}
-                    title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
-                  >
-                    {isUnlocked ? level : <Lock className="h-4 w-4" />}
-                  </Button>
-                );
-              })}
+            <div className="overflow-x-auto">
+              <div className="flex flex-wrap gap-3 mb-4 justify-center min-h-[60px]">
+                {Array.from({ length: highestLevelUnlocked }, (_, i) => {
+                  const level = i + 1;
+                  const isUnlocked = level <= highestLevelUnlocked;
+                  return (
+                    <Button
+                      key={level}
+                      onClick={() => startFromLevel(level)}
+                      size="default"
+                      className={`w-12 h-12 text-base font-bold flex-shrink-0 ${
+                        isUnlocked 
+                          ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                      disabled={!isUnlocked}
+                      title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
+                    >
+                      {isUnlocked ? level : <Lock className="h-4 w-4" />}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
             <p className="text-xs text-gray-500 text-center">
               Highest Level Reached: {highestLevelUnlocked}
