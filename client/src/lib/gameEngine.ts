@@ -531,8 +531,6 @@ export class GameEngine {
     ctx.fill();
     ctx.fillRect(centerX - 1, y + 17, 2, 3);
     
-
-    
     // Add suit buttons
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
@@ -540,6 +538,20 @@ export class GameEngine {
     ctx.fill();
     ctx.beginPath();
     ctx.arc(centerX, y + 26, 1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw legs
+    ctx.fillStyle = '#2F4F4F'; // Same color as suit
+    ctx.fillRect(centerX - 6, y + h - 4, 4, 8); // Left leg
+    ctx.fillRect(centerX + 2, y + h - 4, 4, 8); // Right leg
+    
+    // Draw black shoes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 8, y + h + 3, 8, 3, 1); // Left shoe
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(centerX + 0, y + h + 3, 8, 3, 1); // Right shoe
     ctx.fill();
     
     // Reset text alignment
