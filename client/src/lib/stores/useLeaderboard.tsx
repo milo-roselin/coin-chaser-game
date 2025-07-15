@@ -21,8 +21,12 @@ export const useLeaderboard = create<LeaderboardState>()(
       
       addScore: (newScore: LeaderboardScore) => {
         set((state) => {
-          const updatedScores = [...state.scores, newScore]
-            .sort((a, b) => b.score - a.score) // Sort by score descending
+          // Remove existing entries for this user
+          const scoresWithoutUser = state.scores.filter(score => score.name !== newScore.name);
+          
+          // Add the new score and sort by score descending
+          const updatedScores = [...scoresWithoutUser, newScore]
+            .sort((a, b) => b.score - a.score)
             .slice(0, 10); // Keep only top 10 scores
           
           return { scores: updatedScores };
