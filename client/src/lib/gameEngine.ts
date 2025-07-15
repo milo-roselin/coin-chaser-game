@@ -113,11 +113,34 @@ export class GameEngine {
         totalCoins: 3
       });
       
-      // 3 coins per cluster with wider spread
+      // 3 coins per cluster with wider spread, ensuring they're within bounds
       for (let i = 0; i < 3; i++) {
+        let coinX, coinY;
+        let coinAttempts = 0;
+        
+        // Ensure coins are placed in valid positions
+        do {
+          coinX = clusterX + (Math.random() - 0.5) * 160;
+          coinY = clusterY + (Math.random() - 0.5) * 120;
+          coinAttempts++;
+        } while (coinAttempts < 20 && (
+          coinX < 50 || coinX > this.levelWidth - 50 || // Keep away from edges
+          coinY < 50 || coinY > this.canvasHeight - 50
+        ));
+        
+        // Fallback to safe position if no valid position found
+        if (coinAttempts >= 20) {
+          coinX = clusterX + (i - 1) * 40; // Spread coins linearly as fallback
+          coinY = clusterY;
+        }
+        
+        // Ensure coin is within playable area
+        coinX = Math.max(50, Math.min(this.levelWidth - 50, coinX));
+        coinY = Math.max(50, Math.min(this.canvasHeight - 50, coinY));
+        
         this.coins.push({
-          x: clusterX + (Math.random() - 0.5) * 160, // Wider spread
-          y: clusterY + (Math.random() - 0.5) * 120, // Wider spread
+          x: coinX,
+          y: coinY,
           width: 20,
           height: 20,
           color: '#F59E0B',
@@ -216,6 +239,60 @@ export class GameEngine {
     this.obstacles = this.obstacles.filter(obs => 
       obs.x > 200 && obs.x < this.levelWidth - 150 // Larger safe zone at start
     );
+    
+    // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
+    this.coins = this.coins.filter(coin => {
+      // Check if coin has at least one path (basic accessibility check)
+      const nearbyObstacles = this.obstacles.filter(obs => {
+        const dx = Math.abs(obs.x + obs.width/2 - coin.x - coin.width/2);
+        const dy = Math.abs(obs.y + obs.height/2 - coin.y - coin.height/2);
+        return dx < 60 && dy < 60; // Within close proximity
+      });
+      
+      // Check if coin is too close to patrol paths
+      const tooCloseToPatrol = this.obstacles.some(obs => {
+        if (obs.patrolStartX !== undefined && obs.patrolEndX !== undefined) {
+          // For horizontal patrol
+          if (obs.patrolStartY === obs.patrolEndY) {
+            const patrolY = obs.patrolStartY;
+            const patrolStartX = Math.min(obs.patrolStartX, obs.patrolEndX);
+            const patrolEndX = Math.max(obs.patrolStartX, obs.patrolEndX);
+            
+            return coin.y > patrolY - 40 && coin.y < patrolY + 40 &&
+                   coin.x > patrolStartX - 40 && coin.x < patrolEndX + 40;
+          }
+          // For vertical patrol
+          if (obs.patrolStartX === obs.patrolEndX) {
+            const patrolX = obs.patrolStartX;
+            const patrolStartY = Math.min(obs.patrolStartY!, obs.patrolEndY!);
+            const patrolEndY = Math.max(obs.patrolStartY!, obs.patrolEndY!);
+            
+            return coin.x > patrolX - 40 && coin.x < patrolX + 40 &&
+                   coin.y > patrolStartY - 40 && coin.y < patrolEndY + 40;
+          }
+        }
+        return false;
+      });
+      
+      // If there are too many obstacles very close to the coin, or it's in a patrol path, it might be unreachable
+      return nearbyObstacles.length < 4 && !tooCloseToPatrol; // Allow some challenge but not complete blockade
+    });
+    
+    // Ensure we have at least some coins left after filtering
+    if (this.coins.length < 3) {
+      // Add safe coins if too many were filtered out
+      const safeCoinCount = 3 - this.coins.length;
+      for (let i = 0; i < safeCoinCount; i++) {
+        this.coins.push({
+          x: 150 + i * 100, // Safe positions near start
+          y: this.canvasHeight / 2 + (i - 1) * 40,
+          width: 20,
+          height: 20,
+          color: '#F59E0B',
+          type: 'coin'
+        });
+      }
+    }
   }
 
   public handleTouchStart(x: number, y: number) {
