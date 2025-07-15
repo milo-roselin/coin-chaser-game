@@ -89,19 +89,19 @@ export default function GameOverScreen() {
 
       {/* Checkpoint Section */}
       {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+        <Card className="w-full max-w-2xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🏃‍♂️ Continue from Checkpoint</h3>
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              {Array.from({ length: Math.min(highestLevelUnlocked, 10) }, (_, i) => {
+            <div className="grid grid-cols-8 gap-3 mb-4">
+              {Array.from({ length: highestLevelUnlocked }, (_, i) => {
                 const level = i + 1;
                 const isUnlocked = level <= highestLevelUnlocked;
                 return (
                   <Button
                     key={level}
                     onClick={() => startFromLevel(level)}
-                    size="sm"
-                    className={`aspect-square text-sm font-bold ${
+                    size="default"
+                    className={`aspect-square text-base font-bold min-h-12 ${
                       isUnlocked 
                         ? 'bg-blue-500 hover:bg-blue-600 text-white' 
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -109,7 +109,7 @@ export default function GameOverScreen() {
                     disabled={!isUnlocked}
                     title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
                   >
-                    {isUnlocked ? level : <Lock className="h-3 w-3" />}
+                    {isUnlocked ? level : <Lock className="h-4 w-4" />}
                   </Button>
                 );
               })}

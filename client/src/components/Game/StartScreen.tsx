@@ -190,7 +190,7 @@ export default function StartScreen() {
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🎯 Level Select</h3>
             <div className="grid grid-cols-8 gap-3 mb-4">
-              {Array.from({ length: Math.min(highestLevelUnlocked, 20) }, (_, i) => {
+              {Array.from({ length: highestLevelUnlocked }, (_, i) => {
                 const level = i + 1;
                 const isUnlocked = level <= highestLevelUnlocked;
                 return (
