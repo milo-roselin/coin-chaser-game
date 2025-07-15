@@ -15,20 +15,40 @@ function App() {
 
   // Initialize audio on component mount
   useEffect(() => {
-    const backgroundMusic = new Audio("/sounds/background.mp3");
-    const hitSound = new Audio("/sounds/hit.mp3");
-    const successSound = new Audio("/sounds/success.mp3");
-    const explosionSound = new Audio("/attached_assets/explosion-6055_1752612347276.mp3");
-    const coinSound = new Audio("/sounds/coin.mp3");
+    const initializeAudio = async () => {
+      try {
+        const backgroundMusic = new Audio("/sounds/background.mp3");
+        const hitSound = new Audio("/sounds/hit.mp3");
+        const successSound = new Audio("/sounds/success.mp3");
+        const explosionSound = new Audio("/attached_assets/explosion-6055_1752612347276.mp3");
+        const coinSound = new Audio("/sounds/coin.mp3");
 
-    backgroundMusic.loop = true;
-    backgroundMusic.volume = 0.3;
+        // Set properties
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.3;
+        explosionSound.volume = 0.6;
+        explosionSound.preload = "auto";
+        
+        // Preload the explosion sound
+        await new Promise((resolve) => {
+          explosionSound.addEventListener('canplaythrough', resolve, { once: true });
+          explosionSound.load();
+        });
 
-    setBackgroundMusic(backgroundMusic);
-    setHitSound(hitSound);
-    setSuccessSound(successSound);
-    setExplosionSound(explosionSound);
-    setCoinSound(coinSound);
+        setBackgroundMusic(backgroundMusic);
+        setHitSound(hitSound);
+        setSuccessSound(successSound);
+        setExplosionSound(explosionSound);
+        setCoinSound(coinSound);
+      } catch (error) {
+        console.log("Audio initialization error:", error);
+        // Fallback to default explosion sound if custom one fails
+        const fallbackExplosion = new Audio("/sounds/explosion.mp3");
+        setExplosionSound(fallbackExplosion);
+      }
+    };
+
+    initializeAudio();
   }, [setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound]);
 
   const renderScreen = () => {

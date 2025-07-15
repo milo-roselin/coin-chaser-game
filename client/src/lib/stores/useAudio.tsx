@@ -41,8 +41,17 @@ export const useAudio = create<AudioState>((set, get) => ({
     const { isMuted } = get();
     const newMutedState = !isMuted;
     
-    // Just update the muted state
+    // Update the muted state
     set({ isMuted: newMutedState });
+    
+    // If unmuting, try to initialize audio context
+    if (!newMutedState) {
+      const { explosionSound } = get();
+      if (explosionSound) {
+        explosionSound.muted = false;
+        explosionSound.load();
+      }
+    }
     
     // Log the change
     console.log(`Sound ${newMutedState ? 'muted' : 'unmuted'}`);
@@ -90,12 +99,26 @@ export const useAudio = create<AudioState>((set, get) => ({
         return;
       }
       
-      const soundClone = explosionSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.6; // Slightly lower volume for custom sound
-      soundClone.playbackRate = 1.0; // Normal speed for custom sound
-      soundClone.play().catch(error => {
-        console.log("Explosion sound play prevented:", error);
-      });
+      try {
+        explosionSound.currentTime = 0;
+        explosionSound.volume = 0.6;
+        explosionSound.playbackRate = 1.0;
+        
+        const playPromise = explosionSound.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Explosion sound play prevented:", error);
+            // Try to play without cloning as fallback
+            setTimeout(() => {
+              explosionSound.play().catch(() => {
+                console.log("Explosion sound fallback failed");
+              });
+            }, 100);
+          });
+        }
+      } catch (error) {
+        console.log("Explosion sound error:", error);
+      }
     }
   },
   

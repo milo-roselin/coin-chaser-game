@@ -10,6 +10,12 @@ export default function StartScreen() {
   const { isMuted, toggleMute } = useAudio();
 
   const handleStartGame = () => {
+    // Enable audio context on user interaction
+    const { explosionSound } = useAudio.getState();
+    if (explosionSound) {
+      explosionSound.muted = false;
+      explosionSound.load();
+    }
     startGame();
   };
 
