@@ -21,11 +21,6 @@ export const useLeaderboard = create<LeaderboardState>()(
       scores: [],
       
       addScore: (newScore: LeaderboardScore) => {
-        // Don't add anonymous entries
-        if (newScore.name.toLowerCase() === 'anonymous') {
-          return;
-        }
-        
         set((state) => {
           // Remove existing entries for this user
           const scoresWithoutUser = state.scores.filter(score => score.name !== newScore.name);

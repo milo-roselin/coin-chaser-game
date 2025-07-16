@@ -27,7 +27,13 @@ export default function VictoryScreen() {
       });
       setScoreSubmitted(true);
     } else {
-      // Don't auto-submit anonymous scores, just mark as submitted
+      // Auto-submit with default name if no name saved
+      addScore({
+        name: 'Anonymous',
+        score: totalScore,
+        coins: totalCoinsCollected,
+        date: new Date().toISOString()
+      });
       setScoreSubmitted(true);
     }
   }, [addScore, totalScore, totalCoinsCollected]);
