@@ -143,7 +143,7 @@ export class GameEngine {
           y: coinY,
           width: 20,
           height: 20,
-          color: '#FFD700',
+          color: '#F59E0B',
           type: 'coin'
         });
       }
@@ -288,7 +288,7 @@ export class GameEngine {
           y: this.canvasHeight / 2 + (i - 1) * 40,
           width: 20,
           height: 20,
-          color: '#FFD700',
+          color: '#F59E0B',
           type: 'coin'
         });
       }
