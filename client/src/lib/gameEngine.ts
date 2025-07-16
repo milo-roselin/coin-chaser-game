@@ -46,6 +46,7 @@ export class GameEngine {
   private portalImage: HTMLImageElement | null = null;
   private coinsNeededForPortal = 5; // Number of coins needed to activate portal
   private gameSpeed = 1; // Speed multiplier for the game
+  private playerVelocity = { x: 0, y: 0 }; // Player velocity for smoother movement
 
   constructor(
     private canvasWidth: number, 
@@ -529,29 +530,29 @@ export class GameEngine {
       return;
     }
     
-    const speed = 5 * this.gameSpeed; // Apply speed multiplier
-    let moveX = 0;
-    let moveY = 0;
+    const baseSpeed = 5;
+    const acceleration = 0.8; // How quickly player accelerates
+    const deceleration = 0.85; // How quickly player decelerates (higher = faster stop)
+    
+    // Target velocity based on input
+    let targetVelX = 0;
+    let targetVelY = 0;
     
     // Handle keyboard input
     if (this.keys['ArrowUp'] || this.keys['KeyW']) {
-      this.player.y -= speed;
-      moveY = -speed;
+      targetVelY = -baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowDown'] || this.keys['KeyS']) {
-      this.player.y += speed;
-      moveY = speed;
+      targetVelY = baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
-      this.player.x -= speed;
-      moveX = -speed;
+      targetVelX = -baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowRight'] || this.keys['KeyD']) {
-      this.player.x += speed;
-      moveX = speed;
+      targetVelX = baseSpeed * this.gameSpeed;
     }
     
-    // Move player towards touch position (if no keyboard input)
+    // Handle touch input (if no keyboard input)
     const hasKeyboardInput = this.keys['ArrowUp'] || this.keys['ArrowDown'] || 
                            this.keys['ArrowLeft'] || this.keys['ArrowRight'] ||
                            this.keys['KeyW'] || this.keys['KeyA'] || 
@@ -567,18 +568,30 @@ export class GameEngine {
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 5) {
-        const touchSpeed = 3 * this.gameSpeed; // Apply speed multiplier to touch controls
-        moveX = (dx / distance) * touchSpeed;
-        moveY = (dy / distance) * touchSpeed;
-        this.player.x += moveX;
-        this.player.y += moveY;
+        const touchSpeed = 3 * this.gameSpeed;
+        targetVelX = (dx / distance) * touchSpeed;
+        targetVelY = (dy / distance) * touchSpeed;
       }
     }
+    
+    // Smooth velocity interpolation for better stopping
+    this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
+                                      targetVelX === 0 ? deceleration : acceleration);
+    this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
+                                      targetVelY === 0 ? deceleration : acceleration);
+    
+    // Apply velocity to player position
+    this.player.x += this.playerVelocity.x;
+    this.player.y += this.playerVelocity.y;
+    
+    // Track movement for animation
+    const moveX = this.playerVelocity.x;
+    const moveY = this.playerVelocity.y;
     
     // Check if player is moving and update animation
     this.isMoving = moveX !== 0 || moveY !== 0;
     if (this.isMoving) {
-      this.animationFrame += 0.3;
+      this.animationFrame += 0.3 * this.gameSpeed; // Animation speed matches player speed
       // Update facing direction based on horizontal movement
       if (moveX > 0) {
         this.facingDirection = 1; // Moving right
@@ -606,7 +619,7 @@ export class GameEngine {
           let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
           
           // Update angle for circular movement
-          angle += (0.02 + Math.random() * 0.01) * this.gameSpeed; // variable speed with game speed multiplier
+          angle += 0.02 + Math.random() * 0.01; // variable speed without game speed multiplier
           obstacle.patrolEndY = angle;
           
           // Calculate new position
@@ -618,9 +631,9 @@ export class GameEngine {
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
           
         } else {
-          // Linear movement (existing code) with speed multiplier
-          obstacle.x += obstacle.vx * this.gameSpeed;
-          obstacle.y += obstacle.vy * this.gameSpeed;
+          // Linear movement (existing code) without speed multiplier
+          obstacle.x += obstacle.vx;
+          obstacle.y += obstacle.vy;
           
           // Check boundaries and reverse direction if needed
           if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
@@ -1175,6 +1188,11 @@ export class GameEngine {
     ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
     
     // Speed controls hint removed - moved to main instructions
+  }
+  
+  // Linear interpolation helper for smooth movement
+  private lerp(current: number, target: number, factor: number): number {
+    return current + (target - current) * factor;
   }
 
 
