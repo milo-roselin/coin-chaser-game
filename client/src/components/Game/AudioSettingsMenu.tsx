@@ -15,33 +15,19 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
   const { 
     isMuted, 
     toggleMute, 
-    masterVolume,
     backgroundMusicVolume,
-    soundEffectsVolume,
     coinSoundVolume,
     explosionSoundVolume,
-    setMasterVolume,
     setBackgroundMusicVolume,
-    setSoundEffectsVolume,
     setCoinSoundVolume,
     setExplosionSoundVolume
   } = useAudio();
 
   if (!isOpen) return null;
 
-  const handleMasterVolumeChange = (value: number[]) => {
-    const newVolume = value[0] / 100; // Convert to 0-1 range
-    setMasterVolume(newVolume);
-  };
-
   const handleBackgroundMusicVolumeChange = (value: number[]) => {
     const newVolume = value[0] / 100; // Convert to 0-1 range
     setBackgroundMusicVolume(newVolume);
-  };
-
-  const handleSoundEffectsVolumeChange = (value: number[]) => {
-    const newVolume = value[0] / 100; // Convert to 0-1 range
-    setSoundEffectsVolume(newVolume);
   };
 
   const handleCoinSoundVolumeChange = (value: number[]) => {
@@ -86,22 +72,6 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
             </Button>
           </div>
 
-          {/* Master Volume */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-white text-sm">Master Volume</span>
-              <span className="text-slate-300 text-sm">{Math.round(masterVolume * 100)}%</span>
-            </div>
-            <Slider
-              value={[masterVolume * 100]}
-              onValueChange={handleMasterVolumeChange}
-              max={100}
-              step={1}
-              className="w-full"
-              disabled={isMuted}
-            />
-          </div>
-
           {/* Background Music Volume */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -111,22 +81,6 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
             <Slider
               value={[backgroundMusicVolume * 100]}
               onValueChange={handleBackgroundMusicVolumeChange}
-              max={100}
-              step={1}
-              className="w-full"
-              disabled={isMuted}
-            />
-          </div>
-
-          {/* Sound Effects Volume */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-white text-sm">Sound Effects</span>
-              <span className="text-slate-300 text-sm">{Math.round(soundEffectsVolume * 100)}%</span>
-            </div>
-            <Slider
-              value={[soundEffectsVolume * 100]}
-              onValueChange={handleSoundEffectsVolumeChange}
               max={100}
               step={1}
               className="w-full"
@@ -199,9 +153,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
             variant="outline"
             className="w-full text-white border-slate-600 hover:bg-slate-800"
             onClick={() => {
-              setMasterVolume(0.5);
               setBackgroundMusicVolume(0.3);
-              setSoundEffectsVolume(0.7);
               setCoinSoundVolume(0.8);
               setExplosionSoundVolume(0.6);
             }}

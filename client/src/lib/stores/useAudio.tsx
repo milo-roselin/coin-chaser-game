@@ -11,9 +11,7 @@ interface AudioState {
   isBackgroundMusicPlaying: boolean;
   
   // Volume levels (0-1)
-  masterVolume: number;
   backgroundMusicVolume: number;
-  soundEffectsVolume: number;
   coinSoundVolume: number;
   explosionSoundVolume: number;
   
@@ -34,9 +32,7 @@ interface AudioState {
   stopBackgroundMusic: () => void;
   
   // Volume control functions
-  setMasterVolume: (volume: number) => void;
   setBackgroundMusicVolume: (volume: number) => void;
-  setSoundEffectsVolume: (volume: number) => void;
   setCoinSoundVolume: (volume: number) => void;
   setExplosionSoundVolume: (volume: number) => void;
 }
@@ -51,9 +47,7 @@ export const useAudio = create<AudioState>((set, get) => ({
   isBackgroundMusicPlaying: false,
   
   // Default volume levels
-  masterVolume: 0.5,
   backgroundMusicVolume: 0.3,
-  soundEffectsVolume: 0.7,
   coinSoundVolume: 0.8,
   explosionSoundVolume: 0.6,
   
@@ -126,7 +120,7 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playExplosion: () => {
-    const { explosionSound, isMuted, masterVolume, explosionSoundVolume, soundEffectsVolume } = get();
+    const { explosionSound, isMuted, explosionSoundVolume } = get();
     if (explosionSound) {
       if (isMuted) {
         console.log("Explosion sound skipped (muted)");
@@ -135,7 +129,7 @@ export const useAudio = create<AudioState>((set, get) => ({
       
       try {
         explosionSound.currentTime = 0;
-        explosionSound.volume = masterVolume * explosionSoundVolume * soundEffectsVolume;
+        explosionSound.volume = explosionSoundVolume;
         explosionSound.playbackRate = 1.0;
         
         const playPromise = explosionSound.play();
@@ -157,7 +151,7 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playCoin: () => {
-    const { coinSound, isMuted, masterVolume, coinSoundVolume, soundEffectsVolume } = get();
+    const { coinSound, isMuted, coinSoundVolume } = get();
     if (coinSound) {
       if (isMuted) {
         console.log("Coin sound skipped (muted)");
@@ -165,7 +159,7 @@ export const useAudio = create<AudioState>((set, get) => ({
       }
       
       const soundClone = coinSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = masterVolume * coinSoundVolume * soundEffectsVolume;
+      soundClone.volume = coinSoundVolume;
       soundClone.playbackRate = 1.0; // Normal speed since it's already shortened
       soundClone.currentTime = 0; // Start from beginning
       soundClone.play().catch(error => {
@@ -175,10 +169,10 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   startBackgroundMusic: () => {
-    const { isBackgroundMusicPlaying, masterVolume, backgroundMusicVolume } = get();
+    const { isBackgroundMusicPlaying, backgroundMusicVolume } = get();
     if (!isBackgroundMusicPlaying) {
       backgroundMusic.start();
-      backgroundMusic.setVolume(masterVolume * backgroundMusicVolume);
+      backgroundMusic.setVolume(backgroundMusicVolume);
       set({ isBackgroundMusicPlaying: true });
       console.log("Background music started");
     }
@@ -194,20 +188,9 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   // Volume control functions
-  setMasterVolume: (volume: number) => {
-    set({ masterVolume: volume });
-    const { backgroundMusicVolume } = get();
-    backgroundMusic.setVolume(volume * backgroundMusicVolume);
-  },
-  
   setBackgroundMusicVolume: (volume: number) => {
     set({ backgroundMusicVolume: volume });
-    const { masterVolume } = get();
-    backgroundMusic.setVolume(masterVolume * volume);
-  },
-  
-  setSoundEffectsVolume: (volume: number) => {
-    set({ soundEffectsVolume: volume });
+    backgroundMusic.setVolume(volume);
   },
   
   setCoinSoundVolume: (volume: number) => {
