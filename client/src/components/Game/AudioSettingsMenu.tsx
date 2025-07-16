@@ -41,10 +41,10 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-96 max-w-[90vw] bg-slate-900 border-slate-700">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <Card className="w-96 max-w-[90vw] bg-slate-800 border-slate-600 shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
             <Settings className="h-5 w-5" />
             Audio Settings
           </CardTitle>
@@ -52,7 +52,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="text-white hover:bg-slate-800"
+            className="text-white hover:bg-slate-700"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -65,7 +65,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
               variant="ghost"
               size="sm"
               onClick={toggleMute}
-              className="text-white hover:bg-slate-800"
+              className="text-white hover:bg-slate-700"
             >
               {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               {isMuted ? "Unmute" : "Mute"}
@@ -83,7 +83,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
               onValueChange={handleBackgroundMusicVolumeChange}
               max={100}
               step={1}
-              className="w-full"
+              className="w-full [&>span:first-child]:bg-slate-600 [&>span:first-child]:h-3 [&_[role=slider]]:bg-blue-500 [&_[role=slider]]:border-2 [&_[role=slider]]:border-blue-400 [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:shadow-lg"
               disabled={isMuted}
             />
           </div>
@@ -99,7 +99,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
               onValueChange={handleCoinSoundVolumeChange}
               max={100}
               step={1}
-              className="w-full"
+              className="w-full [&>span:first-child]:bg-slate-600 [&>span:first-child]:h-3 [&_[role=slider]]:bg-green-500 [&_[role=slider]]:border-2 [&_[role=slider]]:border-green-400 [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:shadow-lg"
               disabled={isMuted}
             />
           </div>
@@ -115,7 +115,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
               onValueChange={handleExplosionSoundVolumeChange}
               max={100}
               step={1}
-              className="w-full"
+              className="w-full [&>span:first-child]:bg-slate-600 [&>span:first-child]:h-3 [&_[role=slider]]:bg-red-500 [&_[role=slider]]:border-2 [&_[role=slider]]:border-red-400 [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:shadow-lg"
               disabled={isMuted}
             />
           </div>
@@ -130,7 +130,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
                 playCoin();
               }}
               disabled={isMuted}
-              className="text-white border-slate-600 hover:bg-slate-800"
+              className="text-white border-slate-500 hover:bg-slate-700"
             >
               Test Coin
             </Button>
@@ -142,7 +142,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
                 playExplosion();
               }}
               disabled={isMuted}
-              className="text-white border-slate-600 hover:bg-slate-800"
+              className="text-white border-slate-500 hover:bg-slate-700"
             >
               Test Explosion
             </Button>
@@ -151,7 +151,7 @@ export default function AudioSettingsMenu({ isOpen, onClose }: AudioSettingsMenu
           {/* Reset Button */}
           <Button
             variant="outline"
-            className="w-full text-white border-slate-600 hover:bg-slate-800"
+            className="w-full text-white border-slate-500 hover:bg-slate-700"
             onClick={() => {
               setBackgroundMusicVolume(0.3);
               setCoinSoundVolume(0.8);
