@@ -75,6 +75,7 @@ export class GameEngine {
     };
 
     this.generateLevel();
+    this.validateLevelReachability();
   }
 
   private generateLevel() {
@@ -293,6 +294,75 @@ export class GameEngine {
         });
       }
     }
+    
+    // Validate that portal is reachable after generation
+    this.validateLevelReachability();
+  }
+
+  private validateLevelReachability(): boolean {
+    // Simple pathfinding to check if player can reach the goal
+    const gridSize = 20; // Size of each grid cell for pathfinding
+    const gridWidth = Math.ceil(this.levelWidth / gridSize);
+    const gridHeight = Math.ceil(this.canvasHeight / gridSize);
+    
+    // Create a grid where true = passable, false = blocked
+    const grid: boolean[][] = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(true));
+    
+    // Mark obstacles as blocked in the grid
+    this.obstacles.forEach(obstacle => {
+      const startX = Math.floor(obstacle.x / gridSize);
+      const endX = Math.ceil((obstacle.x + obstacle.width) / gridSize);
+      const startY = Math.floor(obstacle.y / gridSize);
+      const endY = Math.ceil((obstacle.y + obstacle.height) / gridSize);
+      
+      for (let y = Math.max(0, startY); y < Math.min(gridHeight, endY); y++) {
+        for (let x = Math.max(0, startX); x < Math.min(gridWidth, endX); x++) {
+          grid[y][x] = false;
+        }
+      }
+    });
+    
+    // Simple BFS pathfinding from player to goal
+    const playerGridX = Math.floor(this.player.x / gridSize);
+    const playerGridY = Math.floor(this.player.y / gridSize);
+    const goalGridX = Math.floor(this.goal.x / gridSize);
+    const goalGridY = Math.floor(this.goal.y / gridSize);
+    
+    const queue = [[playerGridX, playerGridY]];
+    const visited = new Set<string>();
+    visited.add(`${playerGridX},${playerGridY}`);
+    
+    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+    
+    while (queue.length > 0) {
+      const [x, y] = queue.shift()!;
+      
+      // Check if we reached the goal
+      if (Math.abs(x - goalGridX) <= 2 && Math.abs(y - goalGridY) <= 2) {
+        console.log(`Level ${this.level}: Portal is reachable!`);
+        return true;
+      }
+      
+      // Explore neighbors
+      for (const [dx, dy] of directions) {
+        const newX = x + dx;
+        const newY = y + dy;
+        const key = `${newX},${newY}`;
+        
+        if (newX >= 0 && newX < gridWidth && 
+            newY >= 0 && newY < gridHeight && 
+            grid[newY][newX] && 
+            !visited.has(key)) {
+          visited.add(key);
+          queue.push([newX, newY]);
+        }
+      }
+    }
+    
+    // If we get here, no path was found - regenerate level
+    console.warn(`Level ${this.level}: Portal not reachable, regenerating...`);
+    this.generateLevel();
+    return this.validateLevelReachability(); // Recursively try again
   }
 
   public handleTouchStart(x: number, y: number) {
