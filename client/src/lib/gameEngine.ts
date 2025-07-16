@@ -45,6 +45,7 @@ export class GameEngine {
   private facingDirection = 1; // 1 for right, -1 for left
   private portalImage: HTMLImageElement | null = null;
   private coinsNeededForPortal = 5; // Number of coins needed to activate portal
+  private gameSpeed = 1; // Speed multiplier for the game
 
   constructor(
     private canvasWidth: number, 
@@ -502,6 +503,15 @@ export class GameEngine {
       return;
     }
     
+    // Handle speed adjustment keys
+    if (key === 'Equal' || key === 'NumpadAdd') { // Plus key (= key without shift, or numpad +)
+      this.gameSpeed = Math.min(this.gameSpeed + 0.25, 3); // Max speed of 3x
+      console.log(`Game speed increased to ${this.gameSpeed}x`);
+    } else if (key === 'Minus' || key === 'NumpadSubtract') { // Minus key (- key or numpad -)
+      this.gameSpeed = Math.max(this.gameSpeed - 0.25, 0.25); // Min speed of 0.25x
+      console.log(`Game speed decreased to ${this.gameSpeed}x`);
+    }
+    
     this.keys[key] = true;
   }
 
@@ -519,7 +529,7 @@ export class GameEngine {
       return;
     }
     
-    const speed = 5;
+    const speed = 5 * this.gameSpeed; // Apply speed multiplier
     let moveX = 0;
     let moveY = 0;
     
@@ -557,7 +567,7 @@ export class GameEngine {
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 5) {
-        const touchSpeed = 3;
+        const touchSpeed = 3 * this.gameSpeed; // Apply speed multiplier to touch controls
         moveX = (dx / distance) * touchSpeed;
         moveY = (dy / distance) * touchSpeed;
         this.player.x += moveX;
@@ -596,7 +606,7 @@ export class GameEngine {
           let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
           
           // Update angle for circular movement
-          angle += 0.02 + Math.random() * 0.01; // variable speed
+          angle += (0.02 + Math.random() * 0.01) * this.gameSpeed; // variable speed with game speed multiplier
           obstacle.patrolEndY = angle;
           
           // Calculate new position
@@ -608,9 +618,9 @@ export class GameEngine {
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
           
         } else {
-          // Linear movement (existing code)
-          obstacle.x += obstacle.vx;
-          obstacle.y += obstacle.vy;
+          // Linear movement (existing code) with speed multiplier
+          obstacle.x += obstacle.vx * this.gameSpeed;
+          obstacle.y += obstacle.vy * this.gameSpeed;
           
           // Check boundaries and reverse direction if needed
           if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
@@ -1160,6 +1170,17 @@ export class GameEngine {
     ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 1;
     ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
+    
+    // Game speed indicator (top right)
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText(`Speed: ${this.gameSpeed}x`, this.canvasWidth - 20, 40);
+    
+    // Speed controls hint
+    ctx.fillStyle = '#666';
+    ctx.font = '12px Arial';
+    ctx.fillText('(+/-) to change speed', this.canvasWidth - 20, 60);
   }
 
 
