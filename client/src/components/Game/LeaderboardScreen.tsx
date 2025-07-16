@@ -112,7 +112,7 @@ export default function LeaderboardScreen() {
                       {score.score.toLocaleString()} pts
                     </div>
                     <div className="text-sm text-yellow-600 font-semibold">
-                      🪙 {score.coins} coins
+                      <span style={{ color: '#FFD700' }}>🪙</span> {score.coins} coins
                     </div>
                   </div>
                 </div>
