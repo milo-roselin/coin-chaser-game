@@ -1105,12 +1105,15 @@ export class GameEngine {
     const totalCoins = this.coins.length + this.coinsCollected;
     ctx.fillText(`Coins: ${this.coinsCollected}/${totalCoins}`, 20, 100);
     
+    // Game speed indicator
+    ctx.fillText(`Speed: ${this.gameSpeed}x`, 20, 130);
+    
     // Progress indicator
     const progress = this.clustersCompleted / this.coinClusters.length;
     const progressBarWidth = 200;
     const progressBarHeight = 10;
     const progressBarX = 20;
-    const progressBarY = 120;
+    const progressBarY = 150;
     
     // Progress bar background
     ctx.fillStyle = "#ddd";
@@ -1170,12 +1173,6 @@ export class GameEngine {
     ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 1;
     ctx.strokeRect(goalMiniX - 4, miniMapY + miniMapHeight / 2 - 4, 8, 8);
-    
-    // Game speed indicator (top right)
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 16px Arial';
-    ctx.textAlign = 'right';
-    ctx.fillText(`Speed: ${this.gameSpeed}x`, this.canvasWidth - 20, 40);
     
     // Speed controls hint removed - moved to main instructions
   }
