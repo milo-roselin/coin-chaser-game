@@ -311,9 +311,75 @@ export class GameEngine {
       });
     }
 
-    // Ensure no obstacles are too close to player start or goal (except wall patrols)
+    // Add static barrier walls to prevent edge-hugging strategies
+    const barrierThickness = 15;
+    const barrierHeight = 40;
+    const numBarriers = 8 + this.level; // More barriers in higher levels
+    
+    // Top edge barriers (forcing players away from top wall)
+    for (let i = 0; i < numBarriers; i++) {
+      this.obstacles.push({
+        x: 80 + (i * (this.levelWidth - 160) / numBarriers),
+        y: 0,
+        width: barrierThickness,
+        height: barrierHeight + Math.random() * 20,
+        color: '#654321',
+        type: 'obstacle',
+        vx: 0,
+        vy: 0 // Static barriers
+      });
+    }
+    
+    // Bottom edge barriers (forcing players away from bottom wall)
+    for (let i = 0; i < numBarriers; i++) {
+      this.obstacles.push({
+        x: 80 + (i * (this.levelWidth - 160) / numBarriers),
+        y: this.canvasHeight - (barrierHeight + Math.random() * 20),
+        width: barrierThickness,
+        height: barrierHeight + Math.random() * 20,
+        color: '#654321',
+        type: 'obstacle',
+        vx: 0,
+        vy: 0 // Static barriers
+      });
+    }
+    
+    // Left edge barriers (forcing players away from left wall)
+    const leftBarriers = Math.ceil(numBarriers / 2);
+    for (let i = 0; i < leftBarriers; i++) {
+      this.obstacles.push({
+        x: 0,
+        y: 80 + (i * (this.canvasHeight - 160) / leftBarriers),
+        width: barrierHeight + Math.random() * 20,
+        height: barrierThickness,
+        color: '#654321',
+        type: 'obstacle',
+        vx: 0,
+        vy: 0 // Static barriers
+      });
+    }
+    
+    // Right edge barriers (forcing players away from right wall)
+    for (let i = 0; i < leftBarriers; i++) {
+      this.obstacles.push({
+        x: this.levelWidth - (barrierHeight + Math.random() * 20),
+        y: 80 + (i * (this.canvasHeight - 160) / leftBarriers),
+        width: barrierHeight + Math.random() * 20,
+        height: barrierThickness,
+        color: '#654321',
+        type: 'obstacle',
+        vx: 0,
+        vy: 0 // Static barriers
+      });
+    }
+
+    // Ensure no obstacles are too close to player start or goal (except wall patrols and barriers)
     this.obstacles = this.obstacles.filter(obs => 
-      obs.x <= 60 || obs.x >= 200 && obs.x < this.levelWidth - 150 // Allow wall patrols but larger safe zone at start
+      obs.x <= 60 || // Allow left wall patrols and barriers
+      obs.x >= this.levelWidth - 100 || // Allow right wall patrols and barriers
+      obs.y <= 60 || // Allow top wall patrols and barriers
+      obs.y >= this.canvasHeight - 60 || // Allow bottom wall patrols and barriers
+      (obs.x >= 200 && obs.x < this.levelWidth - 150) // Regular safe zone for other obstacles
     );
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
