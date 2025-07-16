@@ -248,46 +248,56 @@ export class GameEngine {
     // Removed wall patrols - now handled by barrier patrols
 
     // Add multiple rows of TNT barrier patrols to prevent edge-hugging strategies
+    // But keep them away from the portal area (right side)
     const numBarriers = 8 + Math.floor(this.level / 2); // More barriers in higher levels
     const barrierRows = 2; // Multiple rows of barriers
+    const portalSafeZone = 200; // Keep TNT away from portal area
     
-    // Top edge barrier patrols (multiple rows moving horizontally)
+    // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
       for (let i = 0; i < numBarriers; i++) {
-        this.obstacles.push({
-          x: 80 + (i * (this.levelWidth - 160) / numBarriers),
-          y: 20 + (row * 40), // Multiple rows
-          width: 35,
-          height: 35,
-          color: '#8B4513',
-          type: 'obstacle',
-          vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
-          vy: 0,
-          patrolStartX: 50,
-          patrolEndX: this.levelWidth - 50,
-          patrolStartY: 20 + (row * 40),
-          patrolEndY: 20 + (row * 40)
-        });
+        const x = 80 + (i * (this.levelWidth - portalSafeZone - 160) / numBarriers);
+        // Only add if not in portal area
+        if (x < this.levelWidth - portalSafeZone) {
+          this.obstacles.push({
+            x: x,
+            y: 20 + (row * 40), // Multiple rows
+            width: 35,
+            height: 35,
+            color: '#8B4513',
+            type: 'obstacle',
+            vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
+            vy: 0,
+            patrolStartX: 50,
+            patrolEndX: this.levelWidth - portalSafeZone,
+            patrolStartY: 20 + (row * 40),
+            patrolEndY: 20 + (row * 40)
+          });
+        }
       }
     }
     
-    // Bottom edge barrier patrols (multiple rows moving horizontally)
+    // Bottom edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
       for (let i = 0; i < numBarriers; i++) {
-        this.obstacles.push({
-          x: 80 + (i * (this.levelWidth - 160) / numBarriers),
-          y: this.canvasHeight - 55 - (row * 40), // Multiple rows from bottom
-          width: 35,
-          height: 35,
-          color: '#8B4513',
-          type: 'obstacle',
-          vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? -1 : 1), // Alternate directions
-          vy: 0,
-          patrolStartX: 50,
-          patrolEndX: this.levelWidth - 50,
-          patrolStartY: this.canvasHeight - 55 - (row * 40),
-          patrolEndY: this.canvasHeight - 55 - (row * 40)
-        });
+        const x = 80 + (i * (this.levelWidth - portalSafeZone - 160) / numBarriers);
+        // Only add if not in portal area
+        if (x < this.levelWidth - portalSafeZone) {
+          this.obstacles.push({
+            x: x,
+            y: this.canvasHeight - 55 - (row * 40), // Multiple rows from bottom
+            width: 35,
+            height: 35,
+            color: '#8B4513',
+            type: 'obstacle',
+            vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? -1 : 1), // Alternate directions
+            vy: 0,
+            patrolStartX: 50,
+            patrolEndX: this.levelWidth - portalSafeZone,
+            patrolStartY: this.canvasHeight - 55 - (row * 40),
+            patrolEndY: this.canvasHeight - 55 - (row * 40)
+          });
+        }
       }
     }
     
@@ -312,33 +322,14 @@ export class GameEngine {
       }
     }
     
-    // Right edge barrier patrols (multiple columns moving vertically)
-    for (let col = 0; col < barrierRows; col++) {
-      for (let i = 0; i < sideBarriers; i++) {
-        this.obstacles.push({
-          x: this.levelWidth - 55 - (col * 40), // Multiple columns from right
-          y: 120 + (i * (this.canvasHeight - 240) / sideBarriers),
-          width: 35,
-          height: 35,
-          color: '#8B4513',
-          type: 'obstacle',
-          vx: 0,
-          vy: (1.0 + Math.random() * 1.0) * (col % 2 === 0 ? -1 : 1), // Alternate directions
-          patrolStartX: this.levelWidth - 55 - (col * 40),
-          patrolEndX: this.levelWidth - 55 - (col * 40),
-          patrolStartY: 100,
-          patrolEndY: this.canvasHeight - 100
-        });
-      }
-    }
+    // Right edge barrier patrols removed to keep portal area clear
 
-    // Ensure no obstacles are too close to player start or goal (except wall patrols and barriers)
+    // Ensure no obstacles are too close to player start or portal area
     this.obstacles = this.obstacles.filter(obs => 
       obs.x <= 60 || // Allow left wall patrols and barriers
-      obs.x >= this.levelWidth - 100 || // Allow right wall patrols and barriers
       obs.y <= 60 || // Allow top wall patrols and barriers
       obs.y >= this.canvasHeight - 60 || // Allow bottom wall patrols and barriers
-      (obs.x >= 200 && obs.x < this.levelWidth - 150) // Regular safe zone for other obstacles
+      (obs.x >= 200 && obs.x < this.levelWidth - 200) // Regular safe zone for other obstacles, larger portal safe zone
     );
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
