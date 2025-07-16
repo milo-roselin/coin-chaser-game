@@ -7,7 +7,12 @@ import { ArrowLeft, Trophy, Medal, Award } from "lucide-react";
 
 export default function LeaderboardScreen() {
   const { resetGame } = useCoinGame();
-  const { scores } = useLeaderboard();
+  const { scores, removeScore } = useLeaderboard();
+
+  // Clean up anonymous entries on component mount
+  useEffect(() => {
+    removeScore("anonymous");
+  }, [removeScore]);
 
   const handleBack = () => {
     resetGame();

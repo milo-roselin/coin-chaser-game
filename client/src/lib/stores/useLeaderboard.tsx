@@ -11,6 +11,7 @@ export interface LeaderboardScore {
 interface LeaderboardState {
   scores: LeaderboardScore[];
   addScore: (score: LeaderboardScore) => void;
+  removeScore: (name: string) => void;
   clearScores: () => void;
 }
 
@@ -31,6 +32,12 @@ export const useLeaderboard = create<LeaderboardState>()(
           
           return { scores: updatedScores };
         });
+      },
+      
+      removeScore: (name: string) => {
+        set((state) => ({
+          scores: state.scores.filter(score => score.name !== name)
+        }));
       },
       
       clearScores: () => {
