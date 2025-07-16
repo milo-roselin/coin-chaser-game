@@ -7,7 +7,7 @@ import { Trophy, Play, Volume2, VolumeX, Lock } from "lucide-react";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
-  const { isMuted, toggleMute } = useAudio();
+  const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -18,10 +18,17 @@ export default function StartScreen() {
       explosionSound.muted = false;
       explosionSound.load();
     }
+    
+    // Start background music
+    startBackgroundMusic();
+    
     startGame();
   };
 
   const handleContinue = () => {
+    // Start background music
+    startBackgroundMusic();
+    
     startFromLevel(highestLevelUnlocked);
   };
 

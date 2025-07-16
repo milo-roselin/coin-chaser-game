@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { backgroundMusic } from "../backgroundMusic";
 
 interface AudioState {
   backgroundMusic: HTMLAudioElement | null;
@@ -7,6 +8,7 @@ interface AudioState {
   explosionSound: HTMLAudioElement | null;
   coinSound: HTMLAudioElement | null;
   isMuted: boolean;
+  isBackgroundMusicPlaying: boolean;
   
   // Setter functions
   setBackgroundMusic: (music: HTMLAudioElement) => void;
@@ -21,6 +23,8 @@ interface AudioState {
   playSuccess: () => void;
   playExplosion: () => void;
   playCoin: () => void;
+  startBackgroundMusic: () => void;
+  stopBackgroundMusic: () => void;
 }
 
 export const useAudio = create<AudioState>((set, get) => ({
@@ -30,6 +34,7 @@ export const useAudio = create<AudioState>((set, get) => ({
   explosionSound: null,
   coinSound: null,
   isMuted: true, // Start muted by default
+  isBackgroundMusicPlaying: false,
   
   setBackgroundMusic: (music) => set({ backgroundMusic: music }),
   setHitSound: (sound) => set({ hitSound: sound }),
@@ -43,6 +48,9 @@ export const useAudio = create<AudioState>((set, get) => ({
     
     // Update the muted state
     set({ isMuted: newMutedState });
+    
+    // Update background music mute state
+    backgroundMusic.setMuted(newMutedState);
     
     // Log the change
     console.log(`Sound ${newMutedState ? 'muted' : 'unmuted'}`);
@@ -143,5 +151,23 @@ export const useAudio = create<AudioState>((set, get) => ({
         console.log("Coin sound play prevented:", error);
       });
     }
-  }
+  },
+  
+  startBackgroundMusic: () => {
+    const { isBackgroundMusicPlaying } = get();
+    if (!isBackgroundMusicPlaying) {
+      backgroundMusic.start();
+      set({ isBackgroundMusicPlaying: true });
+      console.log("Background music started");
+    }
+  },
+  
+  stopBackgroundMusic: () => {
+    const { isBackgroundMusicPlaying } = get();
+    if (isBackgroundMusicPlaying) {
+      backgroundMusic.stop();
+      set({ isBackgroundMusicPlaying: false });
+      console.log("Background music stopped");
+    }
+  },
 }));
