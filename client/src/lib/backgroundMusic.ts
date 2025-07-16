@@ -56,6 +56,12 @@ export class BackgroundMusicGenerator {
     }
   }
   
+  public setVolume(volume: number) {
+    if (this.masterGain) {
+      this.masterGain.gain.value = this.isMuted ? 0 : volume;
+    }
+  }
+  
   private playAmbientMusic() {
     if (!this.audioContext || !this.isPlaying || !this.masterGain) return;
     

@@ -3,13 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { Trophy, Play, Volume2, VolumeX, Lock } from "lucide-react";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings } from "lucide-react";
+import AudioSettingsMenu from "./AudioSettingsMenu";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showAudioSettings, setShowAudioSettings] = useState(false);
 
   const handleStartGame = () => {
     // Enable audio context on user interaction
@@ -193,16 +195,27 @@ export default function StartScreen() {
             <span className="ml-auto text-sm opacity-75">[L]</span>
           </Button>
 
-          <Button 
-            onClick={toggleMute}
-            variant="outline"
-            size="lg"
-            className="w-full text-lg py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
-          >
-            {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
-            {isMuted ? "Unmute" : "Mute"} Sound
-            <span className="ml-auto text-sm opacity-75">[M]</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={toggleMute}
+              variant="outline"
+              size="lg"
+              className="flex-1 text-lg py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
+            >
+              {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
+              {isMuted ? "Unmute" : "Mute"}
+              <span className="ml-auto text-sm opacity-75">[M]</span>
+            </Button>
+            
+            <Button 
+              onClick={() => setShowAudioSettings(true)}
+              variant="outline"
+              size="lg"
+              className="px-4 py-4 border-2 border-blue-300 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
 
           {highestLevelUnlocked > 1 && (
             <Button 
@@ -267,6 +280,12 @@ export default function StartScreen() {
           Collect coins and avoid TNT guards patrolling around them. Reach the portal to win!
         </p>
       </div>
+      
+      {/* Audio Settings Modal */}
+      <AudioSettingsMenu 
+        isOpen={showAudioSettings} 
+        onClose={() => setShowAudioSettings(false)} 
+      />
     </div>
   );
 }
