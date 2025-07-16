@@ -300,27 +300,40 @@ export class GameEngine {
   }
 
   private validateLevelReachability(): boolean {
-    // Simple pathfinding to check if player can reach the goal
-    const gridSize = 20; // Size of each grid cell for pathfinding
+    // Since obstacles are moving, we only need to check if there are any permanent barriers
+    // For moving obstacles, the player can time their movement to pass through
+    const gridSize = 30; // Larger grid for more generous pathfinding
     const gridWidth = Math.ceil(this.levelWidth / gridSize);
     const gridHeight = Math.ceil(this.canvasHeight / gridSize);
     
-    // Create a grid where true = passable, false = blocked
+    // Create a grid where true = passable, false = permanently blocked
     const grid: boolean[][] = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(true));
     
-    // Mark obstacles as blocked in the grid
+    // Only mark areas as blocked if they have high obstacle density
+    // This prevents marking single moving obstacles as permanent barriers
+    const obstacleInfluence: number[][] = Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(0));
+    
+    // Calculate obstacle influence rather than hard blocking
     this.obstacles.forEach(obstacle => {
-      const startX = Math.floor(obstacle.x / gridSize);
-      const endX = Math.ceil((obstacle.x + obstacle.width) / gridSize);
-      const startY = Math.floor(obstacle.y / gridSize);
-      const endY = Math.ceil((obstacle.y + obstacle.height) / gridSize);
+      const centerX = Math.floor((obstacle.x + obstacle.width / 2) / gridSize);
+      const centerY = Math.floor((obstacle.y + obstacle.height / 2) / gridSize);
       
-      for (let y = Math.max(0, startY); y < Math.min(gridHeight, endY); y++) {
-        for (let x = Math.max(0, startX); x < Math.min(gridWidth, endX); x++) {
-          grid[y][x] = false;
+      // Add influence around obstacle center (since they move, they don't permanently block)
+      for (let y = Math.max(0, centerY - 1); y < Math.min(gridHeight, centerY + 2); y++) {
+        for (let x = Math.max(0, centerX - 1); x < Math.min(gridWidth, centerX + 2); x++) {
+          obstacleInfluence[y][x] += 1;
         }
       }
     });
+    
+    // Only block areas with very high obstacle density (3+ obstacles in same area)
+    for (let y = 0; y < gridHeight; y++) {
+      for (let x = 0; x < gridWidth; x++) {
+        if (obstacleInfluence[y][x] >= 3) {
+          grid[y][x] = false;
+        }
+      }
+    }
     
     // Simple BFS pathfinding from player to goal
     const playerGridX = Math.floor(this.player.x / gridSize);
@@ -332,14 +345,14 @@ export class GameEngine {
     const visited = new Set<string>();
     visited.add(`${playerGridX},${playerGridY}`);
     
-    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]; // Include diagonal movement
     
     while (queue.length > 0) {
       const [x, y] = queue.shift()!;
       
-      // Check if we reached the goal
-      if (Math.abs(x - goalGridX) <= 2 && Math.abs(y - goalGridY) <= 2) {
-        console.log(`Level ${this.level}: Portal is reachable!`);
+      // Check if we reached the goal area (more generous)
+      if (Math.abs(x - goalGridX) <= 3 && Math.abs(y - goalGridY) <= 3) {
+        console.log(`Level ${this.level}: Portal is reachable! (Moving obstacles allow passage)`);
         return true;
       }
       
@@ -359,10 +372,20 @@ export class GameEngine {
       }
     }
     
-    // If we get here, no path was found - regenerate level
-    console.warn(`Level ${this.level}: Portal not reachable, regenerating...`);
-    this.generateLevel();
-    return this.validateLevelReachability(); // Recursively try again
+    // If we get here, check if it's due to too many obstacles clustered together
+    const totalObstacles = this.obstacles.length;
+    const levelArea = (this.levelWidth * this.canvasHeight) / (gridSize * gridSize);
+    const obstacleDensity = totalObstacles / levelArea;
+    
+    if (obstacleDensity > 0.3) { // If obstacle density is too high
+      console.warn(`Level ${this.level}: Too many obstacles clustered, regenerating...`);
+      this.generateLevel();
+      return this.validateLevelReachability();
+    }
+    
+    // Otherwise, assume it's reachable since obstacles are moving
+    console.log(`Level ${this.level}: Portal assumed reachable (obstacles are moving)`);
+    return true;
   }
 
   public handleTouchStart(x: number, y: number) {
