@@ -138,7 +138,7 @@ export default function StartScreen() {
           <img src="/gold-coin.svg" alt="Gold Coin" className="w-20 h-20" />
         </div>
         <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
-        <p className="text-lg text-gray-600">Collect coins, avoid obstacles!</p>
+        <p className="text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
         {highestLevelUnlocked > 1 && (
           <div className="mt-4 p-3 bg-purple-100 rounded-lg">
             <p className="text-sm font-semibold text-purple-700">
