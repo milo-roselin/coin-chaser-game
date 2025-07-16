@@ -136,8 +136,9 @@ export const useAudio = create<AudioState>((set, get) => ({
       }
       
       const soundClone = coinSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.7; // Clear and bright
-      soundClone.playbackRate = 1.3; // Faster and higher pitch for cha-ching effect
+      soundClone.volume = 0.8; // Slightly louder for clarity
+      soundClone.playbackRate = 1.0; // Normal speed since it's already shortened
+      soundClone.currentTime = 0; // Start from beginning
       soundClone.play().catch(error => {
         console.log("Coin sound play prevented:", error);
       });
