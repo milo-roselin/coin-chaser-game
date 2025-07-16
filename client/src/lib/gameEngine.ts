@@ -235,6 +235,9 @@ export class GameEngine {
       }
     }
 
+    // Ensure safe paths by creating guaranteed clear corridors
+    this.ensureSafePaths();
+    
     // Ensure no obstacles are too close to player start or goal
     this.obstacles = this.obstacles.filter(obs => 
       obs.x > 200 && obs.x < this.levelWidth - 150 // Larger safe zone at start
@@ -242,40 +245,7 @@ export class GameEngine {
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
     this.coins = this.coins.filter(coin => {
-      // Check if coin has at least one path (basic accessibility check)
-      const nearbyObstacles = this.obstacles.filter(obs => {
-        const dx = Math.abs(obs.x + obs.width/2 - coin.x - coin.width/2);
-        const dy = Math.abs(obs.y + obs.height/2 - coin.y - coin.height/2);
-        return dx < 60 && dy < 60; // Within close proximity
-      });
-      
-      // Check if coin is too close to patrol paths
-      const tooCloseToPatrol = this.obstacles.some(obs => {
-        if (obs.patrolStartX !== undefined && obs.patrolEndX !== undefined) {
-          // For horizontal patrol
-          if (obs.patrolStartY === obs.patrolEndY) {
-            const patrolY = obs.patrolStartY;
-            const patrolStartX = Math.min(obs.patrolStartX, obs.patrolEndX);
-            const patrolEndX = Math.max(obs.patrolStartX, obs.patrolEndX);
-            
-            return coin.y > patrolY - 40 && coin.y < patrolY + 40 &&
-                   coin.x > patrolStartX - 40 && coin.x < patrolEndX + 40;
-          }
-          // For vertical patrol
-          if (obs.patrolStartX === obs.patrolEndX) {
-            const patrolX = obs.patrolStartX;
-            const patrolStartY = Math.min(obs.patrolStartY!, obs.patrolEndY!);
-            const patrolEndY = Math.max(obs.patrolStartY!, obs.patrolEndY!);
-            
-            return coin.x > patrolX - 40 && coin.x < patrolX + 40 &&
-                   coin.y > patrolStartY - 40 && coin.y < patrolEndY + 40;
-          }
-        }
-        return false;
-      });
-      
-      // If there are too many obstacles very close to the coin, or it's in a patrol path, it might be unreachable
-      return nearbyObstacles.length < 4 && !tooCloseToPatrol; // Allow some challenge but not complete blockade
+      return this.isCoinAccessible(coin);
     });
     
     // Ensure we have at least some coins left after filtering
@@ -293,6 +263,129 @@ export class GameEngine {
         });
       }
     }
+  }
+
+  private ensureSafePaths() {
+    // Create guaranteed safe corridors across the level
+    const corridorWidth = 60; // Width of safe passage
+    const numCorridors = 2; // Number of horizontal corridors
+    
+    for (let i = 0; i < numCorridors; i++) {
+      const corridorY = (this.canvasHeight / (numCorridors + 1)) * (i + 1);
+      
+      // Remove any obstacles that intersect with the corridor
+      this.obstacles = this.obstacles.filter(obs => {
+        const obsTop = Math.min(obs.y, obs.patrolStartY || obs.y, obs.patrolEndY || obs.y);
+        const obsBottom = Math.max(obs.y + obs.height, 
+          (obs.patrolStartY || obs.y) + obs.height, 
+          (obs.patrolEndY || obs.y) + obs.height);
+        
+        // Check if obstacle intersects with corridor
+        const intersectsCorridor = obsBottom > corridorY - corridorWidth/2 && 
+                                  obsTop < corridorY + corridorWidth/2;
+        
+        return !intersectsCorridor; // Keep obstacles that don't intersect
+      });
+    }
+    
+    // Create safe vertical passages between major obstacles
+    const verticalPasses = 3;
+    for (let i = 0; i < verticalPasses; i++) {
+      const passX = (this.levelWidth / (verticalPasses + 1)) * (i + 1);
+      const passWidth = 50;
+      
+      // Remove obstacles from vertical passes
+      this.obstacles = this.obstacles.filter(obs => {
+        const obsLeft = Math.min(obs.x, obs.patrolStartX || obs.x, obs.patrolEndX || obs.x);
+        const obsRight = Math.max(obs.x + obs.width, 
+          (obs.patrolStartX || obs.x) + obs.width, 
+          (obs.patrolEndX || obs.x) + obs.width);
+        
+        const intersectsPass = obsRight > passX - passWidth/2 && 
+                              obsLeft < passX + passWidth/2;
+        
+        return !intersectsPass;
+      });
+    }
+  }
+
+  private isCoinAccessible(coin: GameObject): boolean {
+    // Check if coin has at least one path (basic accessibility check)
+    const nearbyObstacles = this.obstacles.filter(obs => {
+      const dx = Math.abs(obs.x + obs.width/2 - coin.x - coin.width/2);
+      const dy = Math.abs(obs.y + obs.height/2 - coin.y - coin.height/2);
+      return dx < 60 && dy < 60; // Within close proximity
+    });
+    
+    // Check if coin is too close to patrol paths
+    const tooCloseToPatrol = this.obstacles.some(obs => {
+      if (obs.patrolStartX !== undefined && obs.patrolEndX !== undefined) {
+        // For horizontal patrol
+        if (obs.patrolStartY === obs.patrolEndY) {
+          const patrolY = obs.patrolStartY;
+          const patrolStartX = Math.min(obs.patrolStartX, obs.patrolEndX);
+          const patrolEndX = Math.max(obs.patrolStartX, obs.patrolEndX);
+          
+          return coin.y > patrolY - 40 && coin.y < patrolY + 40 &&
+                 coin.x > patrolStartX - 40 && coin.x < patrolEndX + 40;
+        }
+        // For vertical patrol
+        if (obs.patrolStartX === obs.patrolEndX) {
+          const patrolX = obs.patrolStartX;
+          const patrolStartY = Math.min(obs.patrolStartY!, obs.patrolEndY!);
+          const patrolEndY = Math.max(obs.patrolStartY!, obs.patrolEndY!);
+          
+          return coin.x > patrolX - 40 && coin.x < patrolX + 40 &&
+                 coin.y > patrolStartY - 40 && coin.y < patrolEndY + 40;
+        }
+      }
+      return false;
+    });
+    
+    // Check if there's a clear path to the coin from multiple directions
+    const pathsAvailable = this.checkPathsFromDirections(coin);
+    
+    // Coin is accessible if it has paths available and isn't completely surrounded
+    return nearbyObstacles.length < 3 && !tooCloseToPatrol && pathsAvailable;
+  }
+
+  private checkPathsFromDirections(coin: GameObject): boolean {
+    // Check if player can approach coin from at least one direction
+    const directions = [
+      { dx: -50, dy: 0 },  // From left
+      { dx: 50, dy: 0 },   // From right
+      { dx: 0, dy: -50 },  // From top
+      { dx: 0, dy: 50 }    // From bottom
+    ];
+    
+    let accessiblePaths = 0;
+    
+    for (const dir of directions) {
+      const approachX = coin.x + dir.dx;
+      const approachY = coin.y + dir.dy;
+      
+      // Check if this approach point is clear of obstacles
+      const blocked = this.obstacles.some(obs => {
+        // Check both current position and patrol area
+        const obsMinX = Math.min(obs.x, obs.patrolStartX || obs.x, obs.patrolEndX || obs.x);
+        const obsMaxX = Math.max(obs.x + obs.width, 
+          (obs.patrolStartX || obs.x) + obs.width, 
+          (obs.patrolEndX || obs.x) + obs.width);
+        const obsMinY = Math.min(obs.y, obs.patrolStartY || obs.y, obs.patrolEndY || obs.y);
+        const obsMaxY = Math.max(obs.y + obs.height, 
+          (obs.patrolStartY || obs.y) + obs.height, 
+          (obs.patrolEndY || obs.y) + obs.height);
+        
+        return approachX + 20 > obsMinX && approachX - 20 < obsMaxX &&
+               approachY + 20 > obsMinY && approachY - 20 < obsMaxY;
+      });
+      
+      if (!blocked) {
+        accessiblePaths++;
+      }
+    }
+    
+    return accessiblePaths >= 1; // At least one clear path
   }
 
   public handleTouchStart(x: number, y: number) {
