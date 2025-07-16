@@ -81,12 +81,7 @@
   <!-- Year -->
   <text x="60" y="82" font-family="Times, serif" font-size="6" font-weight="bold" text-anchor="middle" fill="#8B6914" opacity="0.8">2024</text>
   
-  <!-- Flat coin highlight -->
-  <ellipse cx="45" cy="40" rx="6" ry="10" fill="#FFFFFF" opacity="0.4" transform="rotate(-15 45 40)"/>
-  <ellipse cx="43" cy="38" rx="3" ry="5" fill="#FFFFFF" opacity="0.6" transform="rotate(-15 43 38)"/>
-  
-  <!-- Edge reflection -->
-  <ellipse cx="75" cy="50" rx="2" ry="4" fill="#FFFFFF" opacity="0.3" transform="rotate(20 75 50)"/>
+
   
   <!-- Surface wear patterns for authenticity -->
   <path d="M 30 40 Q 60 35 90 40" stroke="#B8860B" stroke-width="0.2" fill="none" opacity="0.4"/>
