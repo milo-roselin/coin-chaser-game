@@ -958,25 +958,13 @@ export class GameEngine {
     const canEnter = this.coinsCollected >= this.coinsNeededForPortal;
     const time = Date.now() * 0.003; // for animation
     
-    // Only draw portal if at least one coin has been collected
-    if (this.coinsCollected > 0) {
-      // Apply transparency if portal is not active
-      const previousAlpha = ctx.globalAlpha;
-      if (!canEnter) {
-        ctx.globalAlpha = 0.4; // Make portal semi-transparent when locked
-      }
-      
-      // Draw outer gray ring with "PORTAL MACHINE" text
+    // Only draw portal if 5 coins have been collected
+    if (this.coinsCollected >= this.coinsNeededForPortal) {
+      // Draw outer gray ring
       ctx.fillStyle = '#C0C0C0';
       ctx.beginPath();
       ctx.arc(centerX, centerY - 10, 50, 0, Math.PI * 2);
       ctx.fill();
-      
-      // Draw "PORTAL MACHINE" text on the outer ring
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('PORTAL MACHINE', centerX, centerY - 40);
       
       // Draw concentric colorful circles (rainbow portal effect)
       const colors = [
@@ -1004,9 +992,6 @@ export class GameEngine {
       ctx.beginPath();
       ctx.arc(centerX, centerY - 10, 8 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
       ctx.fill();
-      
-      // Restore original alpha
-      ctx.globalAlpha = previousAlpha;
       
       // Draw coin collection panel below the portal
       const panelY = centerY + 35;
@@ -1064,28 +1049,35 @@ export class GameEngine {
       const barWidth = 8;
       const barHeight = 12;
       
-      ctx.fillStyle = canEnter ? '#00FF00' : '#FF0000';
+      ctx.fillStyle = '#00FF00'; // Always green when portal is visible
       ctx.fillRect(barX, barY, barWidth, barHeight);
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 1;
       ctx.strokeRect(barX, barY, barWidth, barHeight);
       
+      // Draw "PORTAL MACHINE" text below the machine
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PORTAL MACHINE', centerX, panelY + 35);
+      
       // Draw status text above portal
-      ctx.fillStyle = canEnter ? '#00FF00' : '#FF6B6B';
+      ctx.fillStyle = '#00FF00';
       ctx.font = 'bold 10px Arial';
       ctx.textAlign = 'center';
-      if (canEnter) {
-        ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
-      } else {
-        ctx.fillText(`COLLECT ${this.coinsNeededForPortal - this.coinsCollected} MORE COINS`, centerX, this.goal.y - 10);
-      }
+      ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
     } else {
-      // Draw placeholder text when no coins collected
+      // Draw coin collection progress when portal is not yet visible
       ctx.fillStyle = '#999999';
       ctx.font = 'bold 14px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('COLLECT COINS TO', centerX, centerY - 10);
-      ctx.fillText('ACTIVATE PORTAL', centerX, centerY + 10);
+      ctx.fillText('COLLECT 5 COINS TO', centerX, centerY - 10);
+      ctx.fillText('ACTIVATE PORTAL MACHINE', centerX, centerY + 10);
+      
+      // Show coin collection progress
+      ctx.fillStyle = '#666666';
+      ctx.font = 'bold 12px Arial';
+      ctx.fillText(`${this.coinsCollected}/5 COINS`, centerX, centerY + 30);
     }
   }
 
