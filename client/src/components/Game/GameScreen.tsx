@@ -2,11 +2,13 @@ import { useRef, useEffect } from "react";
 import GameCanvas from "./GameCanvas";
 import TouchControls from "./TouchControls";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
+import { useAudio } from "@/lib/stores/useAudio";
 import { Button } from "@/components/ui/button";
 import { Pause, Home } from "lucide-react";
 
 export default function GameScreen() {
   const { resetGame } = useCoinGame();
+  const { startBackgroundMusic, toggleMute, isMuted } = useAudio();
   const gameCanvasRef = useRef<{ togglePause: () => void } | null>(null);
 
   const handlePause = () => {
@@ -20,6 +22,11 @@ export default function GameScreen() {
     resetGame();
   };
 
+  // Start background music when game screen loads
+  useEffect(() => {
+    startBackgroundMusic();
+  }, [startBackgroundMusic]);
+
   // Add keyboard shortcuts for home button
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -27,6 +34,8 @@ export default function GameScreen() {
       
       if (e.key === 'h' || e.key === 'H') {
         handleHome();
+      } else if (e.key === 'm' || e.key === 'M') {
+        toggleMute();
       }
     };
 
@@ -66,6 +75,21 @@ export default function GameScreen() {
           </Button>
           <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
             H
+          </span>
+        </div>
+        
+        {/* Mute/Unmute Button */}
+        <div className="flex items-center gap-2 mt-2">
+          <Button
+            onClick={toggleMute}
+            size="sm"
+            variant="outline"
+            className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
+          >
+            {isMuted ? '🔇' : '🔊'}
+          </Button>
+          <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+            M
           </span>
         </div>
       </div>

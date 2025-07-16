@@ -21,6 +21,8 @@ interface AudioState {
   playSuccess: () => void;
   playExplosion: () => void;
   playCoin: () => void;
+  startBackgroundMusic: () => void;
+  stopBackgroundMusic: () => void;
 }
 
 export const useAudio = create<AudioState>((set, get) => ({
@@ -46,6 +48,18 @@ export const useAudio = create<AudioState>((set, get) => ({
     
     // Log the change
     console.log(`Sound ${newMutedState ? 'muted' : 'unmuted'}`);
+    
+    // Handle background music based on mute state
+    const { backgroundMusic } = get();
+    if (backgroundMusic) {
+      if (newMutedState) {
+        backgroundMusic.pause();
+      } else {
+        backgroundMusic.play().catch(error => {
+          console.log("Background music play failed:", error);
+        });
+      }
+    }
     
     // Test explosion sound when unmuting
     if (!newMutedState) {
@@ -143,5 +157,24 @@ export const useAudio = create<AudioState>((set, get) => ({
         console.log("Coin sound play prevented:", error);
       });
     }
-  }
+  },
+  
+  startBackgroundMusic: () => {
+    const { backgroundMusic, isMuted } = get();
+    if (backgroundMusic && !isMuted) {
+      backgroundMusic.loop = true;
+      backgroundMusic.volume = 0.3; // Lower volume for background music
+      backgroundMusic.play().catch(error => {
+        console.log("Background music play failed:", error);
+      });
+    }
+  },
+  
+  stopBackgroundMusic: () => {
+    const { backgroundMusic } = get();
+    if (backgroundMusic) {
+      backgroundMusic.pause();
+      backgroundMusic.currentTime = 0;
+    }
+  },
 }));
