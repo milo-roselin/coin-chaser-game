@@ -43,6 +43,8 @@ export class GameEngine {
   private animationFrame = 0;
   private isMoving = false;
   private facingDirection = 1; // 1 for right, -1 for left
+  private portalImage: HTMLImageElement | null = null;
+  private coinsNeededForPortal = 5; // Number of coins needed to activate portal
 
   constructor(
     private canvasWidth: number, 
@@ -64,18 +66,32 @@ export class GameEngine {
       type: 'player'
     };
 
-    // Initialize goal
+    // Initialize goal (portal)
     this.goal = {
-      x: this.levelWidth - 80,
-      y: canvasHeight / 2 - 40,
-      width: 60,
-      height: 80,
+      x: this.levelWidth - 120,
+      y: canvasHeight / 2 - 60,
+      width: 120,
+      height: 120,
       color: '#8B5CF6',
       type: 'goal'
     };
 
+    // Load portal image
+    this.loadPortalImage();
+
     this.generateLevel();
     this.validateLevelReachability();
+  }
+
+  private loadPortalImage() {
+    this.portalImage = new Image();
+    this.portalImage.src = '/portal.png';
+    this.portalImage.onload = () => {
+      console.log('Portal image loaded successfully');
+    };
+    this.portalImage.onerror = () => {
+      console.log('Failed to load portal image');
+    };
   }
 
   private generateLevel() {
@@ -682,9 +698,9 @@ export class GameEngine {
       }
     }
 
-    // Check goal collision (only if at least one cluster is completed)
+    // Check goal collision (only if 5 coins are collected)
     if (checkCollision(this.player, this.goal)) {
-      if (this.clustersCompleted > 0) {
+      if (this.coinsCollected >= this.coinsNeededForPortal) {
         this.callbacks.onLevelComplete();
         return;
       }
@@ -958,70 +974,81 @@ export class GameEngine {
   private drawGoal(ctx: CanvasRenderingContext2D) {
     const centerX = this.goal.x + this.goal.width / 2;
     const centerY = this.goal.y + this.goal.height / 2;
-    const time = Date.now() * 0.005; // for animation
-    const canEnter = this.clustersCompleted > 0;
+    const canEnter = this.coinsCollected >= this.coinsNeededForPortal;
     
-    // Draw outer portal ring (purple theme)
-    ctx.strokeStyle = canEnter ? '#8B5CF6' : '#6B7280';
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    // Draw inner swirling energy
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2 + time;
-      const radius = 15 + Math.sin(time * 2 + i) * 5;
-      
-      if (canEnter) {
-        ctx.fillStyle = `hsl(${270 + i * 10}, 70%, ${50 + Math.sin(time + i) * 20}%)`;
-      } else {
-        ctx.fillStyle = `hsl(0, 0%, ${30 + Math.sin(time + i) * 10}%)`;
+    // Draw the portal image if loaded
+    if (this.portalImage && this.portalImage.complete) {
+      // Apply transparency if portal is not active
+      const previousAlpha = ctx.globalAlpha;
+      if (!canEnter) {
+        ctx.globalAlpha = 0.4; // Make portal semi-transparent when locked
       }
-      ctx.beginPath();
-      ctx.arc(
-        centerX + Math.cos(angle) * radius, 
-        centerY + Math.sin(angle) * radius, 
-        3, 0, Math.PI * 2
-      );
-      ctx.fill();
-    }
-    
-    // Draw central vortex
-    ctx.fillStyle = canEnter ? '#5B21B6' : '#374151';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw portal particles
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2 + time * 0.5;
-      const radius = 35 + Math.sin(time * 3 + i) * 8;
       
-      if (canEnter) {
-        ctx.fillStyle = `rgba(139, 92, 246, ${0.3 + Math.sin(time * 2 + i) * 0.3})`;
-      } else {
-        ctx.fillStyle = `rgba(107, 114, 128, ${0.1 + Math.sin(time * 2 + i) * 0.1})`;
-      }
-      ctx.beginPath();
-      ctx.arc(
-        centerX + Math.cos(angle) * radius, 
-        centerY + Math.sin(angle) * radius, 
-        2, 0, Math.PI * 2
+      // Draw the portal image scaled to fit the goal area
+      ctx.drawImage(
+        this.portalImage,
+        this.goal.x,
+        this.goal.y,
+        this.goal.width,
+        this.goal.height
       );
-      ctx.fill();
-    }
-    
-    // Draw portal text
-    ctx.fillStyle = canEnter ? '#FFFFFF' : '#9CA3AF';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
-    if (canEnter) {
-      ctx.fillText('PORTAL', centerX, centerY - 50);
+      
+      // Restore original alpha
+      ctx.globalAlpha = previousAlpha;
+      
+      // Draw coin collection indicators (5 circles)
+      const indicatorY = this.goal.y + this.goal.height - 25;
+      const indicatorSpacing = 15;
+      const startX = centerX - (4 * indicatorSpacing) / 2;
+      
+      for (let i = 0; i < 5; i++) {
+        const x = startX + (i * indicatorSpacing);
+        
+        // Draw circle background
+        ctx.fillStyle = '#CCCCCC';
+        ctx.beginPath();
+        ctx.arc(x, indicatorY, 6, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Fill with gold if coin is collected
+        if (i < this.coinsCollected) {
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(x, indicatorY, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        
+        // Draw circle border
+        ctx.strokeStyle = '#666666';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, indicatorY, 6, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      
+      // Draw status text
+      ctx.fillStyle = canEnter ? '#00FF00' : '#FF6B6B';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      if (canEnter) {
+        ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
+      } else {
+        ctx.fillText(`COLLECT ${this.coinsNeededForPortal - this.coinsCollected} MORE COINS`, centerX, this.goal.y - 10);
+      }
     } else {
-      ctx.fillText('LOCKED', centerX, centerY - 50);
-      ctx.font = 'bold 8px Arial';
-      ctx.fillText('Complete a cluster', centerX, centerY + 55);
+      // Fallback rendering if image doesn't load
+      ctx.fillStyle = canEnter ? '#8B5CF6' : '#6B7280';
+      ctx.fillRect(this.goal.x, this.goal.y, this.goal.width, this.goal.height);
+      
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PORTAL', centerX, centerY);
+      
+      if (!canEnter) {
+        ctx.font = 'bold 10px Arial';
+        ctx.fillText(`${this.coinsNeededForPortal - this.coinsCollected} coins needed`, centerX, centerY + 20);
+      }
     }
   }
 
