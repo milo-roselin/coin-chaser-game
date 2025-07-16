@@ -11,7 +11,7 @@ import "@fontsource/inter";
 
 function App() {
   const { gameState } = useCoinGame();
-  const { setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound } = useAudio();
+  const { setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound, setBackgroundMusicVolume, setSoundEffectsVolume } = useAudio();
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -55,6 +55,10 @@ function App() {
         setExplosionSound(explosionSound);
         setCoinSound(coinSound);
         
+        // Initialize volume settings
+        setBackgroundMusicVolume(30);
+        setSoundEffectsVolume(60);
+        
         console.log("Audio system initialized");
       } catch (error) {
         console.log("Audio initialization error:", error);
@@ -62,7 +66,7 @@ function App() {
     };
 
     initializeAudio();
-  }, [setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound]);
+  }, [setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound, setBackgroundMusicVolume, setSoundEffectsVolume]);
 
   const renderScreen = () => {
     switch (gameState) {

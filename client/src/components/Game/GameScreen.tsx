@@ -1,15 +1,17 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import GameCanvas from "./GameCanvas";
 import TouchControls from "./TouchControls";
+import AudioSettingsMenu from "./AudioSettingsMenu";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { Button } from "@/components/ui/button";
-import { Pause, Home } from "lucide-react";
+import { Pause, Home, Settings } from "lucide-react";
 
 export default function GameScreen() {
   const { resetGame } = useCoinGame();
   const { startBackgroundMusic, toggleMute, isMuted } = useAudio();
   const gameCanvasRef = useRef<{ togglePause: () => void } | null>(null);
+  const [showAudioSettings, setShowAudioSettings] = useState(false);
 
   const handlePause = () => {
     // Trigger pause in the game engine
@@ -36,6 +38,8 @@ export default function GameScreen() {
         handleHome();
       } else if (e.key === 'm' || e.key === 'M') {
         toggleMute();
+      } else if (e.key === 'a' || e.key === 'A') {
+        setShowAudioSettings(true);
       }
     };
 
@@ -92,10 +96,31 @@ export default function GameScreen() {
             M
           </span>
         </div>
+
+        {/* Audio Settings Button */}
+        <div className="flex items-center gap-2 mt-2">
+          <Button
+            onClick={() => setShowAudioSettings(true)}
+            size="sm"
+            variant="outline"
+            className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+          <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+            A
+          </span>
+        </div>
       </div>
 
       {/* Touch Controls */}
       <TouchControls />
+
+      {/* Audio Settings Menu */}
+      <AudioSettingsMenu 
+        isOpen={showAudioSettings} 
+        onClose={() => setShowAudioSettings(false)} 
+      />
     </div>
   );
 }

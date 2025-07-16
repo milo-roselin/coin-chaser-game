@@ -8,12 +8,24 @@ interface AudioState {
   coinSound: HTMLAudioElement | null;
   isMuted: boolean;
   
+  // Volume settings
+  backgroundMusicVolume: number;
+  soundEffectsVolume: number;
+  musicEnabled: boolean;
+  soundEffectsEnabled: boolean;
+  
   // Setter functions
   setBackgroundMusic: (music: HTMLAudioElement) => void;
   setHitSound: (sound: HTMLAudioElement) => void;
   setSuccessSound: (sound: HTMLAudioElement) => void;
   setExplosionSound: (sound: HTMLAudioElement) => void;
   setCoinSound: (sound: HTMLAudioElement) => void;
+  
+  // Volume control functions
+  setBackgroundMusicVolume: (volume: number) => void;
+  setSoundEffectsVolume: (volume: number) => void;
+  setMusicEnabled: (enabled: boolean) => void;
+  setSoundEffectsEnabled: (enabled: boolean) => void;
   
   // Control functions
   toggleMute: () => void;
@@ -33,11 +45,51 @@ export const useAudio = create<AudioState>((set, get) => ({
   coinSound: null,
   isMuted: true, // Start muted by default
   
+  // Volume settings
+  backgroundMusicVolume: 30,
+  soundEffectsVolume: 60,
+  musicEnabled: true,
+  soundEffectsEnabled: true,
+  
   setBackgroundMusic: (music) => set({ backgroundMusic: music }),
   setHitSound: (sound) => set({ hitSound: sound }),
   setSuccessSound: (sound) => set({ successSound: sound }),
   setExplosionSound: (sound) => set({ explosionSound: sound }),
   setCoinSound: (sound) => set({ coinSound: sound }),
+  
+  // Volume control functions
+  setBackgroundMusicVolume: (volume) => {
+    set({ backgroundMusicVolume: volume });
+    const { backgroundMusic } = get();
+    if (backgroundMusic) {
+      backgroundMusic.volume = volume / 100;
+    }
+  },
+  
+  setSoundEffectsVolume: (volume) => {
+    set({ soundEffectsVolume: volume });
+    const { hitSound, successSound, explosionSound, coinSound } = get();
+    const baseVolume = volume / 100;
+    
+    if (hitSound) hitSound.volume = baseVolume * 0.3;
+    if (successSound) successSound.volume = baseVolume * 0.5;
+    if (explosionSound) explosionSound.volume = baseVolume * 0.6;
+    if (coinSound) coinSound.volume = baseVolume * 0.8;
+  },
+  
+  setMusicEnabled: (enabled) => {
+    set({ musicEnabled: enabled });
+    const { backgroundMusic, isMuted } = get();
+    if (backgroundMusic) {
+      if (enabled && !isMuted) {
+        backgroundMusic.play().catch(console.log);
+      } else {
+        backgroundMusic.pause();
+      }
+    }
+  },
+  
+  setSoundEffectsEnabled: (enabled) => set({ soundEffectsEnabled: enabled }),
   
   toggleMute: () => {
     const { isMuted } = get();
@@ -77,17 +129,11 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playHit: () => {
-    const { hitSound, isMuted } = get();
-    if (hitSound) {
-      // If sound is muted, don't play anything
-      if (isMuted) {
-        console.log("Hit sound skipped (muted)");
-        return;
-      }
-      
+    const { hitSound, isMuted, soundEffectsEnabled } = get();
+    if (hitSound && !isMuted && soundEffectsEnabled) {
       // Clone the sound to allow overlapping playback
       const soundClone = hitSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.3;
+      soundClone.volume = hitSound.volume;
       soundClone.play().catch(error => {
         console.log("Hit sound play prevented:", error);
       });
@@ -95,14 +141,8 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playSuccess: () => {
-    const { successSound, isMuted } = get();
-    if (successSound) {
-      // If sound is muted, don't play anything
-      if (isMuted) {
-        console.log("Success sound skipped (muted)");
-        return;
-      }
-      
+    const { successSound, isMuted, soundEffectsEnabled } = get();
+    if (successSound && !isMuted && soundEffectsEnabled) {
       successSound.currentTime = 0;
       successSound.play().catch(error => {
         console.log("Success sound play prevented:", error);
@@ -111,16 +151,10 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playExplosion: () => {
-    const { explosionSound, isMuted } = get();
-    if (explosionSound) {
-      if (isMuted) {
-        console.log("Explosion sound skipped (muted)");
-        return;
-      }
-      
+    const { explosionSound, isMuted, soundEffectsEnabled } = get();
+    if (explosionSound && !isMuted && soundEffectsEnabled) {
       try {
         explosionSound.currentTime = 0;
-        explosionSound.volume = 0.6;
         explosionSound.playbackRate = 1.0;
         
         const playPromise = explosionSound.play();
@@ -142,15 +176,10 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playCoin: () => {
-    const { coinSound, isMuted } = get();
-    if (coinSound) {
-      if (isMuted) {
-        console.log("Coin sound skipped (muted)");
-        return;
-      }
-      
+    const { coinSound, isMuted, soundEffectsEnabled } = get();
+    if (coinSound && !isMuted && soundEffectsEnabled) {
       const soundClone = coinSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.8; // Slightly louder for clarity
+      soundClone.volume = coinSound.volume;
       soundClone.playbackRate = 1.0; // Normal speed since it's already shortened
       soundClone.currentTime = 0; // Start from beginning
       soundClone.play().catch(error => {
@@ -160,10 +189,9 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   startBackgroundMusic: () => {
-    const { backgroundMusic, isMuted } = get();
-    if (backgroundMusic && !isMuted) {
+    const { backgroundMusic, isMuted, musicEnabled } = get();
+    if (backgroundMusic && !isMuted && musicEnabled) {
       backgroundMusic.loop = true;
-      backgroundMusic.volume = 0.3; // Lower volume for background music
       backgroundMusic.play().catch(error => {
         console.log("Background music play failed:", error);
       });
