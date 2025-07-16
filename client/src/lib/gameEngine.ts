@@ -311,65 +311,79 @@ export class GameEngine {
       });
     }
 
-    // Add static barrier walls to prevent edge-hugging strategies
-    const barrierThickness = 15;
-    const barrierHeight = 40;
-    const numBarriers = 8 + this.level; // More barriers in higher levels
+    // Add moving TNT barrier patrols to prevent edge-hugging strategies
+    const numBarriers = 6 + Math.floor(this.level / 2); // More barriers in higher levels
     
-    // Top edge barriers (forcing players away from top wall)
+    // Top edge barrier patrols (moving horizontally near top wall)
     for (let i = 0; i < numBarriers; i++) {
       this.obstacles.push({
-        x: 80 + (i * (this.levelWidth - 160) / numBarriers),
-        y: 0,
-        width: barrierThickness,
-        height: barrierHeight + Math.random() * 20,
-        color: '#654321',
+        x: 100 + (i * (this.levelWidth - 200) / numBarriers),
+        y: 60, // Slightly below top wall patrols
+        width: 35,
+        height: 35,
+        color: '#8B4513', // Same TNT color
         type: 'obstacle',
-        vx: 0,
-        vy: 0 // Static barriers
+        vx: 1.2 + Math.random() * 0.8, // Horizontal movement
+        vy: 0,
+        patrolStartX: 80,
+        patrolEndX: this.levelWidth - 80,
+        patrolStartY: 60,
+        patrolEndY: 60
       });
     }
     
-    // Bottom edge barriers (forcing players away from bottom wall)
+    // Bottom edge barrier patrols (moving horizontally near bottom wall)
     for (let i = 0; i < numBarriers; i++) {
       this.obstacles.push({
-        x: 80 + (i * (this.levelWidth - 160) / numBarriers),
-        y: this.canvasHeight - (barrierHeight + Math.random() * 20),
-        width: barrierThickness,
-        height: barrierHeight + Math.random() * 20,
-        color: '#654321',
+        x: 100 + (i * (this.levelWidth - 200) / numBarriers),
+        y: this.canvasHeight - 95, // Slightly above bottom wall patrols
+        width: 35,
+        height: 35,
+        color: '#8B4513', // Same TNT color
         type: 'obstacle',
-        vx: 0,
-        vy: 0 // Static barriers
+        vx: -(1.2 + Math.random() * 0.8), // Opposite direction
+        vy: 0,
+        patrolStartX: 80,
+        patrolEndX: this.levelWidth - 80,
+        patrolStartY: this.canvasHeight - 95,
+        patrolEndY: this.canvasHeight - 95
       });
     }
     
-    // Left edge barriers (forcing players away from left wall)
-    const leftBarriers = Math.ceil(numBarriers / 2);
-    for (let i = 0; i < leftBarriers; i++) {
+    // Left edge barrier patrols (moving vertically near left wall)
+    const sideBarriers = Math.ceil(numBarriers / 2);
+    for (let i = 0; i < sideBarriers; i++) {
       this.obstacles.push({
-        x: 0,
-        y: 80 + (i * (this.canvasHeight - 160) / leftBarriers),
-        width: barrierHeight + Math.random() * 20,
-        height: barrierThickness,
-        color: '#654321',
+        x: 60, // Slightly right of left wall patrols
+        y: 120 + (i * (this.canvasHeight - 240) / sideBarriers),
+        width: 35,
+        height: 35,
+        color: '#8B4513', // Same TNT color
         type: 'obstacle',
         vx: 0,
-        vy: 0 // Static barriers
+        vy: 1.2 + Math.random() * 0.8, // Vertical movement
+        patrolStartX: 60,
+        patrolEndX: 60,
+        patrolStartY: 80,
+        patrolEndY: this.canvasHeight - 80
       });
     }
     
-    // Right edge barriers (forcing players away from right wall)
-    for (let i = 0; i < leftBarriers; i++) {
+    // Right edge barrier patrols (moving vertically near right wall)
+    for (let i = 0; i < sideBarriers; i++) {
       this.obstacles.push({
-        x: this.levelWidth - (barrierHeight + Math.random() * 20),
-        y: 80 + (i * (this.canvasHeight - 160) / leftBarriers),
-        width: barrierHeight + Math.random() * 20,
-        height: barrierThickness,
-        color: '#654321',
+        x: this.levelWidth - 95, // Slightly left of right wall patrols
+        y: 120 + (i * (this.canvasHeight - 240) / sideBarriers),
+        width: 35,
+        height: 35,
+        color: '#8B4513', // Same TNT color
         type: 'obstacle',
         vx: 0,
-        vy: 0 // Static barriers
+        vy: -(1.2 + Math.random() * 0.8), // Opposite direction
+        patrolStartX: this.levelWidth - 95,
+        patrolEndX: this.levelWidth - 95,
+        patrolStartY: 80,
+        patrolEndY: this.canvasHeight - 80
       });
     }
 
