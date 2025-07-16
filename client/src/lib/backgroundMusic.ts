@@ -59,43 +59,51 @@ export class BackgroundMusicGenerator {
   private playAmbientMusic() {
     if (!this.audioContext || !this.isPlaying || !this.masterGain) return;
     
-    // Playful treasure hunt melody sequence
-    const melodyNotes = [
-      { freq: 523.25, duration: 0.3 }, // C5
-      { freq: 587.33, duration: 0.3 }, // D5
-      { freq: 659.25, duration: 0.6 }, // E5
-      { freq: 587.33, duration: 0.3 }, // D5
-      { freq: 523.25, duration: 0.3 }, // C5
-      { freq: 440.00, duration: 0.6 }, // A4
-      { freq: 493.88, duration: 0.3 }, // B4
-      { freq: 523.25, duration: 0.9 }, // C5
-    ];
-    
-    // Background harmony chords for coin collection theme
-    const harmonyChords = [
-      [261.63, 329.63, 392.00], // C major - adventure start
-      [349.23, 440.00, 523.25], // F major - treasure discovery
-      [392.00, 493.88, 587.33], // G major - success feeling
-      [261.63, 329.63, 392.00], // C major - return home
+    // Classic Pac-Man theme melody (simplified version)
+    const pacmanMelody = [
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 523.25, duration: 0.2 }, // C5
+      { freq: 587.33, duration: 0.2 }, // D5
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 523.25, duration: 0.2 }, // C5
+      { freq: 493.88, duration: 0.2 }, // B4
+      { freq: 523.25, duration: 0.4 }, // C5
+      { freq: 440.00, duration: 0.4 }, // A4
+      
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 523.25, duration: 0.2 }, // C5
+      { freq: 587.33, duration: 0.2 }, // D5
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 523.25, duration: 0.2 }, // C5
+      { freq: 493.88, duration: 0.2 }, // B4
+      { freq: 523.25, duration: 0.8 }, // C5 (longer)
+      
+      { freq: 587.33, duration: 0.4 }, // D5
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 698.46, duration: 0.4 }, // F5
+      { freq: 783.99, duration: 0.4 }, // G5
+      { freq: 659.25, duration: 0.4 }, // E5
+      { freq: 523.25, duration: 0.4 }, // C5
+      { freq: 587.33, duration: 0.4 }, // D5
+      { freq: 523.25, duration: 0.8 }, // C5 (longer)
     ];
     
     let melodyIndex = 0;
-    let harmonyIndex = 0;
     
-    const playMelodyNote = () => {
+    const playPacmanNote = () => {
       if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
       
-      const note = melodyNotes[melodyIndex];
+      const note = pacmanMelody[melodyIndex];
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
       
-      // Use triangle wave for a more playful, game-like sound
-      oscillator.type = 'triangle';
+      // Use square wave for classic arcade sound
+      oscillator.type = 'square';
       oscillator.frequency.value = note.freq;
       
       gainNode.gain.value = 0;
-      gainNode.gain.setTargetAtTime(0.4, this.audioContext.currentTime, 0.05);
-      gainNode.gain.setTargetAtTime(0, this.audioContext.currentTime + note.duration - 0.1, 0.1);
+      gainNode.gain.setTargetAtTime(0.3, this.audioContext.currentTime, 0.01);
+      gainNode.gain.setTargetAtTime(0, this.audioContext.currentTime + note.duration - 0.05, 0.05);
       
       oscillator.connect(gainNode);
       gainNode.connect(this.masterGain);
@@ -103,115 +111,59 @@ export class BackgroundMusicGenerator {
       oscillator.start();
       oscillator.stop(this.audioContext.currentTime + note.duration);
       
-      melodyIndex = (melodyIndex + 1) % melodyNotes.length;
+      melodyIndex = (melodyIndex + 1) % pacmanMelody.length;
       
       // Schedule next note
       if (this.isPlaying) {
-        setTimeout(() => playMelodyNote(), note.duration * 1000);
+        setTimeout(() => playPacmanNote(), note.duration * 1000);
       }
     };
     
-    const playHarmonyChord = () => {
-      if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
-      
-      const chord = harmonyChords[harmonyIndex];
-      const chordGain = this.audioContext.createGain();
-      chordGain.connect(this.masterGain);
-      chordGain.gain.value = 0;
-      
-      // Create soft harmony background
-      const oscillators = chord.map(frequency => {
-        const oscillator = this.audioContext!.createOscillator();
-        const noteGain = this.audioContext!.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.value = frequency * 0.5; // Lower octave for background
-        noteGain.gain.value = 0.15; // Softer background
-        
-        oscillator.connect(noteGain);
-        noteGain.connect(chordGain);
-        
-        return { oscillator, noteGain };
-      });
-      
-      // Gentle fade in
-      chordGain.gain.setTargetAtTime(0.6, this.audioContext.currentTime, 0.3);
-      
-      oscillators.forEach(({ oscillator }) => {
-        oscillator.start();
-      });
-      
-      // Fade out after 2.5 seconds
-      setTimeout(() => {
-        if (chordGain && this.audioContext) {
-          chordGain.gain.setTargetAtTime(0, this.audioContext.currentTime, 0.3);
-          
-          setTimeout(() => {
-            oscillators.forEach(({ oscillator }) => {
-              try {
-                oscillator.stop();
-              } catch (error) {
-                // Oscillator might already be stopped
-              }
-            });
-          }, 800);
-        }
-      }, 2500);
-      
-      harmonyIndex = (harmonyIndex + 1) % harmonyChords.length;
-      
-      // Schedule next chord
-      if (this.isPlaying) {
-        setTimeout(() => playHarmonyChord(), 3000);
-      }
-    };
+    // Start the classic Pac-Man melody
+    playPacmanNote();
     
-    // Start melody and harmony
-    playMelodyNote();
-    setTimeout(() => playHarmonyChord(), 500); // Start harmony slightly after melody
-    
-    // Add coin collection sound effect periodically
-    this.addCoinSparkles();
+    // Add occasional power pellet sound effects
+    this.addPowerPelletEffects();
   }
   
-  // Add magical coin sparkle effects
-  private addCoinSparkles() {
+  // Add Pac-Man style power pellet effects
+  private addPowerPelletEffects() {
     if (!this.audioContext || !this.masterGain) return;
     
-    const playSparkle = () => {
+    const playPowerPellet = () => {
       if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
       
-      // Create a magical sparkle sound like coin collection
-      const frequencies = [1318.51, 1567.98, 1975.53]; // High notes for sparkle
+      // Create the classic Pac-Man power pellet sound
+      const frequencies = [220, 330, 440, 550]; // Ascending notes
       
       frequencies.forEach((freq, index) => {
         setTimeout(() => {
           const oscillator = this.audioContext!.createOscillator();
           const gainNode = this.audioContext!.createGain();
           
-          oscillator.type = 'sine';
+          oscillator.type = 'square';
           oscillator.frequency.value = freq;
           
-          gainNode.gain.value = 0.1;
-          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext!.currentTime + 0.2);
+          gainNode.gain.value = 0.15;
+          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext!.currentTime + 0.15);
           
           oscillator.connect(gainNode);
           gainNode.connect(this.masterGain);
           
           oscillator.start();
-          oscillator.stop(this.audioContext!.currentTime + 0.2);
-        }, index * 50); // Cascade the sparkle notes
+          oscillator.stop(this.audioContext!.currentTime + 0.15);
+        }, index * 40); // Quick ascending pattern
       });
       
-      // Random sparkles every 8-12 seconds
+      // Random power pellet effects every 15-20 seconds
       if (this.isPlaying) {
-        const nextSparkle = 8000 + Math.random() * 4000;
-        setTimeout(() => playSparkle(), nextSparkle);
+        const nextEffect = 15000 + Math.random() * 5000;
+        setTimeout(() => playPowerPellet(), nextEffect);
       }
     };
     
-    // Start sparkles after initial delay
-    setTimeout(() => playSparkle(), 3000);
+    // Start power pellet effects after initial delay
+    setTimeout(() => playPowerPellet(), 8000);
   }
 }
 
