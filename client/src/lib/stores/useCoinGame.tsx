@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector, persist } from "zustand/middleware";
+import { useAudio } from "./useAudio";
 
 export type GameState = "start" | "playing" | "gameOver" | "victory" | "leaderboard" | "nextLevel";
 
@@ -91,6 +92,9 @@ export const useCoinGame = create<CoinGameState>()(
         set((state) => ({
           gameState: state.gameState === "playing" ? "gameOver" : state.gameState
         }));
+        // Stop background music when game ends
+        const { stopBackgroundMusic } = useAudio.getState();
+        stopBackgroundMusic();
       },
       
       winGame: () => {
