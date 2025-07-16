@@ -59,32 +59,74 @@ export class BackgroundMusicGenerator {
   private playAmbientMusic() {
     if (!this.audioContext || !this.isPlaying || !this.masterGain) return;
     
-    // Create a simple ambient chord progression
-    const chords = [
-      [261.63, 329.63, 392.00], // C major
-      [293.66, 369.99, 440.00], // D minor
-      [329.63, 415.30, 493.88], // E minor
-      [349.23, 440.00, 523.25], // F major
+    // Playful treasure hunt melody sequence
+    const melodyNotes = [
+      { freq: 523.25, duration: 0.3 }, // C5
+      { freq: 587.33, duration: 0.3 }, // D5
+      { freq: 659.25, duration: 0.6 }, // E5
+      { freq: 587.33, duration: 0.3 }, // D5
+      { freq: 523.25, duration: 0.3 }, // C5
+      { freq: 440.00, duration: 0.6 }, // A4
+      { freq: 493.88, duration: 0.3 }, // B4
+      { freq: 523.25, duration: 0.9 }, // C5
     ];
     
-    let chordIndex = 0;
+    // Background harmony chords for coin collection theme
+    const harmonyChords = [
+      [261.63, 329.63, 392.00], // C major - adventure start
+      [349.23, 440.00, 523.25], // F major - treasure discovery
+      [392.00, 493.88, 587.33], // G major - success feeling
+      [261.63, 329.63, 392.00], // C major - return home
+    ];
     
-    const playChord = () => {
+    let melodyIndex = 0;
+    let harmonyIndex = 0;
+    
+    const playMelodyNote = () => {
       if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
       
-      const chord = chords[chordIndex];
+      const note = melodyNotes[melodyIndex];
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      
+      // Use triangle wave for a more playful, game-like sound
+      oscillator.type = 'triangle';
+      oscillator.frequency.value = note.freq;
+      
+      gainNode.gain.value = 0;
+      gainNode.gain.setTargetAtTime(0.4, this.audioContext.currentTime, 0.05);
+      gainNode.gain.setTargetAtTime(0, this.audioContext.currentTime + note.duration - 0.1, 0.1);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      oscillator.start();
+      oscillator.stop(this.audioContext.currentTime + note.duration);
+      
+      melodyIndex = (melodyIndex + 1) % melodyNotes.length;
+      
+      // Schedule next note
+      if (this.isPlaying) {
+        setTimeout(() => playMelodyNote(), note.duration * 1000);
+      }
+    };
+    
+    const playHarmonyChord = () => {
+      if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
+      
+      const chord = harmonyChords[harmonyIndex];
       const chordGain = this.audioContext.createGain();
       chordGain.connect(this.masterGain);
       chordGain.gain.value = 0;
       
-      // Create oscillators for each note in the chord
+      // Create soft harmony background
       const oscillators = chord.map(frequency => {
         const oscillator = this.audioContext!.createOscillator();
         const noteGain = this.audioContext!.createGain();
         
         oscillator.type = 'sine';
-        oscillator.frequency.value = frequency;
-        noteGain.gain.value = 0.3;
+        oscillator.frequency.value = frequency * 0.5; // Lower octave for background
+        noteGain.gain.value = 0.15; // Softer background
         
         oscillator.connect(noteGain);
         noteGain.connect(chordGain);
@@ -92,18 +134,17 @@ export class BackgroundMusicGenerator {
         return { oscillator, noteGain };
       });
       
-      // Fade in
-      chordGain.gain.setTargetAtTime(0.8, this.audioContext.currentTime, 0.5);
+      // Gentle fade in
+      chordGain.gain.setTargetAtTime(0.6, this.audioContext.currentTime, 0.3);
       
-      // Start all oscillators
       oscillators.forEach(({ oscillator }) => {
         oscillator.start();
       });
       
-      // Fade out and stop after 3 seconds
+      // Fade out after 2.5 seconds
       setTimeout(() => {
         if (chordGain && this.audioContext) {
-          chordGain.gain.setTargetAtTime(0, this.audioContext.currentTime, 0.5);
+          chordGain.gain.setTargetAtTime(0, this.audioContext.currentTime, 0.3);
           
           setTimeout(() => {
             oscillators.forEach(({ oscillator }) => {
@@ -113,54 +154,64 @@ export class BackgroundMusicGenerator {
                 // Oscillator might already be stopped
               }
             });
-          }, 1000);
+          }, 800);
         }
-      }, 3000);
+      }, 2500);
       
-      // Move to next chord
-      chordIndex = (chordIndex + 1) % chords.length;
+      harmonyIndex = (harmonyIndex + 1) % harmonyChords.length;
       
       // Schedule next chord
       if (this.isPlaying) {
-        setTimeout(() => playChord(), 4000);
+        setTimeout(() => playHarmonyChord(), 3000);
       }
     };
     
-    // Start the music
-    playChord();
+    // Start melody and harmony
+    playMelodyNote();
+    setTimeout(() => playHarmonyChord(), 500); // Start harmony slightly after melody
+    
+    // Add coin collection sound effect periodically
+    this.addCoinSparkles();
   }
   
-  // Add some percussion elements
-  private createPercussion() {
+  // Add magical coin sparkle effects
+  private addCoinSparkles() {
     if (!this.audioContext || !this.masterGain) return;
     
-    const playBeat = () => {
+    const playSparkle = () => {
       if (!this.isPlaying || !this.audioContext || !this.masterGain) return;
       
-      // Create a subtle kick drum sound
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+      // Create a magical sparkle sound like coin collection
+      const frequencies = [1318.51, 1567.98, 1975.53]; // High notes for sparkle
       
-      oscillator.type = 'sine';
-      oscillator.frequency.value = 60; // Low frequency for kick
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          const oscillator = this.audioContext!.createOscillator();
+          const gainNode = this.audioContext!.createGain();
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.value = freq;
+          
+          gainNode.gain.value = 0.1;
+          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext!.currentTime + 0.2);
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(this.masterGain);
+          
+          oscillator.start();
+          oscillator.stop(this.audioContext!.currentTime + 0.2);
+        }, index * 50); // Cascade the sparkle notes
+      });
       
-      gainNode.gain.value = 0.2;
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      
-      oscillator.start();
-      oscillator.stop(this.audioContext.currentTime + 0.1);
-      
-      // Schedule next beat
+      // Random sparkles every 8-12 seconds
       if (this.isPlaying) {
-        setTimeout(() => playBeat(), 1000); // Every second
+        const nextSparkle = 8000 + Math.random() * 4000;
+        setTimeout(() => playSparkle(), nextSparkle);
       }
     };
     
-    // Start percussion after a delay
-    setTimeout(() => playBeat(), 2000);
+    // Start sparkles after initial delay
+    setTimeout(() => playSparkle(), 3000);
   }
 }
 
