@@ -75,8 +75,8 @@
   </text>
   
   <!-- Central dollar symbol with proper depth -->
-  <text x="60" y="68" font-family="Times, serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#654321" opacity="0.3">$</text>
-  <text x="60" y="67" font-family="Times, serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#8B6914">$</text>
+  <text x="60" y="72" font-family="Times, serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#654321" opacity="0.3">$</text>
+  <text x="60" y="71" font-family="Times, serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#8B6914">$</text>
   
   <!-- Year -->
   <text x="60" y="82" font-family="Times, serif" font-size="6" font-weight="bold" text-anchor="middle" fill="#8B6914" opacity="0.8">2024</text>
