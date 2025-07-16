@@ -1177,10 +1177,7 @@ export class GameEngine {
     ctx.textAlign = 'right';
     ctx.fillText(`Speed: ${this.gameSpeed}x`, this.canvasWidth - 20, 40);
     
-    // Speed controls hint
-    ctx.fillStyle = '#666';
-    ctx.font = '12px Arial';
-    ctx.fillText('(+/-) to change speed', this.canvasWidth - 20, 60);
+    // Speed controls hint removed - moved to main instructions
   }
 
 
