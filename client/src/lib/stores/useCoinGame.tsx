@@ -11,6 +11,7 @@ interface CoinGameState {
   currentLevel: number;
   highestLevelUnlocked: number;
   totalScore: number;
+  totalCoinsCollected: number;
   
   // Actions
   startGame: () => void;
@@ -37,6 +38,7 @@ export const useCoinGame = create<CoinGameState>()(
       currentLevel: 1,
       highestLevelUnlocked: 1,
       totalScore: 0,
+      totalCoinsCollected: 0,
       
       startGame: () => {
         set({ 
@@ -67,7 +69,8 @@ export const useCoinGame = create<CoinGameState>()(
           currentLevel: 1,
           // Keep checkpoint progress
           highestLevelUnlocked: state.highestLevelUnlocked,
-          totalScore: state.totalScore
+          totalScore: state.totalScore,
+          totalCoinsCollected: state.totalCoinsCollected
         }));
       },
       
@@ -79,7 +82,8 @@ export const useCoinGame = create<CoinGameState>()(
           playerPosition: { x: 50, y: 300 },
           currentLevel: 1,
           highestLevelUnlocked: 1,
-          totalScore: 0
+          totalScore: 0,
+          totalCoinsCollected: 0
         });
       },
       
@@ -125,7 +129,8 @@ export const useCoinGame = create<CoinGameState>()(
       
       updateCoinsCollected: () => {
         set((state) => ({ 
-          coinsCollected: state.coinsCollected + 1 
+          coinsCollected: state.coinsCollected + 1,
+          totalCoinsCollected: state.totalCoinsCollected + 1
         }));
       },
       

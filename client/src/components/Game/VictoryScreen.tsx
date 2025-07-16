@@ -7,7 +7,7 @@ import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { Trophy, Home, Upload, Lock } from "lucide-react";
 
 export default function VictoryScreen() {
-  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel } = useCoinGame();
+  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
   const { addScore } = useLeaderboard();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
@@ -22,7 +22,7 @@ export default function VictoryScreen() {
       addScore({
         name: savedName,
         score: totalScore,
-        coins: coinsCollected,
+        coins: totalCoinsCollected,
         date: new Date().toISOString()
       });
       setScoreSubmitted(true);
@@ -31,12 +31,12 @@ export default function VictoryScreen() {
       addScore({
         name: 'Anonymous',
         score: totalScore,
-        coins: coinsCollected,
+        coins: totalCoinsCollected,
         date: new Date().toISOString()
       });
       setScoreSubmitted(true);
     }
-  }, [addScore, totalScore, coinsCollected]);
+  }, [addScore, totalScore, totalCoinsCollected]);
 
   const handleSubmitScore = () => {
     if (playerName.trim()) {
@@ -44,7 +44,7 @@ export default function VictoryScreen() {
       addScore({
         name: playerName.trim(),
         score: totalScore,
-        coins: coinsCollected,
+        coins: totalCoinsCollected,
         date: new Date().toISOString()
       });
       setScoreSubmitted(true);
@@ -146,10 +146,13 @@ export default function VictoryScreen() {
           <div className="space-y-2 mb-6">
             <div className="text-3xl font-bold text-blue-600">{score}</div>
             <div className="text-lg text-gray-600">
-              Coins Collected: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
+              Level Coins: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
             <div className="text-sm text-gray-500 border-t pt-2">
               Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
+            </div>
+            <div className="text-sm text-gray-500">
+              Total Coins: <span className="font-semibold text-yellow-600">{totalCoinsCollected}</span>
             </div>
           </div>
 
