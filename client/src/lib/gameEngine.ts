@@ -958,14 +958,14 @@ export class GameEngine {
     const canEnter = this.coinsCollected >= this.coinsNeededForPortal;
     const time = Date.now() * 0.003; // for animation
     
-    // Only draw portal if 5 coins have been collected
+    // Always draw the gray outer ring (portal machine housing)
+    ctx.fillStyle = '#C0C0C0';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY - 10, 50, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Only draw the colorful portal circles if 5 coins have been collected
     if (this.coinsCollected >= this.coinsNeededForPortal) {
-      // Draw outer gray ring
-      ctx.fillStyle = '#C0C0C0';
-      ctx.beginPath();
-      ctx.arc(centerX, centerY - 10, 50, 0, Math.PI * 2);
-      ctx.fill();
-      
       // Draw concentric colorful circles (rainbow portal effect)
       const colors = [
         '#4B0082', // Indigo (outermost)
@@ -992,92 +992,90 @@ export class GameEngine {
       ctx.beginPath();
       ctx.arc(centerX, centerY - 10, 8 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
       ctx.fill();
+    } else {
+      // Draw inactive portal center (dark gray)
+      ctx.fillStyle = '#555555';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY - 10, 40, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Always draw coin collection panel below the portal
+    const panelY = centerY + 35;
+    const panelWidth = 80;
+    const panelHeight = 25;
+    
+    // Draw panel background
+    ctx.fillStyle = '#D3D3D3';
+    ctx.fillRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
+    
+    // Draw panel border
+    ctx.strokeStyle = '#808080';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
+    
+    // Draw "COINS COLLECTED" text
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('COINS COLLECTED', centerX, panelY + 8);
+    
+    // Draw coin collection indicators (5 circles)
+    const indicatorY = panelY + 18;
+    const indicatorSpacing = 12;
+    const startX = centerX - (4 * indicatorSpacing) / 2;
+    
+    for (let i = 0; i < 5; i++) {
+      const x = startX + (i * indicatorSpacing);
       
-      // Draw coin collection panel below the portal
-      const panelY = centerY + 35;
-      const panelWidth = 80;
-      const panelHeight = 25;
+      // Draw circle background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
+      ctx.fill();
       
-      // Draw panel background
-      ctx.fillStyle = '#D3D3D3';
-      ctx.fillRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
-      
-      // Draw panel border
-      ctx.strokeStyle = '#808080';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
-      
-      // Draw "COINS COLLECTED" text
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 8px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('COINS COLLECTED', centerX, panelY + 8);
-      
-      // Draw coin collection indicators (5 circles)
-      const indicatorY = panelY + 18;
-      const indicatorSpacing = 12;
-      const startX = centerX - (4 * indicatorSpacing) / 2;
-      
-      for (let i = 0; i < 5; i++) {
-        const x = startX + (i * indicatorSpacing);
-        
-        // Draw circle background
-        ctx.fillStyle = '#FFFFFF';
+      // Fill with gold if coin is collected
+      if (i < this.coinsCollected) {
+        ctx.fillStyle = '#FFD700';
         ctx.beginPath();
-        ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
+        ctx.arc(x, indicatorY, 3, 0, Math.PI * 2);
         ctx.fill();
-        
-        // Fill with gold if coin is collected
-        if (i < this.coinsCollected) {
-          ctx.fillStyle = '#FFD700';
-          ctx.beginPath();
-          ctx.arc(x, indicatorY, 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        
-        // Draw circle border
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
-        ctx.stroke();
       }
       
-      // Draw activation indicator bar
-      const barX = centerX + 35;
-      const barY = panelY + 10;
-      const barWidth = 8;
-      const barHeight = 12;
-      
-      ctx.fillStyle = '#00FF00'; // Always green when portal is visible
-      ctx.fillRect(barX, barY, barWidth, barHeight);
+      // Draw circle border
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 1;
-      ctx.strokeRect(barX, barY, barWidth, barHeight);
-      
-      // Draw "PORTAL MACHINE" text below the machine
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 12px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('PORTAL MACHINE', centerX, panelY + 35);
-      
-      // Draw status text above portal
-      ctx.fillStyle = '#00FF00';
-      ctx.font = 'bold 10px Arial';
-      ctx.textAlign = 'center';
+      ctx.beginPath();
+      ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    
+    // Draw activation indicator bar
+    const barX = centerX + 35;
+    const barY = panelY + 10;
+    const barWidth = 8;
+    const barHeight = 12;
+    
+    ctx.fillStyle = canEnter ? '#00FF00' : '#FF0000';
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barWidth, barHeight);
+    
+    // Always draw "PORTAL MACHINE" text below the machine
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('PORTAL MACHINE', centerX, panelY + 35);
+    
+    // Draw status text above portal
+    ctx.fillStyle = canEnter ? '#00FF00' : '#FF6B6B';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    if (canEnter) {
       ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
     } else {
-      // Draw coin collection progress when portal is not yet visible
-      ctx.fillStyle = '#999999';
-      ctx.font = 'bold 14px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('COLLECT 5 COINS TO', centerX, centerY - 10);
-      ctx.fillText('ACTIVATE PORTAL MACHINE', centerX, centerY + 10);
-      
-      // Show coin collection progress
-      ctx.fillStyle = '#666666';
-      ctx.font = 'bold 12px Arial';
-      ctx.fillText(`${this.coinsCollected}/5 COINS`, centerX, centerY + 30);
+      ctx.fillText(`COLLECT ${this.coinsNeededForPortal - this.coinsCollected} MORE COINS`, centerX, this.goal.y - 10);
     }
   }
 
