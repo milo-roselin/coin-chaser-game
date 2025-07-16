@@ -236,9 +236,84 @@ export class GameEngine {
       }
     }
 
-    // Ensure no obstacles are too close to player start or goal
+    // Add TNT patrols along all outside walls
+    const wallPatrols = 2 + Math.floor(this.level / 3); // More wall patrols in higher levels
+    
+    // Top wall patrols
+    for (let i = 0; i < wallPatrols; i++) {
+      this.obstacles.push({
+        x: 100 + (i * (this.levelWidth - 200) / wallPatrols),
+        y: 20,
+        width: 35,
+        height: 35,
+        color: '#8B4513',
+        type: 'obstacle',
+        vx: 1.5 + Math.random() * 1, // horizontal movement speed
+        vy: 0,
+        patrolStartX: 50, // left boundary
+        patrolEndX: this.levelWidth - 50, // right boundary
+        patrolStartY: 20, // stay on top wall
+        patrolEndY: 20
+      });
+    }
+    
+    // Bottom wall patrols
+    for (let i = 0; i < wallPatrols; i++) {
+      this.obstacles.push({
+        x: 100 + (i * (this.levelWidth - 200) / wallPatrols),
+        y: this.canvasHeight - 55,
+        width: 35,
+        height: 35,
+        color: '#8B4513',
+        type: 'obstacle',
+        vx: -(1.5 + Math.random() * 1), // horizontal movement speed (opposite direction)
+        vy: 0,
+        patrolStartX: 50, // left boundary
+        patrolEndX: this.levelWidth - 50, // right boundary
+        patrolStartY: this.canvasHeight - 55, // stay on bottom wall
+        patrolEndY: this.canvasHeight - 55
+      });
+    }
+    
+    // Left wall patrols
+    for (let i = 0; i < Math.ceil(wallPatrols / 2); i++) {
+      this.obstacles.push({
+        x: 20,
+        y: 100 + (i * (this.canvasHeight - 200) / Math.ceil(wallPatrols / 2)),
+        width: 35,
+        height: 35,
+        color: '#8B4513',
+        type: 'obstacle',
+        vx: 0,
+        vy: 1.5 + Math.random() * 1, // vertical movement speed
+        patrolStartX: 20, // stay on left wall
+        patrolEndX: 20,
+        patrolStartY: 50, // top boundary
+        patrolEndY: this.canvasHeight - 50 // bottom boundary
+      });
+    }
+    
+    // Right wall patrols
+    for (let i = 0; i < Math.ceil(wallPatrols / 2); i++) {
+      this.obstacles.push({
+        x: this.levelWidth - 55,
+        y: 100 + (i * (this.canvasHeight - 200) / Math.ceil(wallPatrols / 2)),
+        width: 35,
+        height: 35,
+        color: '#8B4513',
+        type: 'obstacle',
+        vx: 0,
+        vy: -(1.5 + Math.random() * 1), // vertical movement speed (opposite direction)
+        patrolStartX: this.levelWidth - 55, // stay on right wall
+        patrolEndX: this.levelWidth - 55,
+        patrolStartY: 50, // top boundary
+        patrolEndY: this.canvasHeight - 50 // bottom boundary
+      });
+    }
+
+    // Ensure no obstacles are too close to player start or goal (except wall patrols)
     this.obstacles = this.obstacles.filter(obs => 
-      obs.x > 200 && obs.x < this.levelWidth - 150 // Larger safe zone at start
+      obs.x <= 60 || obs.x >= 200 && obs.x < this.levelWidth - 150 // Allow wall patrols but larger safe zone at start
     );
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
