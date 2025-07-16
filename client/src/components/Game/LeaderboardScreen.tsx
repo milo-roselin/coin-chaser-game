@@ -109,10 +109,10 @@ export default function LeaderboardScreen() {
                   
                   <div className="text-right">
                     <div className="font-bold text-blue-600">
-                      {score.score}
+                      {score.score.toLocaleString()} pts
                     </div>
-                    <div className="text-xs text-yellow-600">
-                      {score.coins} coins
+                    <div className="text-sm text-yellow-600 font-semibold">
+                      🪙 {score.coins} coins
                     </div>
                   </div>
                 </div>
