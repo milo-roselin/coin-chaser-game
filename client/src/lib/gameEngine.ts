@@ -169,8 +169,8 @@ export class GameEngine {
         height: 35,
         color: '#8B4513',
         type: 'obstacle',
-        vx: 0.8 + Math.random() * 1.0, // Slower circular movement
-        vy: 0.8 + Math.random() * 1.0,
+        vx: 1 + Math.random() * 1.5, // circular movement speed
+        vy: 1 + Math.random() * 1.5,
         patrolStartX: clusterX, // center X of circular patrol
         patrolStartY: clusterY, // center Y of circular patrol
         patrolEndX: patrolRadius, // using this as radius
@@ -178,8 +178,8 @@ export class GameEngine {
       });
     }
 
-    // Add some linear patrolling TNT bombs between clusters (limited increase)
-    const linearTnt = 2 + Math.min(this.level, 8); // Cap at 10 total linear TNT
+    // Add some linear patrolling TNT bombs between clusters (more in higher levels)
+    const linearTnt = 2 + this.level;
     for (let i = 0; i < linearTnt; i++) {
       let x, y;
       let attempts = 0;
@@ -196,9 +196,9 @@ export class GameEngine {
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
       
       if (patrolType === 'horizontal') {
-        const patrolRange = 200 + Math.random() * 300; // Longer patrol ranges for more gaps
-        const patrolStartX = Math.max(100, x - patrolRange / 2);
-        const patrolEndX = Math.min(this.levelWidth - 100, x + patrolRange / 2);
+        const patrolRange = 150 + Math.random() * 200;
+        const patrolStartX = Math.max(50, x - patrolRange / 2);
+        const patrolEndX = Math.min(this.levelWidth - 50, x + patrolRange / 2);
         
         this.obstacles.push({
           x: patrolStartX,
@@ -207,7 +207,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: 1.0 + Math.random() * 1.5 + Math.min(this.level * 0.1, 1.0), // Capped speed increase
+          vx: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -215,9 +215,9 @@ export class GameEngine {
           patrolEndY: y
         });
       } else {
-        const patrolRange = 150 + Math.random() * 200; // Longer vertical patrol ranges
-        const patrolStartY = Math.max(100, y - patrolRange / 2);
-        const patrolEndY = Math.min(this.canvasHeight - 100, y + patrolRange / 2);
+        const patrolRange = 100 + Math.random() * 150;
+        const patrolStartY = Math.max(50, y - patrolRange / 2);
+        const patrolEndY = Math.min(this.canvasHeight - 50, y + patrolRange / 2);
         
         this.obstacles.push({
           x,
@@ -227,7 +227,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: 1.0 + Math.random() * 1.5 + Math.min(this.level * 0.1, 1.0), // Capped speed increase
+          vy: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -242,7 +242,7 @@ export class GameEngine {
     // Removed wall patrols - now handled by barrier patrols
 
     // Add multiple rows of TNT barrier patrols to prevent edge-hugging strategies
-    const numBarriers = Math.min(6 + Math.floor(this.level / 3), 12); // Cap barriers to prevent overcrowding
+    const numBarriers = 8 + Math.floor(this.level / 2); // More barriers in higher levels
     const barrierRows = 2; // Multiple rows of barriers
     
     // Top edge barrier patrols (multiple rows moving horizontally)
@@ -255,7 +255,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (0.8 + Math.random() * 0.7) * (row % 2 === 0 ? 1 : -1), // Slower barrier movement
+          vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
           vy: 0,
           patrolStartX: 50,
           patrolEndX: this.levelWidth - 50,
@@ -275,7 +275,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (0.8 + Math.random() * 0.7) * (row % 2 === 0 ? -1 : 1), // Slower barrier movement
+          vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? -1 : 1), // Alternate directions
           vy: 0,
           patrolStartX: 50,
           patrolEndX: this.levelWidth - 50,
@@ -297,7 +297,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (0.8 + Math.random() * 0.7) * (col % 2 === 0 ? 1 : -1), // Slower barrier movement
+          vy: (1.0 + Math.random() * 1.0) * (col % 2 === 0 ? 1 : -1), // Alternate directions
           patrolStartX: 20 + (col * 40),
           patrolEndX: 20 + (col * 40),
           patrolStartY: 100,
@@ -317,7 +317,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (0.8 + Math.random() * 0.7) * (col % 2 === 0 ? -1 : 1), // Slower barrier movement
+          vy: (1.0 + Math.random() * 1.0) * (col % 2 === 0 ? -1 : 1), // Alternate directions
           patrolStartX: this.levelWidth - 55 - (col * 40),
           patrolEndX: this.levelWidth - 55 - (col * 40),
           patrolStartY: 100,
@@ -388,9 +388,6 @@ export class GameEngine {
         });
       }
     }
-
-    // Create guaranteed safe passages through the level
-    this.createSafePassages();
     
     // Validate that portal is reachable after generation
     this.validateLevelReachability();
@@ -692,56 +689,6 @@ export class GameEngine {
         return;
       }
     }
-  }
-
-  private createSafePassages() {
-    // Create horizontal safe corridor in the middle of the level
-    const safeCorridorY = this.canvasHeight / 2;
-    const corridorHeight = 80; // Height of safe corridor
-    
-    // Remove any obstacles that block the main horizontal passage
-    this.obstacles = this.obstacles.filter(obs => {
-      const obsTop = obs.y;
-      const obsBottom = obs.y + obs.height;
-      const corridorTop = safeCorridorY - corridorHeight / 2;
-      const corridorBottom = safeCorridorY + corridorHeight / 2;
-      
-      // Keep wall barriers and obstacles outside the safe corridor
-      if (obs.x <= 100 || obs.x >= this.levelWidth - 100 || 
-          obs.y <= 100 || obs.y >= this.canvasHeight - 100) {
-        return true; // Keep wall barriers
-      }
-      
-      // Remove obstacles that intersect with the safe corridor
-      return !(obsBottom > corridorTop && obsTop < corridorBottom);
-    });
-    
-    // Create vertical safe passages between coin clusters
-    this.coinClusters.forEach((cluster, index) => {
-      if (index < this.coinClusters.length - 1) {
-        const nextCluster = this.coinClusters[index + 1];
-        const passageWidth = 60;
-        
-        // Clear vertical passage between clusters
-        const passageX = (cluster.x + nextCluster.x) / 2;
-        
-        this.obstacles = this.obstacles.filter(obs => {
-          const obsLeft = obs.x;
-          const obsRight = obs.x + obs.width;
-          const passageLeft = passageX - passageWidth / 2;
-          const passageRight = passageX + passageWidth / 2;
-          
-          // Keep wall barriers
-          if (obs.x <= 100 || obs.x >= this.levelWidth - 100 || 
-              obs.y <= 100 || obs.y >= this.canvasHeight - 100) {
-            return true;
-          }
-          
-          // Remove obstacles that block the vertical passage
-          return !(obsRight > passageLeft && obsLeft < passageRight);
-        });
-      }
-    });
   }
 
   public render(ctx: CanvasRenderingContext2D) {
