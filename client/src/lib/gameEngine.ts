@@ -589,7 +589,8 @@ export class GameEngine {
     const moveY = this.playerVelocity.y;
     
     // Check if player is moving and update animation
-    this.isMoving = moveX !== 0 || moveY !== 0;
+    const movementThreshold = 0.1; // Small threshold to prevent jittery animation
+    this.isMoving = Math.abs(moveX) > movementThreshold || Math.abs(moveY) > movementThreshold;
     if (this.isMoving) {
       this.animationFrame += 0.3 * this.gameSpeed; // Animation speed matches player speed
       // Update facing direction based on horizontal movement
@@ -1121,35 +1122,19 @@ export class GameEngine {
     // Game speed indicator
     ctx.fillText(`Speed: ${this.gameSpeed}x`, 20, 130);
     
-    // Progress indicator
-    const progress = this.clustersCompleted / this.coinClusters.length;
-    const progressBarWidth = 200;
-    const progressBarHeight = 10;
-    const progressBarX = 20;
-    const progressBarY = 150;
+    // Progress indicator removed - clusters monitor not needed
     
-    // Progress bar background
-    ctx.fillStyle = "#ddd";
-    ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
-    
-    // Progress bar fill
-    ctx.fillStyle = "#4CAF50";
-    ctx.fillRect(progressBarX, progressBarY, progressBarWidth * progress, progressBarHeight);
-    
-    // Progress text
-    ctx.fillStyle = "#333";
-    ctx.font = "14px Arial";
-    ctx.fillText(`Clusters: ${this.clustersCompleted}/${this.coinClusters.length}`, progressBarX, progressBarY + 25);
+    // Progress text removed - clusters monitor not needed
     
     // Draw level progress bar  
     const levelProgress = Math.min(1, this.player.x / (this.levelWidth - 100));
     const barWidth = this.canvasWidth - 40;
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(20, 160, barWidth, 10);
+    ctx.fillRect(20, 140, barWidth, 10);
     
     ctx.fillStyle = '#8B5CF6';
-    ctx.fillRect(20, 160, barWidth * levelProgress, 10);
+    ctx.fillRect(20, 140, barWidth * levelProgress, 10);
     
     // Draw mini-map (centered at top)
     const miniMapWidth = 150;
