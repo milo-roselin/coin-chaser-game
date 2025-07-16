@@ -76,23 +76,13 @@ export class GameEngine {
       type: 'goal'
     };
 
-    // Load portal image
-    this.loadPortalImage();
+    // Portal image no longer needed - using custom rendering
 
     this.generateLevel();
     this.validateLevelReachability();
   }
 
-  private loadPortalImage() {
-    this.portalImage = new Image();
-    this.portalImage.src = '/portal.png';
-    this.portalImage.onload = () => {
-      console.log('Portal image loaded successfully');
-    };
-    this.portalImage.onerror = () => {
-      console.log('Failed to load portal image');
-    };
-  }
+
 
   private generateLevel() {
     this.coins = [];
@@ -975,80 +965,126 @@ export class GameEngine {
     const centerX = this.goal.x + this.goal.width / 2;
     const centerY = this.goal.y + this.goal.height / 2;
     const canEnter = this.coinsCollected >= this.coinsNeededForPortal;
+    const time = Date.now() * 0.003; // for animation
     
-    // Draw the portal image if loaded
-    if (this.portalImage && this.portalImage.complete) {
-      // Apply transparency if portal is not active
-      const previousAlpha = ctx.globalAlpha;
-      if (!canEnter) {
-        ctx.globalAlpha = 0.4; // Make portal semi-transparent when locked
-      }
+    // Apply transparency if portal is not active
+    const previousAlpha = ctx.globalAlpha;
+    if (!canEnter) {
+      ctx.globalAlpha = 0.4; // Make portal semi-transparent when locked
+    }
+    
+    // Draw outer gray ring with "PORTAL" text
+    ctx.fillStyle = '#C0C0C0';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY - 10, 50, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw "PORTAL" text on the outer ring
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('PORTAL', centerX, centerY - 40);
+    
+    // Draw concentric colorful circles (rainbow portal effect)
+    const colors = [
+      '#4B0082', // Indigo (outermost)
+      '#8A2BE2', // Blue Violet
+      '#00CED1', // Dark Turquoise
+      '#32CD32', // Lime Green
+      '#FFD700', // Gold
+      '#FF4500', // Orange Red
+      '#FF1493'  // Deep Pink (innermost)
+    ];
+    
+    for (let i = 0; i < colors.length; i++) {
+      const radius = 45 - (i * 6);
+      const animationOffset = Math.sin(time + i * 0.5) * 2;
       
-      // Draw the portal image scaled to fit the goal area
-      ctx.drawImage(
-        this.portalImage,
-        this.goal.x,
-        this.goal.y,
-        this.goal.width,
-        this.goal.height
-      );
+      ctx.fillStyle = colors[i];
+      ctx.beginPath();
+      ctx.arc(centerX, centerY - 10, radius + animationOffset, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Draw central light blue core
+    ctx.fillStyle = '#87CEEB';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY - 10, 8 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Restore original alpha
+    ctx.globalAlpha = previousAlpha;
+    
+    // Draw coin collection panel below the portal
+    const panelY = centerY + 35;
+    const panelWidth = 80;
+    const panelHeight = 25;
+    
+    // Draw panel background
+    ctx.fillStyle = '#D3D3D3';
+    ctx.fillRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
+    
+    // Draw panel border
+    ctx.strokeStyle = '#808080';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(centerX - panelWidth/2, panelY, panelWidth, panelHeight);
+    
+    // Draw "COINS COLLECTED" text
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('COINS COLLECTED', centerX, panelY + 8);
+    
+    // Draw coin collection indicators (5 circles)
+    const indicatorY = panelY + 18;
+    const indicatorSpacing = 12;
+    const startX = centerX - (4 * indicatorSpacing) / 2;
+    
+    for (let i = 0; i < 5; i++) {
+      const x = startX + (i * indicatorSpacing);
       
-      // Restore original alpha
-      ctx.globalAlpha = previousAlpha;
-      
-      // Draw coin collection indicators (5 circles)
-      const indicatorY = this.goal.y + this.goal.height - 25;
-      const indicatorSpacing = 15;
-      const startX = centerX - (4 * indicatorSpacing) / 2;
-      
-      for (let i = 0; i < 5; i++) {
-        const x = startX + (i * indicatorSpacing);
-        
-        // Draw circle background
-        ctx.fillStyle = '#CCCCCC';
-        ctx.beginPath();
-        ctx.arc(x, indicatorY, 6, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Fill with gold if coin is collected
-        if (i < this.coinsCollected) {
-          ctx.fillStyle = '#FFD700';
-          ctx.beginPath();
-          ctx.arc(x, indicatorY, 5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        
-        // Draw circle border
-        ctx.strokeStyle = '#666666';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, indicatorY, 6, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      
-      // Draw status text
-      ctx.fillStyle = canEnter ? '#00FF00' : '#FF6B6B';
-      ctx.font = 'bold 12px Arial';
-      ctx.textAlign = 'center';
-      if (canEnter) {
-        ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
-      } else {
-        ctx.fillText(`COLLECT ${this.coinsNeededForPortal - this.coinsCollected} MORE COINS`, centerX, this.goal.y - 10);
-      }
-    } else {
-      // Fallback rendering if image doesn't load
-      ctx.fillStyle = canEnter ? '#8B5CF6' : '#6B7280';
-      ctx.fillRect(this.goal.x, this.goal.y, this.goal.width, this.goal.height);
-      
+      // Draw circle background
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 14px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('PORTAL', centerX, centerY);
+      ctx.beginPath();
+      ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
+      ctx.fill();
       
-      if (!canEnter) {
-        ctx.font = 'bold 10px Arial';
-        ctx.fillText(`${this.coinsNeededForPortal - this.coinsCollected} coins needed`, centerX, centerY + 20);
+      // Fill with gold if coin is collected
+      if (i < this.coinsCollected) {
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(x, indicatorY, 3, 0, Math.PI * 2);
+        ctx.fill();
       }
+      
+      // Draw circle border
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, indicatorY, 4, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    
+    // Draw activation indicator bar
+    const barX = centerX + 35;
+    const barY = panelY + 10;
+    const barWidth = 8;
+    const barHeight = 12;
+    
+    ctx.fillStyle = canEnter ? '#00FF00' : '#FF0000';
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barWidth, barHeight);
+    
+    // Draw status text above portal
+    ctx.fillStyle = canEnter ? '#00FF00' : '#FF6B6B';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    if (canEnter) {
+      ctx.fillText('PORTAL ACTIVE', centerX, this.goal.y - 10);
+    } else {
+      ctx.fillText(`COLLECT ${this.coinsNeededForPortal - this.coinsCollected} MORE COINS`, centerX, this.goal.y - 10);
     }
   }
 
