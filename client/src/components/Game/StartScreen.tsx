@@ -134,7 +134,9 @@ export default function StartScreen() {
     <div className="flex flex-col items-center justify-center w-full h-full p-4">
       {/* Game Logo */}
       <div className="mb-8 text-center">
-        <div className="text-6xl mb-4" style={{ color: '#FFD700' }}>🪙</div>
+        <div className="mb-4 flex justify-center">
+          <img src="/gold-coin.svg" alt="Gold Coin" className="w-20 h-20" />
+        </div>
         <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
         <p className="text-lg text-gray-600">Collect coins, avoid obstacles!</p>
         {highestLevelUnlocked > 1 && (
