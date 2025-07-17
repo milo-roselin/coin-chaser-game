@@ -821,23 +821,36 @@ export class GameEngine {
           const radius = obstacle.patrolEndX;
           let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
           
-          // Update angle for circular movement with more consistent speed
-          angle += 0.015 + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Smoother variable speed
+          // iPad-specific: Use more stable circular movement
+          const isIPadForMovement = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          if (isIPadForMovement) {
+            // Simpler, more stable movement for iPad
+            angle += 0.02; // Consistent speed without variable calculations
+          } else {
+            // Original complex movement for other devices
+            angle += 0.015 + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Smoother variable speed
+          }
           obstacle.patrolEndY = angle;
           
           // Calculate new position
           obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
           obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
           
-          // Prevent circular obstacles from moving into control panel area by constraining the center
-          const isMobileForCircular = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-          if (isMobileForCircular) {
-            const controlPanelWidth = 128;
-            const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
-            
-            // If the TNT would go into the control panel area, just constrain it
-            if (obstacle.x > maxObstacleX) {
-              obstacle.x = maxObstacleX;
+          // iPad-specific: Don't constrain circular TNT movement as aggressively
+          const isIPadForCircular = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          if (!isIPadForCircular) {
+            // Only apply constraints on non-iPad devices to prevent circular TNT issues
+            const isMobileForCircular = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobileForCircular) {
+              const controlPanelWidth = 128;
+              const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
+              
+              // If the TNT would go into the control panel area, just constrain it
+              if (obstacle.x > maxObstacleX) {
+                obstacle.x = maxObstacleX;
+              }
             }
           }
           
