@@ -224,8 +224,12 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
-    // Start game loop
-    animationFrameRef.current = requestAnimationFrame(gameLoop);
+    // Start game loop with a small delay to ensure everything is initialized
+    setTimeout(() => {
+      if (gameEngineRef.current) {
+        animationFrameRef.current = requestAnimationFrame(gameLoop);
+      }
+    }, 100); // 100ms delay
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);

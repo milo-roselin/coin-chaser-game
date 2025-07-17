@@ -103,8 +103,10 @@ export class GameEngine {
     // This prevents any TNT flash issues at game startup
     this.updateCameraPosition();
     
-    // Mark as initialized to allow rendering
-    this.isInitialized = true;
+    // Add a small delay before marking as initialized to ensure proper setup
+    setTimeout(() => {
+      this.isInitialized = true;
+    }, 50); // 50ms delay
   }
 
 
@@ -199,20 +201,27 @@ export class GameEngine {
       const patrolRadius = 90 + (clusterIndex % 3) * 20; // Vary radius to prevent overlap
       const startAngle = (clusterIndex * Math.PI * 2 / numClusters) + Math.random() * 0.5; // Space them out evenly
       
-      this.obstacles.push({
-        x: clusterX + Math.cos(startAngle) * patrolRadius,
-        y: clusterY + Math.sin(startAngle) * patrolRadius,
-        width: 35,
-        height: 35,
-        color: '#8B4513',
-        type: 'obstacle',
-        vx: 1 + Math.random() * 0.5, // Slower, more consistent movement
-        vy: 1 + Math.random() * 0.5,
-        patrolStartX: clusterX, // center X of circular patrol
-        patrolStartY: clusterY, // center Y of circular patrol
-        patrolEndX: patrolRadius, // using this as radius
-        patrolEndY: startAngle // using this as current angle
-      });
+      // Ensure TNT starts far enough from the player start position (x=50)
+      const tntStartX = clusterX + Math.cos(startAngle) * patrolRadius;
+      const tntStartY = clusterY + Math.sin(startAngle) * patrolRadius;
+      
+      // Only add TNT if it's not too close to player start position
+      if (tntStartX > 300) { // Keep TNT away from player start area
+        this.obstacles.push({
+          x: tntStartX,
+          y: tntStartY,
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: 1 + Math.random() * 0.5, // Slower, more consistent movement
+          vy: 1 + Math.random() * 0.5,
+          patrolStartX: clusterX, // center X of circular patrol
+          patrolStartY: clusterY, // center Y of circular patrol
+          patrolEndX: patrolRadius, // using this as radius
+          patrolEndY: startAngle // using this as current angle
+        });
+      }
     }
     
     // Add additional TNT for higher levels but spread them out differently
