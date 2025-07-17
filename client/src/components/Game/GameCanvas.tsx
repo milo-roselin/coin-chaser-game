@@ -131,7 +131,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           canvas.style.position = 'fixed';
           canvas.style.top = '0';
           canvas.style.left = '0';
-          canvas.style.zIndex = '1000';
+          canvas.style.zIndex = '1';
           
           // Scale the context to match device pixel ratio
           const ctx = canvas.getContext('2d');

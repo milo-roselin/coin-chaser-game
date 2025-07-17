@@ -111,12 +111,21 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     }
   };
 
+  // Debug logging (remove after testing)
+  console.log('TouchControls iPad detection:', { 
+    isMobile, 
+    maxTouchPoints: navigator.maxTouchPoints,
+    userAgent: navigator.userAgent,
+    innerWidth: window.innerWidth,
+    platform: navigator.platform
+  });
+
   return (
     <>
       {/* Control panel - shows different content based on device */}
       {isMobile ? (
         /* Mobile/iPad: Full control panel with all controls */
-        <div className="absolute top-0 right-0 h-full w-32 bg-transparent flex flex-col items-center justify-between py-6 pointer-events-auto z-50">
+        <div className="absolute top-0 right-0 h-full w-32 bg-gray-900/90 border-l-2 border-gray-600 flex flex-col items-center justify-between py-6 pointer-events-auto z-[9999]">
           {/* Action Buttons - Top */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col items-center gap-1">
@@ -124,7 +133,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handlePause}
                 size="sm"
                 variant="default"
-                className="bg-blue-600 hover:bg-blue-500 border-blue-400 text-white w-16 h-12 relative z-50 shadow-lg"
+                className="bg-blue-600 hover:bg-blue-500 border-blue-400 text-white w-16 h-12 relative z-[9999] shadow-lg border-2"
               >
                 <Pause className="h-4 w-4" />
               </Button>
@@ -138,7 +147,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handleHome}
                 size="sm"
                 variant="default"
-                className="bg-red-600 hover:bg-red-500 border-red-400 text-white w-16 h-12 relative z-50 shadow-lg"
+                className="bg-red-600 hover:bg-red-500 border-red-400 text-white w-16 h-12 relative z-[9999] shadow-lg border-2"
               >
                 <Home className="h-4 w-4" />
               </Button>
@@ -152,7 +161,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handleAudioSettings}
                 size="sm"
                 variant="default"
-                className="bg-green-600 hover:bg-green-500 border-green-400 text-white w-16 h-12 relative z-50 shadow-lg"
+                className="bg-green-600 hover:bg-green-500 border-green-400 text-white w-16 h-12 relative z-[9999] shadow-lg border-2"
               >
                 <Settings className="h-4 w-4" />
               </Button>

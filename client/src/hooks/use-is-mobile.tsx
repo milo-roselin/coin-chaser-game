@@ -8,16 +8,23 @@ export function useIsMobile() {
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     const onChange = () => {
-      // Check for mobile breakpoint OR touch capability (includes iPad)
+      // Enhanced detection for mobile devices and tablets
       const isSmallScreen = window.innerWidth < MOBILE_BREAKPOINT
       const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-      setIsMobile(isSmallScreen || hasTouchScreen)
+      const isTablet = window.innerWidth <= 1024 && hasTouchScreen
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+      
+      setIsMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
     }
     mql.addEventListener("change", onChange)
-    // Initialize with both screen size and touch capability check
+    
+    // Initialize with comprehensive device detection
     const isSmallScreen = window.innerWidth < MOBILE_BREAKPOINT
     const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    setIsMobile(isSmallScreen || hasTouchScreen)
+    const isTablet = window.innerWidth <= 1024 && hasTouchScreen
+    const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    
+    setIsMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
