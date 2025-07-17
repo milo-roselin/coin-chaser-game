@@ -42,15 +42,22 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     // Set canvas size to exact available viewport
     const resizeCanvas = () => {
-      // Use the actual available viewport size, accounting for browser chrome
-      const rect = document.documentElement.getBoundingClientRect();
-      const availableWidth = document.documentElement.clientWidth;
-      const availableHeight = document.documentElement.clientHeight;
+      // Use visual viewport API if available, otherwise fall back to window dimensions
+      let availableWidth, availableHeight;
+      
+      if (window.visualViewport) {
+        availableWidth = window.visualViewport.width;
+        availableHeight = window.visualViewport.height;
+      } else {
+        // Fallback: use the actual rendered dimensions of the viewport
+        availableWidth = Math.min(window.innerWidth, document.documentElement.clientWidth);
+        availableHeight = Math.min(window.innerHeight, document.documentElement.clientHeight);
+      }
       
       canvas.width = availableWidth;
       canvas.height = availableHeight;
       
-      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (viewport size)`);
+      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (visual viewport)`);
     };
 
     resizeCanvas();
@@ -60,6 +67,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     window.addEventListener("orientationchange", () => {
       setTimeout(resizeCanvas, 100); // Small delay to let orientation settle
     });
+    
+    // Listen for visual viewport changes (more reliable for browser chrome)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeCanvas);
+    }
     
     // Listen for viewport size changes (like when browser chrome appears/disappears)
     const resizeObserver = new ResizeObserver(entries => {
@@ -123,6 +135,9 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       window.removeEventListener("orientationchange", resizeCanvas);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", resizeCanvas);
+      }
       resizeObserver.disconnect();
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
