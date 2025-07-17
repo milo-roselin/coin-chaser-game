@@ -1,8 +1,9 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { Button } from "@/components/ui/button";
-import { Pause, Home } from "lucide-react";
+import { Pause, Home, Settings } from "lucide-react";
+import AudioSettingsMenu from "./AudioSettingsMenu";
 
 interface TouchControlsProps {
   onPause?: () => void;
@@ -13,6 +14,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
   const touchAreaRef = useRef<HTMLDivElement>(null);
   const { playerPosition, resetGame } = useCoinGame();
   const isMobile = useIsMobile();
+  const [showAudioSettings, setShowAudioSettings] = useState(false);
 
   const handlePause = () => {
     if (onPause) {
@@ -128,6 +130,20 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 H
               </span>
             </div>
+            
+            <div className="flex flex-col items-center gap-1">
+              <Button
+                onClick={() => setShowAudioSettings(true)}
+                size="sm"
+                variant="outline"
+                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <span className="text-xs text-gray-300">
+                Audio
+              </span>
+            </div>
           </div>
 
           {/* Speed control buttons - Middle */}
@@ -239,6 +255,20 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               H
             </span>
           </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowAudioSettings(true)}
+              size="sm"
+              variant="outline"
+              className="bg-white/90 hover:bg-white border-gray-300"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              Audio
+            </span>
+          </div>
         </div>
       )}
       
@@ -251,6 +281,12 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
           }
         </div>
       </div>
+      
+      {/* Audio Settings Modal */}
+      <AudioSettingsMenu 
+        isOpen={showAudioSettings} 
+        onClose={() => setShowAudioSettings(false)} 
+      />
     </>
   );
 }
