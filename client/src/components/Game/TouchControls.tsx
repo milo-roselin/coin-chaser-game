@@ -162,35 +162,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
             </div>
           </div>
 
-          {/* Speed control buttons - Middle */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col items-center gap-1">
-              <button
-                onTouchStart={handleSpeedIncrease}
-                onClick={handleSpeedIncrease}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
-              >
-                +
-              </button>
-              <span className="text-xs text-gray-300">
-                Speed+
-              </span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <button
-                onTouchStart={handleSpeedDecrease}
-                onClick={handleSpeedDecrease}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
-              >
-                -
-              </button>
-              <span className="text-xs text-gray-300">
-                Speed-
-              </span>
-            </div>
-          </div>
-
-          {/* Arrow key controls - Bottom */}
+          {/* Arrow key controls - Middle */}
           <div className="flex flex-col items-center gap-1">
             {/* Up arrow - top row */}
             <div className="flex justify-center">
@@ -238,6 +210,34 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               >
                 →
               </button>
+            </div>
+          </div>
+
+          {/* Speed control buttons - Bottom */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onTouchStart={handleSpeedIncrease}
+                onClick={handleSpeedIncrease}
+                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+              >
+                +
+              </button>
+              <span className="text-xs text-gray-300">
+                Speed+
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onTouchStart={handleSpeedDecrease}
+                onClick={handleSpeedDecrease}
+                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+              >
+                -
+              </button>
+              <span className="text-xs text-gray-300">
+                Speed-
+              </span>
             </div>
           </div>
         </div>
