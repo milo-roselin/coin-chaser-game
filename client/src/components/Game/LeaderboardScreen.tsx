@@ -1,13 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
-import { ArrowLeft, Trophy, Medal, Award } from "lucide-react";
+import { ArrowLeft, Trophy, Medal, Award, Edit3, Check, X } from "lucide-react";
 
 export default function LeaderboardScreen() {
   const { resetGame } = useCoinGame();
-  const { scores, removeScore } = useLeaderboard();
+  const { scores, removeScore, updatePlayerName } = useLeaderboard();
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const [originalName, setOriginalName] = useState("");
 
   // Clean up anonymous entries on component mount
   useEffect(() => {
@@ -20,9 +24,8 @@ export default function LeaderboardScreen() {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
-
+      // Don't handle global keys when editing a name
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || editingIndex !== null) return;
       
       const key = e.key.toLowerCase();
       const code = e.code;
@@ -37,7 +40,7 @@ export default function LeaderboardScreen() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [handleBack]);
+  }, [handleBack, editingIndex]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -54,6 +57,35 @@ export default function LeaderboardScreen() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const startEditing = (index: number, name: string) => {
+    setEditingIndex(index);
+    setEditingName(name);
+    setOriginalName(name);
+  };
+
+  const saveEdit = () => {
+    if (editingIndex !== null && editingName.trim() && editingName.trim() !== originalName) {
+      updatePlayerName(originalName, editingName.trim());
+    }
+    setEditingIndex(null);
+    setEditingName("");
+    setOriginalName("");
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditingName("");
+    setOriginalName("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      cancelEdit();
+    }
   };
 
   return (
@@ -84,6 +116,11 @@ export default function LeaderboardScreen() {
           <CardTitle className="text-center text-xl">High Scores</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
+          {editingIndex !== null && (
+            <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+              <strong>Editing mode:</strong> Press Enter to save, Escape to cancel
+            </div>
+          )}
           {scores.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Trophy className="h-12 w-12 mx-auto mb-4 text-gray-300" />
@@ -104,9 +141,43 @@ export default function LeaderboardScreen() {
                   </div>
                   
                   <div className="flex-grow min-w-0">
-                    <div className="font-semibold text-gray-800 truncate">
-                      {score.name}
-                    </div>
+                    {editingIndex === index ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={editingName}
+                          onChange={(e) => setEditingName(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                          className="h-7 text-sm font-semibold"
+                          maxLength={20}
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={saveEdit}
+                          className="h-7 w-7 p-0 text-green-600 hover:text-green-700"
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={cancelEdit}
+                          className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div 
+                        className="font-semibold text-gray-800 truncate cursor-pointer hover:text-blue-600 flex items-center gap-1"
+                        onClick={() => startEditing(index, score.name)}
+                        title="Click to edit name"
+                      >
+                        {score.name}
+                        <Edit3 className="h-3 w-3 opacity-50" />
+                      </div>
+                    )}
                     <div className="text-sm text-gray-600">
                       {formatDate(score.date)}
                     </div>
