@@ -492,6 +492,30 @@ export class GameEngine {
     if (this.isTouching) {
       this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
+      
+      // Immediate position update - no waiting for game loop
+      if (this.previousTouchPosition) {
+        const deltaX = x - this.previousTouchPosition.x;
+        const deltaY = y - this.previousTouchPosition.y;
+        
+        // Move player immediately
+        this.player.x += deltaX;
+        this.player.y += deltaY;
+        
+        // Keep player in bounds
+        this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+        this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+        
+        // Update velocity for animation
+        this.playerVelocity.x = deltaX;
+        this.playerVelocity.y = deltaY;
+        
+        // Update camera to follow player
+        this.updateCamera();
+        
+        // Notify callback of player movement
+        this.callbacks.onPlayerMove(this.player.x, this.player.y);
+      }
     }
   }
 
@@ -562,35 +586,17 @@ export class GameEngine {
                            this.keys['KeyW'] || this.keys['KeyA'] || 
                            this.keys['KeyS'] || this.keys['KeyD'];
     
-    if (!hasKeyboardInput && this.isTouching && this.touchPosition && this.previousTouchPosition) {
-      // Calculate finger movement delta
-      const fingerDeltaX = this.touchPosition.x - this.previousTouchPosition.x;
-      const fingerDeltaY = this.touchPosition.y - this.previousTouchPosition.y;
-      
-      // Move player directly with finger movement - no interpolation delay
-      this.player.x += fingerDeltaX;
-      this.player.y += fingerDeltaY;
-      
-      // Set velocity to match the movement for animation and collision purposes
-      this.playerVelocity.x = fingerDeltaX;
-      this.playerVelocity.y = fingerDeltaY;
-      
-      // Skip normal velocity interpolation for touch input
-      targetVelX = fingerDeltaX;
-      targetVelY = fingerDeltaY;
-    }
+    // Touch input is now handled immediately in handleTouchMove
+    // Only process keyboard input here
     
-    // Only apply velocity interpolation for keyboard input
-    const isTouchInput = this.isTouching && this.touchPosition && this.previousTouchPosition;
+    // Apply velocity interpolation for keyboard input
+    this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
+                                      targetVelX === 0 ? deceleration : acceleration);
+    this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
+                                      targetVelY === 0 ? deceleration : acceleration);
     
-    if (!isTouchInput) {
-      // Normal velocity interpolation for keyboard input
-      this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
-                                        targetVelX === 0 ? deceleration : acceleration);
-      this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
-                                        targetVelY === 0 ? deceleration : acceleration);
-      
-      // Apply velocity to player position for keyboard input
+    // Apply velocity to player position for keyboard input only
+    if (!this.isTouching) {
       this.player.x += this.playerVelocity.x;
       this.player.y += this.playerVelocity.y;
     }
@@ -672,10 +678,7 @@ export class GameEngine {
     });
 
     // Update camera to follow player
-    this.cameraX = Math.max(0, Math.min(
-      this.levelWidth - this.canvasWidth,
-      this.player.x - this.canvasWidth / 2
-    ));
+    this.updateCamera();
 
     // Notify callback of player movement
     this.callbacks.onPlayerMove(this.player.x, this.player.y);
@@ -1189,6 +1192,13 @@ export class GameEngine {
   // Linear interpolation helper for smooth movement
   private lerp(current: number, target: number, factor: number): number {
     return current + (target - current) * factor;
+  }
+  
+  private updateCamera() {
+    // Update camera to follow player
+    const playerCenterX = this.player.x + this.player.width / 2;
+    const targetCameraX = playerCenterX - this.canvasWidth / 2;
+    this.cameraX = Math.max(0, Math.min(this.levelWidth - this.canvasWidth, targetCameraX));
   }
 
 
