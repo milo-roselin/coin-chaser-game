@@ -41,12 +41,13 @@ Preferred communication style: Simple, everyday language.
 ## State Management
 - **Game State** (`useCoinGame.tsx`): Manages game phases, score, player position
 - **Audio State** (`useAudio.tsx`): Controls background music and sound effects with mute functionality
-- **Leaderboard State** (`useLeaderboard.tsx`): Persistent local storage of high scores
+- **Leaderboard State** (`useLeaderboard.tsx`): Persistent local storage of high scores with inline editing support
 
 ## UI Components
 - **Game Screens**: Start, playing, game over, victory, and leaderboard screens
 - **Touch Controls**: Mobile-friendly interface with visual feedback
 - **Canvas Game**: Real-time rendering with responsive design
+- **Leaderboard**: Persistent score tracking with inline name editing functionality
 
 ## Database Schema
 - **Users Table**: Basic user authentication structure with username/password
@@ -92,3 +93,11 @@ Preferred communication style: Simple, everyday language.
 - PostgreSQL dialect with Neon Database integration
 
 The application is architected for scalability with clear separation between frontend game logic, backend API services, and database operations. The modular design allows for easy feature additions and maintains type safety across the full stack.
+
+# Recent Changes
+
+## January 17, 2025
+- **Inline Leaderboard Editing**: Added ability to edit player names directly in the leaderboard by clicking on any name
+- **Enhanced Mobile Detection**: Improved iPad and tablet detection for proper control panel display
+- **TNT Movement Optimization**: Fixed TNT disappearing/reappearing issues and reduced clustering around coin clusters
+- **Boundary Constraints**: Implemented comprehensive boundary checks to prevent game objects from overlapping control panel area
