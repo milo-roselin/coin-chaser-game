@@ -123,16 +123,9 @@ export class GameEngine {
       const controlPanelWidth = isMobile ? 128 : 0;
       const maxClusterX = this.levelWidth - 400; // Keep clusters away from right edge
       
-      // Better vertical distribution - divide screen into zones to prevent clustering at top/bottom
-      const verticalZones = 3; // Divide screen into 3 vertical zones
-      const zoneHeight = (this.canvasHeight - 300) / verticalZones; // Leave margins at top and bottom
-      const targetZone = cluster % verticalZones;
-      const zoneStartY = 150 + targetZone * zoneHeight; // Start with margin from top
-      const zoneEndY = zoneStartY + zoneHeight;
-      
       do {
         clusterX = 300 + Math.random() * (maxClusterX - 300);
-        clusterY = zoneStartY + Math.random() * (zoneEndY - zoneStartY); // Constrain to zone
+        clusterY = 100 + Math.random() * (this.canvasHeight - 200);
         attempts++;
       } while (attempts < 50 && clusterPositions.some(pos => 
         Math.sqrt((pos.x - clusterX) ** 2 + (pos.y - clusterY) ** 2) < minDistance
@@ -222,9 +215,9 @@ export class GameEngine {
         const clusterX = this.coinClusters[clusterIndex].x;
         const clusterY = this.coinClusters[clusterIndex].y;
         
-        // Create a second TNT with different radius and offset angle - better separation
-        const patrolRadius = 120 + Math.random() * 60; // Larger radius to spread out more
-        const startAngle = (Math.PI + i * Math.PI / 1.5) % (Math.PI * 2); // Better angle distribution
+        // Create a second TNT with different radius and offset angle
+        const patrolRadius = 60 + Math.random() * 40;
+        const startAngle = (Math.PI + i * Math.PI / 2) % (Math.PI * 2); // Different starting positions
         
         this.obstacles.push({
           x: clusterX + Math.cos(startAngle) * patrolRadius,
@@ -249,21 +242,17 @@ export class GameEngine {
       let x, y;
       let attempts = 0;
       
-      // Find positions that are away from coin clusters and control panel with better distribution
+      // Find positions that are away from coin clusters and control panel
       const isMobileForLinear = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const controlPanelWidthForLinear = isMobileForLinear ? 128 : 0;
       const maxLinearX = this.levelWidth - 300 - controlPanelWidthForLinear; // Keep away from right edge and control panel
       
-      // Better distribution - avoid clustering in corners and ensure central placement
-      const minY = this.canvasHeight * 0.25; // Stay away from top edge
-      const maxY = this.canvasHeight * 0.75; // Stay away from bottom edge
-      
       do {
-        x = 400 + Math.random() * (maxLinearX - 400); // Stay more central horizontally
-        y = minY + Math.random() * (maxY - minY); // Constrain vertical placement
+        x = 250 + Math.random() * (maxLinearX - 250);
+        y = 80 + Math.random() * (this.canvasHeight - 160);
         attempts++;
       } while (attempts < 20 && clusterPositions.some(pos => 
-        Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2) < 350 // Increase minimum distance even more
+        Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2) < 250 // Increase minimum distance from clusters
       ));
       
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
@@ -280,7 +269,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (2.5 + Math.random() * 1.5) * (1 + this.level * 0.1), // Faster linear movement
+          vx: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -300,7 +289,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (2.5 + Math.random() * 1.5) * (1 + this.level * 0.1), // Faster linear movement
+          vy: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -690,26 +679,26 @@ export class GameEngine {
       return;
     }
     
-    const baseSpeed = 12; // Increased base speed for more responsive movement
-    const acceleration = 0.9; // Faster acceleration 
+    const baseSpeed = 5;
+    const acceleration = 0.8; // How quickly player accelerates
     const deceleration = 0.85; // How quickly player decelerates (higher = faster stop)
     
     // Target velocity based on input
     let targetVelX = 0;
     let targetVelY = 0;
     
-    // Handle keyboard input - removed game speed multiplier for consistent feel
+    // Handle keyboard input
     if (this.keys['ArrowUp'] || this.keys['KeyW']) {
-      targetVelY = -baseSpeed;
+      targetVelY = -baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowDown'] || this.keys['KeyS']) {
-      targetVelY = baseSpeed;
+      targetVelY = baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
-      targetVelX = -baseSpeed;
+      targetVelX = -baseSpeed * this.gameSpeed;
     }
     if (this.keys['ArrowRight'] || this.keys['KeyD']) {
-      targetVelX = baseSpeed;
+      targetVelX = baseSpeed * this.gameSpeed;
     }
     
     // Handle touch input (if no keyboard input)
@@ -728,7 +717,7 @@ export class GameEngine {
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance > 5) {
-        const touchSpeed = 8; // Increased touch speed, removed game speed multiplier
+        const touchSpeed = 3 * this.gameSpeed;
         targetVelX = (dx / distance) * touchSpeed;
         targetVelY = (dy / distance) * touchSpeed;
       }
@@ -752,10 +741,7 @@ export class GameEngine {
     const movementThreshold = 0.1; // Small threshold to prevent jittery animation
     this.isMoving = Math.abs(moveX) > movementThreshold || Math.abs(moveY) > movementThreshold;
     if (this.isMoving) {
-      // Calculate animation speed based on actual movement speed
-      const currentSpeed = Math.sqrt(moveX * moveX + moveY * moveY);
-      const normalizedSpeed = currentSpeed / 12; // 12 is our base speed
-      this.animationFrame += 0.4 * normalizedSpeed; // Animation speed matches actual movement
+      this.animationFrame += 0.3 * this.gameSpeed; // Animation speed matches player speed
       // Update facing direction based on horizontal movement
       if (moveX > 0) {
         this.facingDirection = 1; // Moving right
@@ -806,8 +792,8 @@ export class GameEngine {
           const radius = obstacle.patrolEndX;
           let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
           
-          // Update angle for circular movement - faster and more exciting
-          angle += 0.035 + (Math.sin(Date.now() * 0.001 + radius) * 0.01); // Faster circular movement
+          // Update angle for circular movement with more consistent speed
+          angle += 0.015 + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Smoother variable speed
           obstacle.patrolEndY = angle;
           
           // Calculate new position
