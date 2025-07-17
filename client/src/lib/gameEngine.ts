@@ -47,6 +47,7 @@ export class GameEngine {
   private coinsNeededForPortal = 5; // Number of coins needed to activate portal
   private gameSpeed = 1; // Speed multiplier for the game
   private playerVelocity = { x: 0, y: 0 }; // Player velocity for smoother movement
+  private isInitialized = false; // Flag to prevent rendering before proper initialization
 
   constructor(
     private canvasWidth: number, 
@@ -101,6 +102,9 @@ export class GameEngine {
     // Initialize camera position to follow player from the start
     // This prevents any TNT flash issues at game startup
     this.updateCameraPosition();
+    
+    // Mark as initialized to allow rendering
+    this.isInitialized = true;
   }
 
 
@@ -678,8 +682,8 @@ export class GameEngine {
   }
 
   public update() {
-    // Don't update game state if paused
-    if (this.isPaused) {
+    // Don't update game state if not initialized or paused
+    if (!this.isInitialized || this.isPaused) {
       return;
     }
     
@@ -901,6 +905,13 @@ export class GameEngine {
   }
 
   public render(ctx: CanvasRenderingContext2D) {
+    // Don't render anything until fully initialized
+    if (!this.isInitialized) {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+      return;
+    }
+    
     // Clear canvas with black background first
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
