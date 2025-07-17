@@ -40,15 +40,45 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Force full page layout and scroll to top
+    const ensureFullViewport = () => {
+      // Scroll to top to ensure we're at the beginning of the page
+      window.scrollTo(0, 0);
+      
+      // Force body to be exactly viewport size
+      document.body.style.margin = '0';
+      document.body.style.padding = '0';
+      document.body.style.width = '100vw';
+      document.body.style.height = '100vh';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = '0';
+      document.body.style.left = '0';
+      
+      // Force html to be exactly viewport size
+      document.documentElement.style.margin = '0';
+      document.documentElement.style.padding = '0';
+      document.documentElement.style.width = '100vw';
+      document.documentElement.style.height = '100vh';
+      document.documentElement.style.overflow = 'hidden';
+    };
+
     // Set canvas size using CSS viewport dimensions
     const resizeCanvas = () => {
-      // Get the actual rendered size of the canvas element
-      const rect = canvas.getBoundingClientRect();
+      ensureFullViewport();
+      
+      // Use window.innerWidth/Height for consistent sizing
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
       const dpr = window.devicePixelRatio || 1;
       
-      // Set canvas internal resolution to match display size
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      // Set canvas internal resolution
+      canvas.width = viewportWidth * dpr;
+      canvas.height = viewportHeight * dpr;
+      
+      // Set canvas display size
+      canvas.style.width = viewportWidth + 'px';
+      canvas.style.height = viewportHeight + 'px';
       
       // Scale the context to match device pixel ratio
       const ctx = canvas.getContext('2d');
@@ -56,7 +86,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         ctx.scale(dpr, dpr);
       }
       
-      console.log(`Canvas resized to: ${canvas.width}x${canvas.height} (internal), ${rect.width}x${rect.height} (display), DPR: ${dpr}`);
+      console.log(`Canvas forced to: ${canvas.width}x${canvas.height} (internal), ${viewportWidth}x${viewportHeight} (display), DPR: ${dpr}`);
     };
 
     resizeCanvas();
@@ -72,21 +102,25 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       window.visualViewport.addEventListener("resize", resizeCanvas);
     }
     
-    // Listen for viewport size changes (like when browser chrome appears/disappears)
-    const resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        if (entry.target === document.documentElement) {
-          resizeCanvas();
-        }
-      }
-    });
-    resizeObserver.observe(document.documentElement);
+    // Prevent scrolling entirely
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+      window.scrollTo(0, 0);
+    };
+    
+    window.addEventListener("scroll", preventScroll, { passive: false });
+    document.addEventListener("scroll", preventScroll, { passive: false });
+    
+    // Force initial state
+    setTimeout(() => {
+      resizeCanvas();
+      window.scrollTo(0, 0);
+    }, 100);
 
-    // Initialize game engine with display dimensions
-    const rect = canvas.getBoundingClientRect();
+    // Initialize game engine with viewport dimensions
     gameEngineRef.current = new GameEngine(
-      rect.width,
-      rect.height,
+      window.innerWidth,
+      window.innerHeight,
       {
         onCoinCollected: (score: number) => {
           updateScore(score);
@@ -133,12 +167,13 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("orientationchange", resizeCanvas);
+      window.removeEventListener("scroll", preventScroll);
+      document.removeEventListener("scroll", preventScroll);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       if (window.visualViewport) {
         window.visualViewport.removeEventListener("resize", resizeCanvas);
       }
-      resizeObserver.disconnect();
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
