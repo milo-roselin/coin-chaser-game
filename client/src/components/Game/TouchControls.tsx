@@ -97,7 +97,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     <>
       {/* iPad-style controls: All controls in unified right panel */}
       {isMobile && (
-        <div className="absolute top-0 right-0 h-full w-32 bg-gray-800/90 border-l-2 border-gray-600 flex flex-col items-center justify-between py-6 pointer-events-auto z-10">
+        <div className="absolute top-0 right-0 h-full w-32 bg-gray-800 border-l-2 border-gray-600 flex flex-col items-center justify-between py-6 pointer-events-auto z-10">
           {/* Action Buttons - Top */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col items-center gap-1">
