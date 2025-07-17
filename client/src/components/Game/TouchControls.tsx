@@ -1,7 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useIsMobile } from '../../hooks/use-is-mobile';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function TouchControls() {
   const touchAreaRef = useRef<HTMLDivElement>(null);
@@ -88,9 +87,9 @@ export default function TouchControls() {
                 onMouseDown={(e) => handleArrowKeyDown('up', e)}
                 onMouseUp={(e) => handleArrowKeyUp('up', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('up', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
               >
-                <ChevronUp className="w-6 h-6" />
+                ↑
               </button>
               
               {/* Left and Right arrows */}
@@ -101,9 +100,9 @@ export default function TouchControls() {
                   onMouseDown={(e) => handleArrowKeyDown('left', e)}
                   onMouseUp={(e) => handleArrowKeyUp('left', e)}
                   onMouseLeave={(e) => handleArrowKeyUp('left', e)}
-                  className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                  className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  ←
                 </button>
                 <button
                   onTouchStart={(e) => handleArrowKeyDown('right', e)}
@@ -111,9 +110,9 @@ export default function TouchControls() {
                   onMouseDown={(e) => handleArrowKeyDown('right', e)}
                   onMouseUp={(e) => handleArrowKeyUp('right', e)}
                   onMouseLeave={(e) => handleArrowKeyUp('right', e)}
-                  className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                  className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  →
                 </button>
               </div>
               
@@ -124,9 +123,9 @@ export default function TouchControls() {
                 onMouseDown={(e) => handleArrowKeyDown('down', e)}
                 onMouseUp={(e) => handleArrowKeyUp('down', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('down', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
               >
-                <ChevronDown className="w-6 h-6" />
+                ↓
               </button>
             </div>
           </div>
