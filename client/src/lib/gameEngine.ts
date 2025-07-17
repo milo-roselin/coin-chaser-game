@@ -73,10 +73,14 @@ export class GameEngine {
     const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
 
     // Initialize goal (portal) - position it so it can be reached when player is at the right edge
-    // The portal should be positioned where the player can reach it at the control panel boundary
-    // Since the player boundary is dynamic based on camera position, we need to position the portal
-    // at the absolute rightmost position where it would be accessible
-    const portalX = this.levelWidth - controlPanelWidth - 120;
+    // The player can reach at most: levelWidth - controlPanelWidth - playerWidth
+    // So the portal should be positioned where the player can actually reach it
+    // The rightmost position where the player can be is when the camera is at maximum position
+    // and the player is at the right edge of the visible area (minus control panel)
+    const maxCameraX = this.levelWidth - canvasWidth + controlPanelWidth;
+    const maxPlayerX = maxCameraX + canvasWidth - controlPanelWidth - 30; // 30 is player width
+    const portalX = maxPlayerX - 60; // Position portal so player can reach it (overlap a bit)
+    
     this.goal = {
       x: portalX,
       y: canvasHeight / 2 - 60,
@@ -87,7 +91,7 @@ export class GameEngine {
     };
 
     // Debug logging
-    console.log(`Portal positioning: isMobile=${isMobile}, levelWidth=${this.levelWidth}, controlPanelWidth=${controlPanelWidth}, portalX=${portalX}`);
+    console.log(`Portal positioning: isMobile=${isMobile}, levelWidth=${this.levelWidth}, controlPanelWidth=${controlPanelWidth}, maxCameraX=${maxCameraX}, maxPlayerX=${maxPlayerX}, portalX=${portalX}`);
 
     // Portal image no longer needed - using custom rendering
 
