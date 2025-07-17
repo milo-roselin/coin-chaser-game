@@ -172,7 +172,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onMouseDown={(e) => handleArrowKeyDown('up', e)}
                 onMouseUp={(e) => handleArrowKeyUp('up', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('up', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold select-none focus:outline-none"
               >
                 ↑
               </button>
@@ -186,7 +186,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onMouseDown={(e) => handleArrowKeyDown('left', e)}
                 onMouseUp={(e) => handleArrowKeyUp('left', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('left', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-sm font-bold"
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-sm font-bold select-none focus:outline-none"
               >
                 ←
               </button>
@@ -196,7 +196,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onMouseDown={(e) => handleArrowKeyDown('down', e)}
                 onMouseUp={(e) => handleArrowKeyUp('down', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('down', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold select-none focus:outline-none"
               >
                 ↓
               </button>
@@ -206,7 +206,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onMouseDown={(e) => handleArrowKeyDown('right', e)}
                 onMouseUp={(e) => handleArrowKeyUp('right', e)}
                 onMouseLeave={(e) => handleArrowKeyUp('right', e)}
-                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-sm font-bold"
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-10 h-10 rounded-md border-2 border-gray-500 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-sm font-bold select-none focus:outline-none"
               >
                 →
               </button>
@@ -219,7 +219,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <button
                 onTouchStart={handleSpeedIncrease}
                 onClick={handleSpeedIncrease}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150 select-none focus:outline-none"
               >
                 +
               </button>
@@ -231,7 +231,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <button
                 onTouchStart={handleSpeedDecrease}
                 onClick={handleSpeedDecrease}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150 select-none focus:outline-none"
               >
                 -
               </button>

@@ -5,6 +5,15 @@
 @layer base {
   * {
     @apply border-border;
+    /* Prevent text selection and highlighting globally */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Prevent touch callout on iOS */
+    -webkit-touch-callout: none;
+    /* Prevent tap highlighting */
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
@@ -27,4 +36,28 @@ canvas {
   width: 100% !important;
   height: 100% !important;
   touch-action: none;
+}
+
+/* Prevent button highlighting and focus states */
+button, input, textarea, select {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+}
+
+button:focus, button:active, button:hover {
+  outline: none !important;
+}
+
+/* Prevent text selection in game interface */
+.game-ui, .game-ui * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
 }
