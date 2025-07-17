@@ -33,7 +33,8 @@ export default function TouchControls() {
     document.dispatchEvent(event);
   };
 
-  const handleArrowKey = (direction: string) => {
+  const handleArrowKeyDown = (direction: string, e?: React.TouchEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     const keyMap = {
       up: { key: 'ArrowUp', code: 'ArrowUp' },
       down: { key: 'ArrowDown', code: 'ArrowDown' },
@@ -52,6 +53,26 @@ export default function TouchControls() {
     }
   };
 
+  const handleArrowKeyUp = (direction: string, e?: React.TouchEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const keyMap = {
+      up: { key: 'ArrowUp', code: 'ArrowUp' },
+      down: { key: 'ArrowDown', code: 'ArrowDown' },
+      left: { key: 'ArrowLeft', code: 'ArrowLeft' },
+      right: { key: 'ArrowRight', code: 'ArrowRight' }
+    };
+
+    const keyData = keyMap[direction as keyof typeof keyMap];
+    if (keyData) {
+      const event = new KeyboardEvent('keyup', {
+        key: keyData.key,
+        code: keyData.code,
+        bubbles: true
+      });
+      document.dispatchEvent(event);
+    }
+  };
+
   return (
     <>
       {/* iPad-style controls: Arrow keys on right side + Speed controls */}
@@ -62,8 +83,11 @@ export default function TouchControls() {
             <div className="flex flex-col items-center gap-2">
               {/* Up arrow */}
               <button
-                onTouchStart={() => handleArrowKey('up')}
-                onClick={() => handleArrowKey('up')}
+                onTouchStart={(e) => handleArrowKeyDown('up', e)}
+                onTouchEnd={(e) => handleArrowKeyUp('up', e)}
+                onMouseDown={(e) => handleArrowKeyDown('up', e)}
+                onMouseUp={(e) => handleArrowKeyUp('up', e)}
+                onMouseLeave={(e) => handleArrowKeyUp('up', e)}
                 className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
               >
                 <ChevronUp className="w-6 h-6" />
@@ -72,15 +96,21 @@ export default function TouchControls() {
               {/* Left and Right arrows */}
               <div className="flex gap-2">
                 <button
-                  onTouchStart={() => handleArrowKey('left')}
-                  onClick={() => handleArrowKey('left')}
+                  onTouchStart={(e) => handleArrowKeyDown('left', e)}
+                  onTouchEnd={(e) => handleArrowKeyUp('left', e)}
+                  onMouseDown={(e) => handleArrowKeyDown('left', e)}
+                  onMouseUp={(e) => handleArrowKeyUp('left', e)}
+                  onMouseLeave={(e) => handleArrowKeyUp('left', e)}
                   className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
-                  onTouchStart={() => handleArrowKey('right')}
-                  onClick={() => handleArrowKey('right')}
+                  onTouchStart={(e) => handleArrowKeyDown('right', e)}
+                  onTouchEnd={(e) => handleArrowKeyUp('right', e)}
+                  onMouseDown={(e) => handleArrowKeyDown('right', e)}
+                  onMouseUp={(e) => handleArrowKeyUp('right', e)}
+                  onMouseLeave={(e) => handleArrowKeyUp('right', e)}
                   className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
                 >
                   <ChevronRight className="w-6 h-6" />
@@ -89,8 +119,11 @@ export default function TouchControls() {
               
               {/* Down arrow */}
               <button
-                onTouchStart={() => handleArrowKey('down')}
-                onClick={() => handleArrowKey('down')}
+                onTouchStart={(e) => handleArrowKeyDown('down', e)}
+                onTouchEnd={(e) => handleArrowKeyUp('down', e)}
+                onMouseDown={(e) => handleArrowKeyDown('down', e)}
+                onMouseUp={(e) => handleArrowKeyUp('down', e)}
+                onMouseLeave={(e) => handleArrowKeyUp('down', e)}
                 className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
               >
                 <ChevronDown className="w-6 h-6" />
