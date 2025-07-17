@@ -251,8 +251,8 @@ export class GameEngine {
 
     // Add multiple rows of TNT barrier patrols to prevent edge-hugging strategies
     // But keep them away from the portal area (right side)
-    const numBarriers = 8 + Math.floor(this.level / 2); // More barriers in higher levels
-    const barrierRows = 2; // Multiple rows of barriers
+    const numBarriers = 12 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 8)
+    const barrierRows = 3; // Multiple rows of barriers (increased from 2)
     const portalSafeZone = 200; // Keep TNT away from portal area
     
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
@@ -325,6 +325,98 @@ export class GameEngine {
     }
     
     // Right edge barrier patrols removed to keep portal area clear
+
+    // Add additional dense TNT guards on top and bottom edges for increased difficulty
+    const additionalTopBottomGuards = 6 + Math.floor(this.level / 3); // More guards in higher levels
+    
+    // Additional top edge guards (closer spacing, different patrol patterns)
+    for (let i = 0; i < additionalTopBottomGuards; i++) {
+      const x = 120 + (i * (this.levelWidth - portalSafeZone - 240) / additionalTopBottomGuards);
+      if (x < this.levelWidth - portalSafeZone) {
+        this.obstacles.push({
+          x: x,
+          y: 60, // Between the existing rows
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : -1), // Varied speed
+          vy: 0,
+          patrolStartX: 60,
+          patrolEndX: this.levelWidth - portalSafeZone,
+          patrolStartY: 60,
+          patrolEndY: 60
+        });
+      }
+    }
+    
+    // Additional bottom edge guards (closer spacing, different patrol patterns)
+    for (let i = 0; i < additionalTopBottomGuards; i++) {
+      const x = 120 + (i * (this.levelWidth - portalSafeZone - 240) / additionalTopBottomGuards);
+      if (x < this.levelWidth - portalSafeZone) {
+        this.obstacles.push({
+          x: x,
+          y: this.canvasHeight - 95, // Between the existing rows
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? -1 : 1), // Varied speed, opposite direction
+          vy: 0,
+          patrolStartX: 60,
+          patrolEndX: this.levelWidth - portalSafeZone,
+          patrolStartY: this.canvasHeight - 95,
+          patrolEndY: this.canvasHeight - 95
+        });
+      }
+    }
+
+    // Add staggered TNT guards on top and bottom for varied movement patterns
+    const staggeredGuards = 4 + Math.floor(this.level / 4); // More staggered guards in higher levels
+    
+    // Staggered top guards with different Y positions
+    for (let i = 0; i < staggeredGuards; i++) {
+      const x = 200 + (i * (this.levelWidth - portalSafeZone - 400) / staggeredGuards);
+      const yOffset = (i % 2) * 25; // Alternate between two Y positions
+      if (x < this.levelWidth - portalSafeZone) {
+        this.obstacles.push({
+          x: x,
+          y: 35 + yOffset, // Staggered Y positions
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: (0.8 + Math.random() * 0.6) * (i % 3 === 0 ? 1 : -1), // Slower, varied direction
+          vy: 0,
+          patrolStartX: 80,
+          patrolEndX: this.levelWidth - portalSafeZone,
+          patrolStartY: 35 + yOffset,
+          patrolEndY: 35 + yOffset
+        });
+      }
+    }
+    
+    // Staggered bottom guards with different Y positions
+    for (let i = 0; i < staggeredGuards; i++) {
+      const x = 200 + (i * (this.levelWidth - portalSafeZone - 400) / staggeredGuards);
+      const yOffset = (i % 2) * 25; // Alternate between two Y positions
+      if (x < this.levelWidth - portalSafeZone) {
+        this.obstacles.push({
+          x: x,
+          y: this.canvasHeight - 70 - yOffset, // Staggered Y positions from bottom
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: (0.8 + Math.random() * 0.6) * (i % 3 === 0 ? -1 : 1), // Slower, varied direction
+          vy: 0,
+          patrolStartX: 80,
+          patrolEndX: this.levelWidth - portalSafeZone,
+          patrolStartY: this.canvasHeight - 70 - yOffset,
+          patrolEndY: this.canvasHeight - 70 - yOffset
+        });
+      }
+    }
 
     // Ensure no obstacles are too close to player start or portal area
     this.obstacles = this.obstacles.filter(obs => 
