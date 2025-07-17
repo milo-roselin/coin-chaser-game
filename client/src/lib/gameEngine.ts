@@ -206,8 +206,11 @@ export class GameEngine {
       const tntStartX = clusterX + Math.cos(startAngle) * patrolRadius;
       const tntStartY = clusterY + Math.sin(startAngle) * patrolRadius;
       
-      // Only add TNT if it's not too close to player start position
-      if (tntStartX > 300) { // Keep TNT away from player start area
+      // iPad-specific: Allow TNT in start area, other devices keep restriction
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const minStartX = isIPad ? 150 : 300; // Allow TNT closer to start on iPad
+      
+      if (tntStartX > minStartX) { // Keep TNT away from immediate player start area
         this.obstacles.push({
           x: tntStartX,
           y: tntStartY,
@@ -239,8 +242,11 @@ export class GameEngine {
         
         const tntX = clusterX + Math.cos(startAngle) * patrolRadius;
         
-        // Only add if far from player start
-        if (tntX > 400) {
+        // iPad-specific: Allow TNT in start area, other devices keep restriction
+        const isIPadForAdditional = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const minStartXForAdditional = isIPadForAdditional ? 200 : 400;
+        
+        if (tntX > minStartXForAdditional) {
           this.obstacles.push({
             x: tntX,
             y: clusterY + Math.sin(startAngle) * patrolRadius,
@@ -270,8 +276,12 @@ export class GameEngine {
       const controlPanelWidthForLinear = isMobileForLinear ? 128 : 0;
       const maxLinearX = this.levelWidth - 300 - controlPanelWidthForLinear; // Keep away from right edge and control panel
       
+      // iPad-specific: Allow TNT closer to start for better distribution
+      const isIPadForLinear = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const minLinearStartX = isIPadForLinear ? 200 : 500; // Allow TNT closer to start on iPad
+      
       do {
-        x = 500 + Math.random() * (maxLinearX - 500); // Start further from player (was 250)
+        x = minLinearStartX + Math.random() * (maxLinearX - minLinearStartX);
         y = 80 + Math.random() * (this.canvasHeight - 160);
         attempts++;
       } while (attempts < 20 && clusterPositions.some(pos => 
