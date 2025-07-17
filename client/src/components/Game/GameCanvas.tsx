@@ -40,24 +40,34 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to match screen exactly
+    // Set canvas size to match available viewport space
     const resizeCanvas = () => {
-      // Get the actual screen dimensions
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+      // Get the available viewport dimensions (accounting for browser UI)
+      const availableWidth = window.innerWidth;
+      const availableHeight = window.innerHeight;
       
-      // Set canvas size to match screen exactly
-      canvas.width = screenWidth;
-      canvas.height = screenHeight;
+      // Also check document client dimensions for better accuracy
+      const docWidth = document.documentElement.clientWidth;
+      const docHeight = document.documentElement.clientHeight;
       
-      // Also update the canvas style to ensure it fills the screen
-      canvas.style.width = screenWidth + 'px';
-      canvas.style.height = screenHeight + 'px';
+      // Use the smaller of the two to ensure we don't exceed available space
+      const canvasWidth = Math.min(availableWidth, docWidth);
+      const canvasHeight = Math.min(availableHeight, docHeight);
+      
+      // Set canvas size to match available space
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      
+      // Update canvas style to fill the available space
+      canvas.style.width = canvasWidth + 'px';
+      canvas.style.height = canvasHeight + 'px';
       
       // If game engine exists, update its dimensions
       if (gameEngineRef.current) {
-        gameEngineRef.current.updateDimensions(screenWidth, screenHeight);
+        gameEngineRef.current.updateDimensions(canvasWidth, canvasHeight);
       }
+      
+      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (viewport: ${availableWidth}x${availableHeight}, doc: ${docWidth}x${docHeight})`);
     };
 
     resizeCanvas();
