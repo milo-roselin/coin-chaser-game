@@ -79,7 +79,7 @@ export class GameEngine {
     // and the player is at the right edge of the visible area (minus control panel)
     const maxCameraX = this.levelWidth - canvasWidth + controlPanelWidth;
     const maxPlayerX = maxCameraX + canvasWidth - controlPanelWidth - 30; // 30 is player width
-    const portalX = maxPlayerX - 60; // Position portal so player can reach it (overlap a bit)
+    const portalX = maxPlayerX - 150; // Position portal further left so it's fully visible and reachable
     
     this.goal = {
       x: portalX,
