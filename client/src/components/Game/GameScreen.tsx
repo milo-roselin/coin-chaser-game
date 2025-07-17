@@ -39,39 +39,10 @@ export default function GameScreen() {
       {/* Game Canvas */}
       <GameCanvas ref={gameCanvasRef} />
 
-      {/* Control Buttons - top-right corner */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2 pointer-events-none">
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handlePause}
-            size="sm"
-            variant="outline"
-            className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
-          >
-            <Pause className="h-4 w-4" />
-          </Button>
-          <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-            SPACE/ESC
-          </span>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handleHome}
-            size="sm"
-            variant="outline"
-            className="bg-white/90 hover:bg-white border-gray-300 pointer-events-auto"
-          >
-            <Home className="h-4 w-4" />
-          </Button>
-          <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-            H
-          </span>
-        </div>
-      </div>
+
 
       {/* Touch Controls */}
-      <TouchControls />
+      <TouchControls onPause={handlePause} onHome={handleHome} />
     </div>
   );
 }
