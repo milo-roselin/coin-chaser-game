@@ -510,6 +510,19 @@ export class GameEngine {
         this.playerVelocity.x = deltaX;
         this.playerVelocity.y = deltaY;
         
+        // Update animation state for touch input
+        const movementThreshold = 0.1;
+        this.isMoving = Math.abs(deltaX) > movementThreshold || Math.abs(deltaY) > movementThreshold;
+        if (this.isMoving) {
+          this.animationFrame += 0.3 * this.gameSpeed;
+          // Update facing direction based on horizontal movement
+          if (deltaX > 0) {
+            this.facingDirection = 1; // Moving right
+          } else if (deltaX < 0) {
+            this.facingDirection = -1; // Moving left
+          }
+        }
+        
         // Update camera to follow player
         this.updateCamera();
         
@@ -596,6 +609,7 @@ export class GameEngine {
                                       targetVelY === 0 ? deceleration : acceleration);
     
     // Apply velocity to player position for keyboard input only
+    // Touch input is handled immediately in handleTouchMove, so skip here
     if (!this.isTouching) {
       this.player.x += this.playerVelocity.x;
       this.player.y += this.playerVelocity.y;
@@ -618,9 +632,12 @@ export class GameEngine {
       }
     }
 
-    // Keep player in bounds
-    this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
-    this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+    // Keep player in bounds (only for keyboard input)
+    // Touch input handles bounds checking immediately in handleTouchMove
+    if (!this.isTouching) {
+      this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+      this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+    }
 
     // Update moving obstacles
     this.obstacles.forEach(obstacle => {
@@ -677,8 +694,11 @@ export class GameEngine {
       }
     });
 
-    // Update camera to follow player
-    this.updateCamera();
+    // Update camera to follow player (only for keyboard input)
+    // Touch input updates camera immediately in handleTouchMove
+    if (!this.isTouching) {
+      this.updateCamera();
+    }
 
     // Notify callback of player movement
     this.callbacks.onPlayerMove(this.player.x, this.player.y);
