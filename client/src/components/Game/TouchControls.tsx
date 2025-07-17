@@ -93,7 +93,7 @@ export default function TouchControls() {
     const deltaX = clientX - centerX;
     const deltaY = clientY - centerY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = 35; // Maximum joystick movement radius
+    const maxDistance = 50; // Maximum joystick movement radius
     
     let normalizedX = deltaX / maxDistance;
     let normalizedY = deltaY / maxDistance;
@@ -206,21 +206,21 @@ export default function TouchControls() {
       
       {/* Virtual Joystick for touch devices */}
       {isMobile && (
-        <div className="absolute bottom-6 right-6 pointer-events-auto">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+        <div className="absolute bottom-20 right-8 pointer-events-auto">
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-sm text-white bg-black/70 px-3 py-1 rounded pointer-events-none font-medium">
               Movement
             </span>
             <div
               ref={joystickRef}
-              className="relative w-24 h-24 bg-gray-800/80 border-2 border-gray-500 rounded-full flex items-center justify-center touch-none"
+              className="relative w-32 h-32 bg-gray-800/90 border-2 border-gray-400 rounded-full flex items-center justify-center touch-none shadow-xl"
               onTouchStart={handleJoystickStart}
               onMouseDown={handleJoystickStart}
               style={{ touchAction: 'none' }}
             >
               {/* Joystick handle */}
               <div
-                className={`absolute w-10 h-10 rounded-full shadow-lg transition-all duration-100 pointer-events-none ${
+                className={`absolute w-12 h-12 rounded-full shadow-lg transition-all duration-100 pointer-events-none ${
                   isJoystickActive ? 'bg-blue-400 border-2 border-blue-200' : 'bg-blue-500 border-2 border-blue-300'
                 }`}
                 style={{
@@ -229,12 +229,12 @@ export default function TouchControls() {
                 }}
               />
               {/* Center dot */}
-              <div className="w-3 h-3 bg-white rounded-full opacity-60 pointer-events-none" />
+              <div className="w-4 h-4 bg-white rounded-full opacity-60 pointer-events-none" />
               {/* Direction indicators */}
-              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 text-white text-xs opacity-30">↑</div>
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs opacity-30">↓</div>
-              <div className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white text-xs opacity-30">←</div>
-              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 text-white text-xs opacity-30">→</div>
+              <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-40">↑</div>
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-40">↓</div>
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-sm opacity-40">←</div>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-sm opacity-40">→</div>
             </div>
           </div>
         </div>
