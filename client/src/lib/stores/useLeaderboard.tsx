@@ -75,7 +75,7 @@ export const useLeaderboard = create<LeaderboardState>()(
 
       canEditName: (score: LeaderboardScore) => {
         const state = get();
-        return score.playerId === state.currentPlayerId && !score.nameEdited;
+        return score.playerId === state.currentPlayerId;
       },
       
       clearScores: () => {

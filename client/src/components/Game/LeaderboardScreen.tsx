@@ -114,7 +114,7 @@ export default function LeaderboardScreen() {
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl">
         <CardHeader>
           <CardTitle className="text-center text-xl">High Scores</CardTitle>
-          <p className="text-center text-sm text-gray-600">Click on your name to edit it (once only)</p>
+          <p className="text-center text-sm text-gray-600">Click on your name to edit it</p>
         </CardHeader>
         <CardContent className="p-4">
           {scores.length === 0 ? (
@@ -174,9 +174,6 @@ export default function LeaderboardScreen() {
                         </div>
                         {canEditName(score) && (
                           <Edit3 className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        )}
-                        {score.nameEdited && (
-                          <span className="text-xs text-gray-500 ml-1">✓</span>
                         )}
                       </div>
                     )}

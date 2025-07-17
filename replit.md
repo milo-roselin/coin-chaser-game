@@ -102,4 +102,4 @@ The application is architected for scalability with clear separation between fro
 - **TNT Movement Optimization**: Fixed TNT disappearing/reappearing issues and reduced clustering around coin clusters
 - **Boundary Constraints**: Implemented comprehensive boundary checks to prevent game objects from overlapping control panel area
 - **Mandatory Name Input**: Removed anonymous score submissions - players must enter a name to save their score to the leaderboard
-- **Leaderboard Restrictions**: Players can only edit their own name and only once
+- **Leaderboard Restrictions**: Players can only edit their own name (multiple edits allowed)
