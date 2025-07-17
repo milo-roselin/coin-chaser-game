@@ -116,7 +116,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
       {/* Control panel - shows different content based on device */}
       {isMobile ? (
         /* Mobile/iPad: Full control panel with all controls */
-        <div className="absolute top-0 right-0 h-full w-32 bg-gray-800 border-l-2 border-gray-600 flex flex-col items-center justify-between py-6 pointer-events-auto z-10">
+        <div className="absolute top-0 right-0 h-full w-32 bg-transparent flex flex-col items-center justify-between py-6 pointer-events-auto z-50">
           {/* Action Buttons - Top */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col items-center gap-1">
@@ -124,7 +124,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handlePause}
                 size="sm"
                 variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
+                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
               >
                 <Pause className="h-4 w-4" />
               </Button>
@@ -138,7 +138,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handleHome}
                 size="sm"
                 variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
+                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
               >
                 <Home className="h-4 w-4" />
               </Button>
@@ -152,7 +152,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 onClick={handleAudioSettings}
                 size="sm"
                 variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
+                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
               >
                 <Settings className="h-4 w-4" />
               </Button>

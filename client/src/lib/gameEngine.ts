@@ -847,11 +847,17 @@ export class GameEngine {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+    // Draw control panel area on mobile BEFORE anything else to prevent green overflow
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      this.drawControlPanelBackground(ctx);
+    }
+
     // Save context for camera transform
     ctx.save();
     ctx.translate(-this.cameraX, 0);
 
-    // Draw background pattern only in the game area
+    // Draw background pattern only in the game area (limit to game area, not control panel)
     this.drawBackground(ctx);
 
     // Draw goal
@@ -869,12 +875,6 @@ export class GameEngine {
     // Restore context
     ctx.restore();
 
-    // Draw control panel area on mobile
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-      this.drawControlPanelBackground(ctx);
-    }
-
     // Draw UI elements (not affected by camera)
     this.drawUI(ctx);
     
@@ -886,14 +886,22 @@ export class GameEngine {
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
+    // Calculate the actual game area (exclude control panel on mobile)
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidth = isMobile ? 128 : 0;
+    const gameAreaWidth = this.canvasWidth - controlPanelWidth;
+    
+    // Only draw background within the visible game area and up to level width
+    const backgroundWidth = Math.min(this.levelWidth, gameAreaWidth + this.cameraX);
+    
     // Draw grass background only in the playable area
     ctx.fillStyle = '#22C55E';
-    ctx.fillRect(0, 0, this.levelWidth, this.canvasHeight);
+    ctx.fillRect(0, 0, backgroundWidth, this.canvasHeight);
 
     // Draw grid pattern only in the playable area
     ctx.strokeStyle = '#16A34A';
     ctx.lineWidth = 1;
-    for (let x = 0; x < this.levelWidth; x += 50) {
+    for (let x = 0; x < backgroundWidth; x += 50) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, this.canvasHeight);
@@ -902,7 +910,7 @@ export class GameEngine {
     for (let y = 0; y < this.canvasHeight; y += 50) {
       ctx.beginPath();
       ctx.moveTo(0, y);
-      ctx.lineTo(this.levelWidth, y);
+      ctx.lineTo(backgroundWidth, y);
       ctx.stroke();
     }
   }
