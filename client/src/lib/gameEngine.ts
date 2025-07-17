@@ -181,17 +181,15 @@ export class GameEngine {
       }
     }
 
-    // Generate TNT bombs that patrol around coin clusters (more in higher levels)
-    const tntPerCluster = 1 + Math.floor(this.level / 2); // More TNT per cluster in higher levels
-    for (let i = 0; i < numClusters * tntPerCluster; i++) {
-      // Choose a random coin cluster to patrol around
-      const targetCluster = Math.floor(Math.random() * numClusters);
-      const clusterX = this.coinClusters[targetCluster].x;
-      const clusterY = this.coinClusters[targetCluster].y;
+    // Generate TNT bombs that patrol around coin clusters (distributed evenly)
+    const tntPerCluster = 1; // Keep it simple - one TNT per cluster to avoid clumping
+    for (let clusterIndex = 0; clusterIndex < numClusters; clusterIndex++) {
+      const clusterX = this.coinClusters[clusterIndex].x;
+      const clusterY = this.coinClusters[clusterIndex].y;
       
-      // Create circular patrol around the cluster
-      const patrolRadius = 80 + Math.random() * 60;
-      const startAngle = Math.random() * Math.PI * 2;
+      // Create circular patrol around the cluster with better spacing
+      const patrolRadius = 90 + (clusterIndex % 3) * 20; // Vary radius to prevent overlap
+      const startAngle = (clusterIndex * Math.PI * 2 / numClusters) + Math.random() * 0.5; // Space them out evenly
       
       this.obstacles.push({
         x: clusterX + Math.cos(startAngle) * patrolRadius,
@@ -200,36 +198,69 @@ export class GameEngine {
         height: 35,
         color: '#8B4513',
         type: 'obstacle',
-        vx: 1 + Math.random() * 1.5, // circular movement speed
-        vy: 1 + Math.random() * 1.5,
+        vx: 1 + Math.random() * 0.5, // Slower, more consistent movement
+        vy: 1 + Math.random() * 0.5,
         patrolStartX: clusterX, // center X of circular patrol
         patrolStartY: clusterY, // center Y of circular patrol
         patrolEndX: patrolRadius, // using this as radius
         patrolEndY: startAngle // using this as current angle
       });
     }
+    
+    // Add additional TNT for higher levels but spread them out differently
+    if (this.level > 1) {
+      const additionalTnt = Math.floor(this.level / 2);
+      for (let i = 0; i < additionalTnt; i++) {
+        const clusterIndex = i % numClusters; // Cycle through clusters
+        const clusterX = this.coinClusters[clusterIndex].x;
+        const clusterY = this.coinClusters[clusterIndex].y;
+        
+        // Create a second TNT with different radius and offset angle
+        const patrolRadius = 60 + Math.random() * 40;
+        const startAngle = (Math.PI + i * Math.PI / 2) % (Math.PI * 2); // Different starting positions
+        
+        this.obstacles.push({
+          x: clusterX + Math.cos(startAngle) * patrolRadius,
+          y: clusterY + Math.sin(startAngle) * patrolRadius,
+          width: 35,
+          height: 35,
+          color: '#8B4513',
+          type: 'obstacle',
+          vx: 1 + Math.random() * 0.5,
+          vy: 1 + Math.random() * 0.5,
+          patrolStartX: clusterX,
+          patrolStartY: clusterY,
+          patrolEndX: patrolRadius,
+          patrolEndY: startAngle
+        });
+      }
+    }
 
-    // Add some linear patrolling TNT bombs between clusters (more in higher levels)
-    const linearTnt = 2 + this.level;
+    // Add some linear patrolling TNT bombs between clusters (reduced to prevent overcrowding)
+    const linearTnt = Math.min(2, this.level); // Cap linear TNT to prevent overcrowding
     for (let i = 0; i < linearTnt; i++) {
       let x, y;
       let attempts = 0;
       
-      // Find positions that are away from coin clusters
+      // Find positions that are away from coin clusters and control panel
+      const isMobileForLinear = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const controlPanelWidthForLinear = isMobileForLinear ? 128 : 0;
+      const maxLinearX = this.levelWidth - 300 - controlPanelWidthForLinear; // Keep away from right edge and control panel
+      
       do {
-        x = 250 + Math.random() * (this.levelWidth - 500);
+        x = 250 + Math.random() * (maxLinearX - 250);
         y = 80 + Math.random() * (this.canvasHeight - 160);
         attempts++;
       } while (attempts < 20 && clusterPositions.some(pos => 
-        Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2) < 200
+        Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2) < 250 // Increase minimum distance from clusters
       ));
       
       const patrolType = Math.random() > 0.5 ? 'horizontal' : 'vertical';
       
       if (patrolType === 'horizontal') {
-        const patrolRange = 150 + Math.random() * 200;
+        const patrolRange = 120 + Math.random() * 150; // Smaller patrol ranges
         const patrolStartX = Math.max(50, x - patrolRange / 2);
-        const patrolEndX = Math.min(this.levelWidth - 50, x + patrolRange / 2);
+        const patrolEndX = Math.min(maxLinearX, x + patrolRange / 2);
         
         this.obstacles.push({
           x: patrolStartX,
@@ -238,7 +269,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
+          vx: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -246,7 +277,7 @@ export class GameEngine {
           patrolEndY: y
         });
       } else {
-        const patrolRange = 100 + Math.random() * 150;
+        const patrolRange = 80 + Math.random() * 120;
         const patrolStartY = Math.max(50, y - patrolRange / 2);
         const patrolEndY = Math.min(this.canvasHeight - 50, y + patrolRange / 2);
         
@@ -258,7 +289,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (1.5 + Math.random() * 2) * (1 + this.level * 0.2), // Faster in higher levels
+          vy: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -761,24 +792,23 @@ export class GameEngine {
           const radius = obstacle.patrolEndX;
           let angle = obstacle.patrolEndY; // current angle stored in patrolEndY
           
-          // Update angle for circular movement
-          angle += 0.02 + Math.random() * 0.01; // variable speed without game speed multiplier
+          // Update angle for circular movement with more consistent speed
+          angle += 0.015 + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Smoother variable speed
           obstacle.patrolEndY = angle;
           
           // Calculate new position
           obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
           obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
           
-          // Prevent circular obstacles from moving into control panel area
+          // Prevent circular obstacles from moving into control panel area by constraining the center
           const isMobileForCircular = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
           if (isMobileForCircular) {
             const controlPanelWidth = 128;
             const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
+            
+            // If the TNT would go into the control panel area, just constrain it
             if (obstacle.x > maxObstacleX) {
-              // Adjust the circular movement to stay within bounds
-              const adjustedAngle = angle + Math.PI; // Move to opposite side of circle
-              obstacle.x = centerX + Math.cos(adjustedAngle) * radius - obstacle.width / 2;
-              obstacle.y = centerY + Math.sin(adjustedAngle) * radius - obstacle.height / 2;
+              obstacle.x = maxObstacleX;
             }
           }
           

@@ -111,14 +111,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     }
   };
 
-  // Debug logging (remove after testing)
-  console.log('TouchControls iPad detection:', { 
-    isMobile, 
-    maxTouchPoints: navigator.maxTouchPoints,
-    userAgent: navigator.userAgent,
-    innerWidth: window.innerWidth,
-    platform: navigator.platform
-  });
+  // Remove debug logging for cleaner console
 
   return (
     <>
