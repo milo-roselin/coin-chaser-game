@@ -112,6 +112,9 @@ export const useCoinGame = create<CoinGameState>()(
             totalScore: newTotalScore
           };
         });
+        // Stop background music when game is won
+        const { stopBackgroundMusic } = useAudio.getState();
+        stopBackgroundMusic();
       },
       
       showLeaderboard: () => {
