@@ -140,65 +140,59 @@ export const useDeviceSettings = create<DeviceSettingsState>()(
         set({ isLoadingOnlineDevices: true, onlineDevicesError: null });
         
         try {
-          // Try multiple device APIs for comprehensive coverage
-          const deviceSources = [
-            'https://api.github.com/repos/DeviceAtlas/DeviceAtlas-Local-JSON/contents/DeviceAtlas.json',
-            'https://raw.githubusercontent.com/matomo-org/device-detector/master/regexes/device/mobiles.yml',
-            'https://www.whatismybrowser.com/api/v2/user_agent_parse',
-            'https://api.screen-size.dev/devices',
-            'https://deviceatlas.com/api/devices'
-          ];
-          
-          // Fetch from multiple sources simultaneously
+          // Fetch from multiple sources simultaneously with proper error handling
           const responses = await Promise.allSettled([
             // GitHub Device Atlas
             fetch('https://api.github.com/repos/DeviceAtlas/DeviceAtlas-Local-JSON/contents/DeviceAtlas.json')
-              .then(res => res.json()),
+              .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+              })
+              .catch(err => {
+                console.warn('GitHub DeviceAtlas API failed:', err);
+                return null;
+              }),
             
-            // Screen Size API
-            fetch('https://api.screen-size.dev/devices')
-              .then(res => res.json()),
-            
-            // Device specs from various sources
-            fetch('https://raw.githubusercontent.com/fxpio/composer-asset-plugin/master/Resources/doc/schema.json')
-              .then(res => res.json()),
-              
             // Mobile device database
             fetch('https://raw.githubusercontent.com/matomo-org/device-detector/master/regexes/device/mobiles.yml')
-              .then(res => res.text()),
+              .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.text();
+              })
+              .catch(err => {
+                console.warn('Mobile device database failed:', err);
+                return null;
+              }),
           ]);
           
           let onlineDevices: DeviceProfile[] = [];
           
           // Process successful responses
           responses.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
+            if (result.status === 'fulfilled' && result.value) {
               const data = result.value;
               
-              // Parse different data sources
-              if (index === 0 && data.content) {
-                // GitHub Device Atlas
-                try {
+              try {
+                // Parse different data sources
+                if (index === 0 && data && data.content) {
+                  // GitHub Device Atlas
                   const deviceData = JSON.parse(atob(data.content));
-                  onlineDevices = onlineDevices.concat(parseDeviceAtlas(deviceData));
-                } catch (e) {
-                  console.warn('Failed to parse Device Atlas data:', e);
+                  const parsedDevices = parseDeviceAtlas(deviceData);
+                  onlineDevices = onlineDevices.concat(parsedDevices);
+                } else if (index === 1 && typeof data === 'string') {
+                  // YAML device data
+                  const parsedDevices = parseYAMLDevices(data);
+                  onlineDevices = onlineDevices.concat(parsedDevices);
                 }
-              } else if (index === 1 && Array.isArray(data)) {
-                // Screen Size API
-                onlineDevices = onlineDevices.concat(parseScreenSizeAPI(data));
-              } else if (index === 3 && typeof data === 'string') {
-                // YAML device data
-                onlineDevices = onlineDevices.concat(parseYAMLDevices(data));
+              } catch (e) {
+                console.warn(`Failed to parse device data from source ${index}:`, e);
               }
             }
           });
           
-          // If no online devices found, use web search to get current popular devices
-          if (onlineDevices.length === 0) {
-            const popularDevices = await fetchPopularDevices();
-            onlineDevices = popularDevices;
-          }
+          // Always add popular devices as fallback
+          const popularDevices = await fetchPopularDevices();
+          onlineDevices = onlineDevices.concat(popularDevices);
           
           // Remove duplicates and sort
           const uniqueDevices = removeDuplicateDevices(onlineDevices);

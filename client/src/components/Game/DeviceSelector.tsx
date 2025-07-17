@@ -29,9 +29,11 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
   const allDevices = getAvailableDevices();
 
   useEffect(() => {
-    // Fetch online devices when component mounts
+    // Fetch online devices when component mounts, but don't await it
     if (onlineDevices.length === 0) {
-      fetchOnlineDevices();
+      fetchOnlineDevices().catch(err => {
+        console.warn('Failed to fetch online devices:', err);
+      });
     }
   }, []);
 
