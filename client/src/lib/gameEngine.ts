@@ -31,7 +31,8 @@ export class GameEngine {
   private callbacks: GameCallbacks;
   private touchPosition: { x: number; y: number } | null = null;
   private previousTouchPosition: { x: number; y: number } | null = null;
-  private touchOffset: { x: number; y: number } | null = null;
+  private touchCenter: { x: number; y: number } | null = null;
+  private targetVelocity: { x: number; y: number } = { x: 0, y: 0 };
   private isTouching = false;
   private levelWidth: number;
   private cameraX = 0;
@@ -488,65 +489,52 @@ export class GameEngine {
     this.touchPosition = { x, y };
     this.previousTouchPosition = { x, y };
     
-    // Store the offset between touch position and current player position
-    // This allows dragging the player relative to where they currently are
-    const currentPlayerScreenX = this.player.x - this.cameraX + this.player.width / 2;
-    const currentPlayerScreenY = this.player.y + this.player.height / 2;
-    
-    // Calculate the offset from touch to player center
-    this.touchOffset = {
-      x: currentPlayerScreenX - x,
-      y: currentPlayerScreenY - y
-    };
+    // Store the initial touch center for joystick-like control
+    this.touchCenter = { x, y };
   }
 
   public handlePointerMove(x: number, y: number) {
-    if (this.isTouching) {
+    if (this.isTouching && this.touchCenter) {
       this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
       
-      // Calculate new player position based on touch + offset
-      const newPlayerCenterX = x + (this.touchOffset?.x || 0);
-      const newPlayerCenterY = y + (this.touchOffset?.y || 0);
+      // Calculate direction vector from touch center to current position
+      const deltaX = x - this.touchCenter.x;
+      const deltaY = y - this.touchCenter.y;
       
-      // Convert to world coordinates
-      const worldX = newPlayerCenterX + this.cameraX;
+      // Calculate distance for speed scaling
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const maxDistance = 100; // Maximum distance for full speed
       
-      // Set player position
-      this.player.x = worldX - this.player.width / 2;
-      this.player.y = newPlayerCenterY - this.player.height / 2;
+      // Normalize and scale velocity
+      const speed = Math.min(distance / maxDistance, 1) * 8; // Max speed of 8
       
-      // Keep player in bounds
-      this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
-      this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
-      
-      // Calculate velocity for animation
-      if (this.previousTouchPosition) {
-        const deltaX = x - this.previousTouchPosition.x;
-        const deltaY = y - this.previousTouchPosition.y;
+      if (distance > 0) {
+        const directionX = deltaX / distance;
+        const directionY = deltaY / distance;
         
-        this.playerVelocity.x = deltaX;
-        this.playerVelocity.y = deltaY;
+        // Set target velocity based on direction and speed
+        this.targetVelocity = {
+          x: directionX * speed * this.gameSpeed,
+          y: directionY * speed * this.gameSpeed
+        };
         
         // Update animation state
-        const movementThreshold = 0.1;
-        this.isMoving = Math.abs(deltaX) > movementThreshold || Math.abs(deltaY) > movementThreshold;
+        this.isMoving = speed > 0.1;
         if (this.isMoving) {
           this.animationFrame += 0.3 * this.gameSpeed;
           // Update facing direction based on horizontal movement
-          if (deltaX > 0) {
+          if (directionX > 0) {
             this.facingDirection = 1; // Moving right
-          } else if (deltaX < 0) {
+          } else if (directionX < 0) {
             this.facingDirection = -1; // Moving left
           }
         }
+      } else {
+        // No movement when at center
+        this.targetVelocity = { x: 0, y: 0 };
+        this.isMoving = false;
       }
-      
-      // Update camera to follow player
-      this.updateCamera();
-      
-      // Notify callback of player movement
-      this.callbacks.onPlayerMove(this.player.x, this.player.y);
     }
   }
 
@@ -554,7 +542,8 @@ export class GameEngine {
     this.isTouching = false;
     this.touchPosition = null;
     this.previousTouchPosition = null;
-    this.touchOffset = null;
+    this.touchCenter = null;
+    this.targetVelocity = { x: 0, y: 0 };
   }
 
   public handleKeyDown(key: string) {
@@ -618,21 +607,22 @@ export class GameEngine {
                            this.keys['KeyW'] || this.keys['KeyA'] || 
                            this.keys['KeyS'] || this.keys['KeyD'];
     
-    // Touch input is now handled immediately in handleTouchMove
-    // Only process keyboard input here
-    
-    // Apply velocity interpolation for keyboard input
-    this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
-                                      targetVelX === 0 ? deceleration : acceleration);
-    this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
-                                      targetVelY === 0 ? deceleration : acceleration);
-    
-    // Apply velocity to player position for keyboard input only
-    // Touch input is handled immediately in handleTouchMove, so skip here
-    if (!this.isTouching) {
-      this.player.x += this.playerVelocity.x;
-      this.player.y += this.playerVelocity.y;
+    // Handle touch input velocity
+    if (this.isTouching) {
+      // Use target velocity from touch for smooth joystick-like control
+      this.playerVelocity.x = this.lerp(this.playerVelocity.x, this.targetVelocity.x, 0.8);
+      this.playerVelocity.y = this.lerp(this.playerVelocity.y, this.targetVelocity.y, 0.8);
+    } else {
+      // Apply velocity interpolation for keyboard input
+      this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
+                                        targetVelX === 0 ? deceleration : acceleration);
+      this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
+                                        targetVelY === 0 ? deceleration : acceleration);
     }
+    
+    // Apply velocity to player position
+    this.player.x += this.playerVelocity.x;
+    this.player.y += this.playerVelocity.y;
     
     // Track movement for animation
     const moveX = this.playerVelocity.x;
@@ -651,12 +641,9 @@ export class GameEngine {
       }
     }
 
-    // Keep player in bounds (only for keyboard input)
-    // Touch input handles bounds checking immediately in handleTouchMove
-    if (!this.isTouching) {
-      this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
-      this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
-    }
+    // Keep player in bounds
+    this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+    this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
 
     // Update moving obstacles
     this.obstacles.forEach(obstacle => {
@@ -713,11 +700,8 @@ export class GameEngine {
       }
     });
 
-    // Update camera to follow player (only for keyboard input)
-    // Touch input updates camera immediately in handleTouchMove
-    if (!this.isTouching) {
-      this.updateCamera();
-    }
+    // Update camera to follow player
+    this.updateCamera();
 
     // Notify callback of player movement
     this.callbacks.onPlayerMove(this.player.x, this.player.y);
