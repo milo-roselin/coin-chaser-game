@@ -700,8 +700,12 @@ export class GameEngine {
       }
     }
 
-    // Keep player in bounds
-    this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+    // Keep player in bounds - account for control panel on mobile
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
+    const maxPlayerX = this.levelWidth - this.player.width - controlPanelWidth;
+    
+    this.player.x = Math.max(0, Math.min(maxPlayerX, this.player.x));
     this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
 
     // Update moving obstacles
@@ -759,9 +763,13 @@ export class GameEngine {
       }
     });
 
-    // Update camera to follow player
+    // Update camera to follow player - account for control panel on mobile
+    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
+    const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
+    
     this.cameraX = Math.max(0, Math.min(
-      this.levelWidth - this.canvasWidth,
+      maxCameraX,
       this.player.x - this.canvasWidth / 2
     ));
 
