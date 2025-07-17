@@ -9,6 +9,8 @@ export default function TouchControls() {
   const isMobile = useIsMobile();
   const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
   const [isJoystickActive, setIsJoystickActive] = useState(false);
+  const activeKeysRef = useRef<Set<string>>(new Set());
+  const moveIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Touch controls are handled by the canvas component
@@ -40,6 +42,35 @@ export default function TouchControls() {
     setIsJoystickActive(true);
   };
 
+  const updateMovementKeys = (normalizedX: number, normalizedY: number) => {
+    const threshold = 0.2;
+    const newKeys = new Set<string>();
+    
+    // Determine which keys should be active
+    if (normalizedX > threshold) newKeys.add('ArrowRight');
+    if (normalizedX < -threshold) newKeys.add('ArrowLeft');
+    if (normalizedY > threshold) newKeys.add('ArrowDown');
+    if (normalizedY < -threshold) newKeys.add('ArrowUp');
+    
+    // Release keys that are no longer active
+    activeKeysRef.current.forEach(key => {
+      if (!newKeys.has(key)) {
+        const event = new KeyboardEvent('keyup', { key, code: key, bubbles: true });
+        document.dispatchEvent(event);
+      }
+    });
+    
+    // Press new keys
+    newKeys.forEach(key => {
+      if (!activeKeysRef.current.has(key)) {
+        const event = new KeyboardEvent('keydown', { key, code: key, bubbles: true });
+        document.dispatchEvent(event);
+      }
+    });
+    
+    activeKeysRef.current = newKeys;
+  };
+
   const handleJoystickMove = (e: React.TouchEvent | React.MouseEvent) => {
     if (!isJoystickActive || !joystickRef.current) return;
     
@@ -51,6 +82,7 @@ export default function TouchControls() {
     let clientX, clientY;
     if (e.type.includes('touch')) {
       const touch = (e as React.TouchEvent).touches[0];
+      if (!touch) return;
       clientX = touch.clientX;
       clientY = touch.clientY;
     } else {
@@ -61,57 +93,41 @@ export default function TouchControls() {
     const deltaX = clientX - centerX;
     const deltaY = clientY - centerY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = 40; // Maximum joystick movement radius
+    const maxDistance = 35; // Maximum joystick movement radius
     
     let normalizedX = deltaX / maxDistance;
     let normalizedY = deltaY / maxDistance;
+    let actualX = deltaX;
+    let actualY = deltaY;
     
     // Limit to circle
     if (distance > maxDistance) {
-      normalizedX = (deltaX / distance) * (maxDistance / maxDistance);
-      normalizedY = (deltaY / distance) * (maxDistance / maxDistance);
+      const angle = Math.atan2(deltaY, deltaX);
+      actualX = Math.cos(angle) * maxDistance;
+      actualY = Math.sin(angle) * maxDistance;
+      normalizedX = actualX / maxDistance;
+      normalizedY = actualY / maxDistance;
     }
     
-    setJoystickPosition({ 
-      x: normalizedX * maxDistance, 
-      y: normalizedY * maxDistance 
-    });
-    
-    // Send keyboard events based on joystick direction
-    const threshold = 0.3;
-    if (Math.abs(normalizedX) > threshold || Math.abs(normalizedY) > threshold) {
-      if (normalizedX > threshold) {
-        // Right
-        const event = new KeyboardEvent('keydown', { key: 'ArrowRight', code: 'ArrowRight', bubbles: true });
-        document.dispatchEvent(event);
-      } else if (normalizedX < -threshold) {
-        // Left
-        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', code: 'ArrowLeft', bubbles: true });
-        document.dispatchEvent(event);
-      }
-      
-      if (normalizedY > threshold) {
-        // Down
-        const event = new KeyboardEvent('keydown', { key: 'ArrowDown', code: 'ArrowDown', bubbles: true });
-        document.dispatchEvent(event);
-      } else if (normalizedY < -threshold) {
-        // Up
-        const event = new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true });
-        document.dispatchEvent(event);
-      }
-    }
+    setJoystickPosition({ x: actualX, y: actualY });
+    updateMovementKeys(normalizedX, normalizedY);
   };
 
   const handleJoystickEnd = () => {
     setIsJoystickActive(false);
     setJoystickPosition({ x: 0, y: 0 });
     
-    // Send keyup events to stop movement
-    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    keys.forEach(key => {
+    // Release all active keys
+    activeKeysRef.current.forEach(key => {
       const event = new KeyboardEvent('keyup', { key, code: key, bubbles: true });
       document.dispatchEvent(event);
     });
+    activeKeysRef.current.clear();
+    
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
   };
 
   // Add global event listeners for joystick
@@ -119,11 +135,8 @@ export default function TouchControls() {
     if (!isJoystickActive) return;
     
     const handleGlobalMove = (e: TouchEvent | MouseEvent) => {
-      if (e.type.includes('touch')) {
-        handleJoystickMove(e as any);
-      } else {
-        handleJoystickMove(e as any);
-      }
+      e.preventDefault();
+      handleJoystickMove(e as any);
     };
     
     const handleGlobalEnd = () => {
@@ -132,16 +145,32 @@ export default function TouchControls() {
     
     document.addEventListener('touchmove', handleGlobalMove, { passive: false });
     document.addEventListener('touchend', handleGlobalEnd);
+    document.addEventListener('touchcancel', handleGlobalEnd);
     document.addEventListener('mousemove', handleGlobalMove);
     document.addEventListener('mouseup', handleGlobalEnd);
     
     return () => {
       document.removeEventListener('touchmove', handleGlobalMove);
       document.removeEventListener('touchend', handleGlobalEnd);
+      document.removeEventListener('touchcancel', handleGlobalEnd);
       document.removeEventListener('mousemove', handleGlobalMove);
       document.removeEventListener('mouseup', handleGlobalEnd);
     };
   }, [isJoystickActive]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+      // Release any active keys on unmount
+      activeKeysRef.current.forEach(key => {
+        const event = new KeyboardEvent('keyup', { key, code: key, bubbles: true });
+        document.dispatchEvent(event);
+      });
+    };
+  }, []);
 
   return (
     <>
@@ -184,21 +213,28 @@ export default function TouchControls() {
             </span>
             <div
               ref={joystickRef}
-              className="relative w-20 h-20 bg-gray-800/70 border-2 border-gray-600 rounded-full flex items-center justify-center"
+              className="relative w-24 h-24 bg-gray-800/80 border-2 border-gray-500 rounded-full flex items-center justify-center touch-none"
               onTouchStart={handleJoystickStart}
               onMouseDown={handleJoystickStart}
+              style={{ touchAction: 'none' }}
             >
               {/* Joystick handle */}
               <div
-                className={`absolute w-8 h-8 bg-blue-500 rounded-full shadow-lg transition-all duration-75 ${
-                  isJoystickActive ? 'bg-blue-400' : 'bg-blue-500'
+                className={`absolute w-10 h-10 rounded-full shadow-lg transition-all duration-100 pointer-events-none ${
+                  isJoystickActive ? 'bg-blue-400 border-2 border-blue-200' : 'bg-blue-500 border-2 border-blue-300'
                 }`}
                 style={{
-                  transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`
+                  transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`,
+                  transition: isJoystickActive ? 'none' : 'transform 0.2s ease-out'
                 }}
               />
               {/* Center dot */}
-              <div className="w-2 h-2 bg-white rounded-full opacity-50" />
+              <div className="w-3 h-3 bg-white rounded-full opacity-60 pointer-events-none" />
+              {/* Direction indicators */}
+              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 text-white text-xs opacity-30">↑</div>
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs opacity-30">↓</div>
+              <div className="absolute left-1 top-1/2 transform -translate-y-1/2 text-white text-xs opacity-30">←</div>
+              <div className="absolute right-1 top-1/2 transform -translate-y-1/2 text-white text-xs opacity-30">→</div>
             </div>
           </div>
         </div>
