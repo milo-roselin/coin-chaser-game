@@ -876,22 +876,36 @@ export class GameEngine {
             }
           }
           
-          // Ensure obstacles stay within their patrol bounds
-          if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
-            obstacle.x = Math.max(obstacle.patrolStartX, Math.min(obstacle.patrolEndX - obstacle.width, obstacle.x));
-          }
-          if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
-            obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+          // iPad-specific: Don't restrict linear TNT to tight patrol bounds on iPad
+          const isIPadForPatrolBounds = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          if (!isIPadForPatrolBounds) {
+            // Ensure obstacles stay within their patrol bounds (except on iPad)
+            if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
+              obstacle.x = Math.max(obstacle.patrolStartX, Math.min(obstacle.patrolEndX - obstacle.width, obstacle.x));
+            }
+            if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
+              obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+            }
+          } else {
+            // iPad: Allow more freedom but keep within reasonable level bounds
+            obstacle.x = Math.max(0, Math.min(this.levelWidth - obstacle.width, obstacle.x));
+            obstacle.y = Math.max(0, Math.min(this.canvasHeight - obstacle.height, obstacle.y));
           }
           
-          // Prevent obstacles from moving into control panel area
-          const isMobileForObstacles = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-          if (isMobileForObstacles) {
-            const controlPanelWidth = 128;
-            const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
-            if (obstacle.x > maxObstacleX) {
-              obstacle.x = maxObstacleX;
-              if (obstacle.vx > 0) obstacle.vx = -obstacle.vx; // Reverse direction if moving right
+          // iPad-specific: Don't constrain linear TNT movement as aggressively
+          const isIPadForLinearObstacles = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          if (!isIPadForLinearObstacles) {
+            // Prevent obstacles from moving into control panel area (except on iPad)
+            const isMobileForObstacles = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobileForObstacles) {
+              const controlPanelWidth = 128;
+              const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
+              if (obstacle.x > maxObstacleX) {
+                obstacle.x = maxObstacleX;
+                if (obstacle.vx > 0) obstacle.vx = -obstacle.vx; // Reverse direction if moving right
+              }
             }
           }
         }
@@ -1215,6 +1229,17 @@ export class GameEngine {
       // Skip rendering if obstacle would appear in the initial startup area
       if (screenX >= -50 && screenX <= 400 && this.cameraX < 100) {
         return; // Don't render TNT near startup area
+      }
+    }
+    
+    // iPad debugging: Check if TNT is going off-screen
+    if (isIPad) {
+      const screenX = obstacle.x - this.cameraX;
+      const screenY = obstacle.y;
+      
+      // If TNT is way off screen, log for debugging
+      if (screenX < -200 || screenX > this.canvasWidth + 200 || screenY < -200 || screenY > this.canvasHeight + 200) {
+        // TNT is off-screen, but still render it in case it comes back
       }
     }
     
