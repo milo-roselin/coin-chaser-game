@@ -1,12 +1,9 @@
 import { useRef, useEffect, useState } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useIsMobile } from '../../hooks/use-is-mobile';
-import { useDeviceSettings } from '@/lib/stores/useDeviceSettings';
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Pause, Home, Settings, Monitor } from "lucide-react";
+import { Pause, Home, Settings } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
-import DeviceSelector from "./DeviceSelector";
 
 interface TouchControlsProps {
   onPause?: () => void;
@@ -16,7 +13,6 @@ interface TouchControlsProps {
 export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
   const touchAreaRef = useRef<HTMLDivElement>(null);
   const { playerPosition, resetGame } = useCoinGame();
-  const { showDeviceSelector, setShowDeviceSelector } = useDeviceSettings();
   const isMobile = useIsMobile();
   const [showAudioSettings, setShowAudioSettings] = useState(false);
 
@@ -38,23 +34,16 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     setShowAudioSettings(true);
   };
 
-  const handleDeviceSelector = () => {
-    setShowDeviceSelector(true);
-  };
-
   useEffect(() => {
     // Touch controls are handled by the canvas component
     // This component just provides visual feedback
     
-    // Add keyboard shortcuts for audio settings and device selector
+    // Add keyboard shortcut for audio settings
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
       if (e.key === 'a' || e.key === 'A') {
         handleAudioSettings();
-      }
-      if (e.key === 'd' || e.key === 'D') {
-        handleDeviceSelector();
       }
     };
 
@@ -169,20 +158,6 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               </Button>
               <span className="text-xs text-gray-300">
                 A
-              </span>
-            </div>
-            
-            <div className="flex flex-col items-center gap-1">
-              <Button
-                onClick={handleDeviceSelector}
-                size="sm"
-                variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
-              >
-                <Monitor className="h-4 w-4" />
-              </Button>
-              <span className="text-xs text-gray-300">
-                D
               </span>
             </div>
           </div>
@@ -310,20 +285,6 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               A
             </span>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handleDeviceSelector}
-              size="sm"
-              variant="outline"
-              className="bg-white/90 hover:bg-white border-gray-300"
-            >
-              <Monitor className="h-4 w-4" />
-            </Button>
-            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-              D
-            </span>
-          </div>
         </div>
       )}
       
@@ -342,11 +303,6 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
         isOpen={showAudioSettings} 
         onClose={() => setShowAudioSettings(false)} 
       />
-      
-      {/* Device Selector Modal */}
-      {showDeviceSelector && (
-        <DeviceSelector onClose={() => setShowDeviceSelector(false)} />
-      )}
     </>
   );
 }
