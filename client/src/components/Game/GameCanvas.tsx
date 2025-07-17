@@ -49,13 +49,13 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       canvasHeight = window.innerHeight;
       
       // Subtract estimated browser UI space
-      // In most browsers: tabs (35-40px) + address bar (30-35px) + bookmarks bar (30px optional)
-      const estimatedBrowserUI = 100; // More aggressive estimate to ensure visibility
-      canvasHeight = Math.max(canvasHeight - estimatedBrowserUI, 300); // Minimum height
+      // In most browsers: tabs (40-50px) + address bar (35-45px) + bookmarks bar (30px optional) + extra margin
+      const estimatedBrowserUI = 200; // Very aggressive estimate to ensure full visibility
+      canvasHeight = Math.max(canvasHeight - estimatedBrowserUI, 250); // Minimum height
       
       // Additional check: if we're in an iframe or embedded context, be more conservative
       if (window !== window.parent) {
-        canvasHeight = Math.max(canvasHeight - 50, 300); // Extra space for iframe context
+        canvasHeight = Math.max(canvasHeight - 100, 250); // Extra space for iframe context
       }
       
       // Set canvas size to match visible area
@@ -71,7 +71,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         gameEngineRef.current.updateDimensions(canvasWidth, canvasHeight);
       }
       
-      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (original: ${window.innerWidth}x${window.innerHeight}, reduced by ${100 + (window !== window.parent ? 50 : 0)}px for browser UI)`);
+      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (original: ${window.innerWidth}x${window.innerHeight}, reduced by ${200 + (window !== window.parent ? 100 : 0)}px for browser UI)`);
     };
 
     resizeCanvas();
