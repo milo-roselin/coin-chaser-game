@@ -40,43 +40,23 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to exact available viewport
+    // Set canvas size using CSS viewport dimensions
     const resizeCanvas = () => {
-      // For iPad/mobile devices, use a more aggressive approach
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      let availableWidth, availableHeight;
+      // Get the actual rendered size of the canvas element
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
       
-      if (isIPad) {
-        // For iPad, try to get the full screen dimensions
-        const screenWidth = screen.width;
-        const screenHeight = screen.height;
-        
-        // Use the larger values between window and screen to ensure full coverage
-        availableWidth = Math.max(window.innerWidth, screenWidth);
-        availableHeight = Math.max(window.innerHeight, screenHeight);
-        
-        // Also try using screen.availWidth/availHeight if larger
-        if (screen.availWidth > availableWidth) availableWidth = screen.availWidth;
-        if (screen.availHeight > availableHeight) availableHeight = screen.availHeight;
-        
-      } else if (isIOS) {
-        // On other iOS devices, use window dimensions
-        availableWidth = window.innerWidth;
-        availableHeight = window.innerHeight;
-      } else if (window.visualViewport) {
-        availableWidth = window.visualViewport.width;
-        availableHeight = window.visualViewport.height;
-      } else {
-        // Fallback: use the actual rendered dimensions of the viewport
-        availableWidth = Math.min(window.innerWidth, document.documentElement.clientWidth);
-        availableHeight = Math.min(window.innerHeight, document.documentElement.clientHeight);
+      // Set canvas internal resolution to match display size
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      // Scale the context to match device pixel ratio
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(dpr, dpr);
       }
       
-      canvas.width = availableWidth;
-      canvas.height = availableHeight;
-      
-      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (${isIPad ? 'iPad' : isIOS ? 'iOS' : 'visual viewport'}) - screen: ${screen.width}x${screen.height}, window: ${window.innerWidth}x${window.innerHeight}`);
+      console.log(`Canvas resized to: ${canvas.width}x${canvas.height} (internal), ${rect.width}x${rect.height} (display), DPR: ${dpr}`);
     };
 
     resizeCanvas();
@@ -102,10 +82,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     });
     resizeObserver.observe(document.documentElement);
 
-    // Initialize game engine
+    // Initialize game engine with display dimensions
+    const rect = canvas.getBoundingClientRect();
     gameEngineRef.current = new GameEngine(
-      canvas.width,
-      canvas.height,
+      rect.width,
+      rect.height,
       {
         onCoinCollected: (score: number) => {
           updateScore(score);
