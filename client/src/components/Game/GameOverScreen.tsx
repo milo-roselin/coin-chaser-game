@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { RotateCcw, Home, Play, Lock } from "lucide-react";
+import CoinBankDisplay from "./CoinBankDisplay";
 
 export default function GameOverScreen() {
   const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel } = useCoinGame();
@@ -88,7 +89,12 @@ export default function GameOverScreen() {
   }, [handleRetry, handleHome, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+      {/* Coin Bank Display - Top Left */}
+      <div className="absolute top-4 left-4 z-10">
+        <CoinBankDisplay />
+      </div>
+      
       {/* Game Over Message */}
       <div className="mb-8 text-center">
         <div className="text-6xl mb-4">💥</div>

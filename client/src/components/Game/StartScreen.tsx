@@ -3,14 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { useCoinBank } from "@/lib/stores/useCoinBank";
-import { Trophy, Play, Volume2, VolumeX, Lock, Settings, Coins } from "lucide-react";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
+import CoinBankDisplay from "./CoinBankDisplay";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
-  const { totalCoins, sessionCoins } = useCoinBank();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAudioSettings, setShowAudioSettings] = useState(false);
@@ -148,7 +147,12 @@ export default function StartScreen() {
   }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+      {/* Coin Bank Display - Top Left */}
+      <div className="absolute top-4 left-4 z-10">
+        <CoinBankDisplay showSessionCoins={true} />
+      </div>
+      
       {/* Game Logo */}
       <div className="mb-8 text-center">
         <div className="mb-4 flex justify-center">
@@ -156,33 +160,16 @@ export default function StartScreen() {
         </div>
         <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
         <p className="text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
-        <div className="mt-4 space-y-2">
-          {/* Coin Bank Display */}
-          <div className="p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300">
-            <div className="flex items-center justify-center space-x-2">
-              <Coins className="h-5 w-5 text-yellow-600" />
-              <p className="text-sm font-semibold text-yellow-800">
-                Coin Bank: {totalCoins.toLocaleString()}
-              </p>
-            </div>
-            {sessionCoins > 0 && (
-              <p className="text-xs text-yellow-700 text-center mt-1">
-                +{sessionCoins} this session
-              </p>
-            )}
+        {highestLevelUnlocked > 1 && (
+          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
+            <p className="text-sm font-semibold text-purple-700">
+              Checkpoint: Level {highestLevelUnlocked} Unlocked
+            </p>
+            <p className="text-xs text-purple-600">
+              Total Score: {totalScore.toLocaleString()}
+            </p>
           </div>
-          
-          {highestLevelUnlocked > 1 && (
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <p className="text-sm font-semibold text-purple-700">
-                Checkpoint: Level {highestLevelUnlocked} Unlocked
-              </p>
-              <p className="text-xs text-purple-600">
-                Total Score: {totalScore.toLocaleString()}
-              </p>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Main Menu Card */}

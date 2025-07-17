@@ -6,6 +6,7 @@ import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { Trophy, Home, Upload, Lock, Coins } from "lucide-react";
+import CoinBankDisplay from "./CoinBankDisplay";
 
 export default function VictoryScreen() {
   const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
@@ -121,7 +122,12 @@ export default function VictoryScreen() {
   }, [handleHome, handleSubmitScore, scoreSubmitted, playerName, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+      {/* Coin Bank Display - Top Left */}
+      <div className="absolute top-4 left-4 z-10">
+        <CoinBankDisplay showSessionCoins={true} />
+      </div>
+      
       {/* Victory Message */}
       <div className="mb-8 text-center">
         <div className="text-6xl mb-4">🎉</div>
@@ -149,19 +155,7 @@ export default function VictoryScreen() {
             <div className="text-sm text-gray-500">
               Total Coins: <span className="font-semibold text-yellow-600">{totalCoinsCollected}</span>
             </div>
-            <div className="p-2 bg-yellow-50 rounded-lg border border-yellow-200 mt-2">
-              <div className="flex items-center justify-center space-x-2">
-                <Coins className="h-4 w-4 text-yellow-600" />
-                <span className="text-sm font-semibold text-yellow-800">
-                  Coin Bank: {totalCoins.toLocaleString()}
-                </span>
-              </div>
-              {sessionCoins > 0 && (
-                <p className="text-xs text-yellow-700 text-center">
-                  +{sessionCoins} this session
-                </p>
-              )}
-            </div>
+
           </div>
 
           <div className="space-y-4">
