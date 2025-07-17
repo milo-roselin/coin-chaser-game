@@ -43,7 +43,7 @@ export const useAudio = create<AudioState>((set, get) => ({
   successSound: null,
   explosionSound: null,
   coinSound: null,
-  isMuted: true, // Start muted by default
+  isMuted: false, // Start unmuted by default
   isBackgroundMusicPlaying: false,
   
   // Default volume levels

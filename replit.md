@@ -103,3 +103,4 @@ The application is architected for scalability with clear separation between fro
 - **Boundary Constraints**: Implemented comprehensive boundary checks to prevent game objects from overlapping control panel area
 - **Mandatory Name Input**: Removed anonymous score submissions - players must enter a name to save their score to the leaderboard
 - **Leaderboard Restrictions**: Players can only edit their own name (multiple edits allowed)
+- **Audio System Updates**: Game now starts with audio unmuted by default, with mute controls available in home screen and during gameplay

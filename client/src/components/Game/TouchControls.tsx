@@ -2,8 +2,9 @@ import { useRef, useEffect, useState } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { Button } from "@/components/ui/button";
-import { Pause, Home, Settings } from "lucide-react";
+import { Pause, Home, Settings, Volume2, VolumeX } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
+import { useAudio } from "@/lib/stores/useAudio";
 
 interface TouchControlsProps {
   onPause?: () => void;
@@ -15,6 +16,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
   const { playerPosition, resetGame } = useCoinGame();
   const isMobile = useIsMobile();
   const [showAudioSettings, setShowAudioSettings] = useState(false);
+  const { isMuted, toggleMute } = useAudio();
 
   const handlePause = () => {
     if (onPause) {
@@ -38,12 +40,16 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     // Touch controls are handled by the canvas component
     // This component just provides visual feedback
     
-    // Add keyboard shortcut for audio settings
+    // Add keyboard shortcuts for audio controls
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
       if (e.key === 'a' || e.key === 'A') {
         handleAudioSettings();
+      }
+      
+      if (e.key === 'm' || e.key === 'M') {
+        toggleMute();
       }
     };
 
@@ -146,6 +152,20 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               </Button>
               <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
                 H
+              </span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-1">
+              <Button
+                onClick={toggleMute}
+                size="sm"
+                variant="default"
+                className="bg-purple-600 hover:bg-purple-500 border-purple-400 text-white w-16 h-12 relative z-[9999] shadow-lg border-2"
+              >
+                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </Button>
+              <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
+                M
               </span>
             </div>
             
@@ -271,6 +291,21 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
             </Button>
             <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
               H
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={toggleMute}
+              size="sm"
+              variant="outline"
+              className="bg-white/90 hover:bg-white border-gray-300"
+              title={isMuted ? "Unmute audio [M]" : "Mute audio [M]"}
+            >
+              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </Button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              M
             </span>
           </div>
           
