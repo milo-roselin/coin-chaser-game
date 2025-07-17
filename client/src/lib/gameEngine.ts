@@ -215,8 +215,8 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: 1 + Math.random() * 0.5, // Slower, more consistent movement
-          vy: 1 + Math.random() * 0.5,
+          vx: 2.5 + Math.random() * 1.5, // Faster movement
+          vy: 2.5 + Math.random() * 1.5,
           patrolStartX: clusterX, // center X of circular patrol
           patrolStartY: clusterY, // center Y of circular patrol
           patrolEndX: patrolRadius, // using this as radius
@@ -248,8 +248,8 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: 1 + Math.random() * 0.5,
-            vy: 1 + Math.random() * 0.5,
+            vx: 2.5 + Math.random() * 1.5,
+            vy: 2.5 + Math.random() * 1.5,
             patrolStartX: clusterX,
             patrolStartY: clusterY,
             patrolEndX: patrolRadius,
@@ -292,7 +292,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
+          vx: (2.5 + Math.random() * 1.5) * (1 + this.level * 0.1), // Faster movement
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -312,7 +312,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (1 + Math.random() * 1) * (1 + this.level * 0.1), // Slower and more consistent
+          vy: (2.5 + Math.random() * 1.5) * (1 + this.level * 0.1), // Faster movement
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
