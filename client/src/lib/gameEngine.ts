@@ -700,12 +700,25 @@ export class GameEngine {
       }
     }
 
+    // First calculate camera position
+    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
+    const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
+    const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
+    
+    this.cameraX = Math.max(0, Math.min(
+      maxCameraX,
+      this.player.x - effectiveCanvasWidthForCamera / 2
+    ));
+
     // Keep player in bounds - account for control panel on mobile
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
-    // Player should stop at the edge of the control panel when it appears on screen
-    const effectiveCanvasWidth = this.canvasWidth - controlPanelWidth;
-    const maxPlayerX = this.levelWidth - this.player.width - controlPanelWidth;
+    
+    // The player should be able to move through the level but stop when they would go under the control panel
+    // This means the rightmost position should be relative to the current camera position + canvas width - control panel width
+    const rightBoundary = this.cameraX + this.canvasWidth - controlPanelWidth;
+    const maxPlayerX = Math.min(this.levelWidth - this.player.width, rightBoundary - this.player.width);
     
     this.player.x = Math.max(0, Math.min(maxPlayerX, this.player.x));
     this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
@@ -765,16 +778,7 @@ export class GameEngine {
       }
     });
 
-    // Update camera to follow player - account for control panel on mobile
-    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
-    const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
-    const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
-    
-    this.cameraX = Math.max(0, Math.min(
-      maxCameraX,
-      this.player.x - effectiveCanvasWidthForCamera / 2
-    ));
+    // Camera position already updated above
 
     // Notify callback of player movement
     this.callbacks.onPlayerMove(this.player.x, this.player.y);
