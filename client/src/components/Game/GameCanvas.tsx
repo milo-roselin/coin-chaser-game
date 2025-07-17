@@ -42,12 +42,26 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     // Set canvas size to exact available viewport
     const resizeCanvas = () => {
-      // For iPad/mobile devices, use a more conservative approach
+      // For iPad/mobile devices, use a more aggressive approach
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       let availableWidth, availableHeight;
       
-      if (isIOS) {
-        // On iOS devices, use window.innerWidth/Height which gives the viewport excluding browser chrome
+      if (isIPad) {
+        // For iPad, try to get the full screen dimensions
+        const screenWidth = screen.width;
+        const screenHeight = screen.height;
+        
+        // Use the larger values between window and screen to ensure full coverage
+        availableWidth = Math.max(window.innerWidth, screenWidth);
+        availableHeight = Math.max(window.innerHeight, screenHeight);
+        
+        // Also try using screen.availWidth/availHeight if larger
+        if (screen.availWidth > availableWidth) availableWidth = screen.availWidth;
+        if (screen.availHeight > availableHeight) availableHeight = screen.availHeight;
+        
+      } else if (isIOS) {
+        // On other iOS devices, use window dimensions
         availableWidth = window.innerWidth;
         availableHeight = window.innerHeight;
       } else if (window.visualViewport) {
@@ -62,7 +76,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       canvas.width = availableWidth;
       canvas.height = availableHeight;
       
-      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (${isIOS ? 'iOS' : 'visual viewport'})`);
+      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (${isIPad ? 'iPad' : isIOS ? 'iOS' : 'visual viewport'}) - screen: ${screen.width}x${screen.height}, window: ${window.innerWidth}x${window.innerHeight}`);
     };
 
     resizeCanvas();
