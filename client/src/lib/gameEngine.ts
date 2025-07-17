@@ -49,7 +49,6 @@ export class GameEngine {
   private playerVelocity = { x: 0, y: 0 }; // Player velocity for smoother movement
   private isInitialized = false; // Flag to prevent rendering before proper initialization
   private renderFrameCount = 0; // Count frames to ensure stability before rendering
-  private lastCameraX = -1; // Track camera position for stability check
 
   constructor(
     private canvasWidth: number, 
@@ -925,11 +924,8 @@ export class GameEngine {
   }
 
   public render(ctx: CanvasRenderingContext2D) {
-    // Don't render anything until fully initialized AND several frames have passed AND camera is stable
-    const cameraStable = this.lastCameraX === this.cameraX;
-    this.lastCameraX = this.cameraX;
-    
-    if (!this.isInitialized || this.renderFrameCount < 15 || !cameraStable) {
+    // Only prevent rendering during the initial startup period
+    if (!this.isInitialized || this.renderFrameCount < 5) {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.renderFrameCount++;
