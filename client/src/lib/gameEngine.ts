@@ -72,9 +72,11 @@ export class GameEngine {
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
 
-    // Initialize goal (portal) - position it to avoid control panel
+    // Initialize goal (portal) - position it at the same spot where player stops (right at control panel edge)
+    // For mobile: at the edge of the control panel, for desktop: at the end of the level
+    const portalX = isMobile ? this.levelWidth - controlPanelWidth - 120 : this.levelWidth - 120;
     this.goal = {
-      x: this.levelWidth - 120 - controlPanelWidth,
+      x: portalX,
       y: canvasHeight / 2 - 60,
       width: 120,
       height: 120,
@@ -257,10 +259,10 @@ export class GameEngine {
     // But keep them away from the portal area (right side)
     const numBarriers = 18 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 12)
     const barrierRows = 2; // Multiple rows of barriers (back to 2)
-    // Calculate safe zone based on control panel width
+    // Calculate safe zone based on control panel width - make sure it accounts for the new portal position
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
-    const portalSafeZone = 200 + controlPanelWidth; // Keep TNT away from portal area and control panel
+    const portalSafeZone = 250 + controlPanelWidth; // Keep TNT away from portal area and control panel (increased for new portal position)
     
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
