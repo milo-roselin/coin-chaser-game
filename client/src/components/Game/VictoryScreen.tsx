@@ -14,11 +14,12 @@ export default function VictoryScreen() {
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Auto-submit score when screen loads
+  // Load saved name when screen loads but don't auto-submit
   useEffect(() => {
     const savedName = localStorage.getItem('playerName');
     if (savedName) {
       setPlayerName(savedName);
+      // Auto-submit only if we have a saved name
       addScore({
         name: savedName,
         score: totalScore,
@@ -26,16 +27,8 @@ export default function VictoryScreen() {
         date: new Date().toISOString()
       });
       setScoreSubmitted(true);
-    } else {
-      // Auto-submit with default name if no name saved
-      addScore({
-        name: 'Anonymous',
-        score: totalScore,
-        coins: totalCoinsCollected,
-        date: new Date().toISOString()
-      });
-      setScoreSubmitted(true);
     }
+    // No anonymous submission - player must enter a name
   }, [addScore, totalScore, totalCoinsCollected]);
 
   const handleSubmitScore = () => {
@@ -132,7 +125,7 @@ export default function VictoryScreen() {
         <div className="text-6xl mb-4">🎉</div>
         <h1 className="text-4xl font-bold text-green-600 mb-2">Level {currentLevel} Complete!</h1>
         <p className="text-lg text-gray-600">
-          Score automatically saved to leaderboard!
+          {scoreSubmitted ? "Score saved to leaderboard!" : "Enter your name to save score"}
         </p>
       </div>
 
@@ -157,13 +150,22 @@ export default function VictoryScreen() {
           </div>
 
           <div className="space-y-4">
-            <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
-              <Trophy className="mr-2 h-5 w-5" />
-              Score saved to leaderboard!
-            </div>
+            {scoreSubmitted ? (
+              <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
+                <Trophy className="mr-2 h-5 w-5" />
+                Score saved to leaderboard!
+              </div>
+            ) : (
+              <div className="text-orange-600 font-semibold flex items-center justify-center mb-4">
+                <Trophy className="mr-2 h-5 w-5" />
+                Enter your name to save score
+              </div>
+            )}
             
             <div className="border-t pt-4">
-              <p className="text-sm text-gray-600 mb-2">Want to update your name?</p>
+              <p className="text-sm text-gray-600 mb-2">
+                {scoreSubmitted ? "Want to update your name?" : "Enter your name to save to leaderboard:"}
+              </p>
               <Input
                 placeholder="Enter your name"
                 value={playerName}
@@ -183,7 +185,7 @@ export default function VictoryScreen() {
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
               >
                 <Upload className="mr-2 h-4 w-4" />
-                Update Name
+                {scoreSubmitted ? "Update Name" : "Save Score"}
                 <span className="ml-auto text-sm opacity-75">[S]</span>
               </Button>
             </div>

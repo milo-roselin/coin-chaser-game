@@ -101,3 +101,4 @@ The application is architected for scalability with clear separation between fro
 - **Enhanced Mobile Detection**: Improved iPad and tablet detection for proper control panel display
 - **TNT Movement Optimization**: Fixed TNT disappearing/reappearing issues and reduced clustering around coin clusters
 - **Boundary Constraints**: Implemented comprehensive boundary checks to prevent game objects from overlapping control panel area
+- **Mandatory Name Input**: Removed anonymous score submissions - players must enter a name to save their score to the leaderboard

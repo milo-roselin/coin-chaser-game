@@ -15,6 +15,7 @@ export default function LeaderboardScreen() {
   // Clean up anonymous entries on component mount
   useEffect(() => {
     removeScore("anonymous");
+    removeScore("Anonymous");
   }, [removeScore]);
 
   const handleBack = () => {
