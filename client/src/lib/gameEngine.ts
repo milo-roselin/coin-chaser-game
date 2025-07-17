@@ -482,13 +482,14 @@ export class GameEngine {
     return true;
   }
 
-  public handleTouchStart(x: number, y: number) {
+  public handlePointerStart(x: number, y: number) {
     this.isTouching = true;
     this.touchPosition = { x, y };
     this.previousTouchPosition = { x, y };
     
-    // Set player position directly to finger position for immediate response
-    this.player.x = x - this.player.width / 2;
+    // Set player position directly to pointer position with camera offset
+    const worldX = x + this.cameraX;
+    this.player.x = worldX - this.player.width / 2;
     this.player.y = y - this.player.height / 2;
     
     // Keep player in bounds
@@ -497,31 +498,34 @@ export class GameEngine {
     
     // Update camera immediately
     this.updateCamera();
+    
+    // Notify callback of player movement
+    this.callbacks.onPlayerMove(this.player.x, this.player.y);
   }
 
-  public handleTouchMove(x: number, y: number) {
+  public handlePointerMove(x: number, y: number) {
     if (this.isTouching) {
       this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
       
-      // Direct position tracking - set player to finger position
+      // Set player position directly to pointer position with camera offset
+      const worldX = x + this.cameraX;
+      this.player.x = worldX - this.player.width / 2;
+      this.player.y = y - this.player.height / 2;
+      
+      // Keep player in bounds
+      this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+      this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+      
+      // Calculate velocity for animation
       if (this.previousTouchPosition) {
         const deltaX = x - this.previousTouchPosition.x;
         const deltaY = y - this.previousTouchPosition.y;
         
-        // Set player position directly to finger position (centered on player)
-        this.player.x = x - this.player.width / 2;
-        this.player.y = y - this.player.height / 2;
-        
-        // Keep player in bounds
-        this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
-        this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
-        
-        // Update velocity for animation (based on movement delta)
         this.playerVelocity.x = deltaX;
         this.playerVelocity.y = deltaY;
         
-        // Update animation state for touch input
+        // Update animation state
         const movementThreshold = 0.1;
         this.isMoving = Math.abs(deltaX) > movementThreshold || Math.abs(deltaY) > movementThreshold;
         if (this.isMoving) {
@@ -533,17 +537,17 @@ export class GameEngine {
             this.facingDirection = -1; // Moving left
           }
         }
-        
-        // Update camera to follow player
-        this.updateCamera();
-        
-        // Notify callback of player movement
-        this.callbacks.onPlayerMove(this.player.x, this.player.y);
       }
+      
+      // Update camera to follow player
+      this.updateCamera();
+      
+      // Notify callback of player movement
+      this.callbacks.onPlayerMove(this.player.x, this.player.y);
     }
   }
 
-  public handleTouchEnd() {
+  public handlePointerEnd() {
     this.isTouching = false;
     this.touchPosition = null;
     this.previousTouchPosition = null;
