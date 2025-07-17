@@ -53,6 +53,7 @@ interface DeviceSettingsState {
   selectedDevice: DeviceProfile | null;
   showDeviceSelector: boolean;
   onlineDevices: DeviceProfile[];
+  customDevices: DeviceProfile[];
   isLoadingOnlineDevices: boolean;
   onlineDevicesError: string | null;
   setSelectedDevice: (device: DeviceProfile) => void;
@@ -61,6 +62,7 @@ interface DeviceSettingsState {
   applyDeviceSettings: (device: DeviceProfile) => void;
   fetchOnlineDevices: () => Promise<void>;
   getAvailableDevices: () => DeviceProfile[];
+  addCustomDevice: (device: DeviceProfile) => void;
 }
 
 export const useDeviceSettings = create<DeviceSettingsState>()(
@@ -69,6 +71,7 @@ export const useDeviceSettings = create<DeviceSettingsState>()(
       selectedDevice: null,
       showDeviceSelector: false,
       onlineDevices: [],
+      customDevices: [],
       isLoadingOnlineDevices: false,
       onlineDevicesError: null,
       
@@ -213,15 +216,22 @@ export const useDeviceSettings = create<DeviceSettingsState>()(
       },
       
       getAvailableDevices: () => {
-        const { onlineDevices } = get();
-        return [...deviceProfiles, ...onlineDevices];
+        const { onlineDevices, customDevices } = get();
+        return [...deviceProfiles, ...onlineDevices, ...customDevices];
+      },
+      
+      addCustomDevice: (device: DeviceProfile) => {
+        const { customDevices } = get();
+        const updatedCustomDevices = [...customDevices, device];
+        set({ customDevices: updatedCustomDevices });
       }
     }),
     {
       name: 'device-settings',
       partialize: (state) => ({
         selectedDevice: state.selectedDevice,
-        onlineDevices: state.onlineDevices
+        onlineDevices: state.onlineDevices,
+        customDevices: state.customDevices
       })
     }
   )

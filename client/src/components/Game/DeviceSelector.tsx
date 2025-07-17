@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Monitor, Tablet, Smartphone, X, Check, RefreshCw, Wifi, AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Search, Monitor, Tablet, Smartphone, X, Check, RefreshCw, Wifi, AlertCircle, Plus } from 'lucide-react';
 
 interface DeviceSelectorProps {
   onClose: () => void;
@@ -20,10 +22,20 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
     fetchOnlineDevices,
     isLoadingOnlineDevices,
     onlineDevicesError,
-    onlineDevices
+    onlineDevices,
+    addCustomDevice
   } = useDeviceSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'mobile' | 'tablet' | 'desktop'>('all');
+  const [showAddDevice, setShowAddDevice] = useState(false);
+  const [newDevice, setNewDevice] = useState({
+    name: '',
+    width: '',
+    height: '',
+    pixelRatio: '1',
+    description: '',
+    category: 'mobile' as 'mobile' | 'tablet' | 'desktop'
+  });
 
   const currentDevice = getCurrentDevice();
   const allDevices = getAvailableDevices();
@@ -38,11 +50,45 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
   }, []);
 
   const filteredDevices = allDevices.filter(device => {
-    const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         device.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = device.name.toLowerCase().includes(searchLower) ||
+                         device.description.toLowerCase().includes(searchLower) ||
+                         device.id.toLowerCase().includes(searchLower) ||
+                         `${device.width}x${device.height}`.includes(searchLower) ||
+                         device.width.toString().includes(searchLower) ||
+                         device.height.toString().includes(searchLower);
     const matchesCategory = activeCategory === 'all' || device.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleAddCustomDevice = () => {
+    if (newDevice.name && newDevice.width && newDevice.height) {
+      const customDevice: DeviceProfile = {
+        id: `custom-${Date.now()}`,
+        name: newDevice.name,
+        width: parseInt(newDevice.width),
+        height: parseInt(newDevice.height),
+        pixelRatio: parseFloat(newDevice.pixelRatio),
+        description: newDevice.description || `Custom ${newDevice.name}`,
+        category: newDevice.category
+      };
+      
+      // Add to the store's custom devices
+      addCustomDevice(customDevice);
+      setSelectedDevice(customDevice);
+      setShowAddDevice(false);
+      
+      // Reset form
+      setNewDevice({
+        name: '',
+        width: '',
+        height: '',
+        pixelRatio: '1',
+        description: '',
+        category: 'mobile'
+      });
+    }
+  };
 
   const handleDeviceSelect = (device: DeviceProfile) => {
     setSelectedDevice(device);
@@ -103,12 +149,12 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
             </div>
           </div>
 
-          {/* Search and Online Status */}
+          {/* Search and Actions */}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search devices..."
+                placeholder="Search devices (name, resolution, dimensions)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -128,6 +174,109 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
                 <Wifi className="w-4 h-4" />
               )}
             </Button>
+            
+            <Dialog open={showAddDevice} onOpenChange={setShowAddDevice}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0">
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Custom Device</DialogTitle>
+                  <DialogDescription>
+                    Add your specific device if it's not in the list
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="device-name">Device Name</Label>
+                    <Input
+                      id="device-name"
+                      placeholder="e.g., My Custom Device"
+                      value={newDevice.name}
+                      onChange={(e) => setNewDevice({...newDevice, name: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="device-width">Width (px)</Label>
+                      <Input
+                        id="device-width"
+                        type="number"
+                        placeholder="1920"
+                        value={newDevice.width}
+                        onChange={(e) => setNewDevice({...newDevice, width: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="device-height">Height (px)</Label>
+                      <Input
+                        id="device-height"
+                        type="number"
+                        placeholder="1080"
+                        value={newDevice.height}
+                        onChange={(e) => setNewDevice({...newDevice, height: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="device-ratio">Pixel Ratio</Label>
+                    <Input
+                      id="device-ratio"
+                      type="number"
+                      step="0.1"
+                      placeholder="1.0"
+                      value={newDevice.pixelRatio}
+                      onChange={(e) => setNewDevice({...newDevice, pixelRatio: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="device-description">Description (optional)</Label>
+                    <Input
+                      id="device-description"
+                      placeholder="e.g., My gaming monitor"
+                      value={newDevice.description}
+                      onChange={(e) => setNewDevice({...newDevice, description: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="device-category">Category</Label>
+                    <select
+                      id="device-category"
+                      value={newDevice.category}
+                      onChange={(e) => setNewDevice({...newDevice, category: e.target.value as any})}
+                      className="w-full p-2 border rounded-md"
+                    >
+                      <option value="mobile">Mobile</option>
+                      <option value="tablet">Tablet</option>
+                      <option value="desktop">Desktop</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleAddCustomDevice}
+                      disabled={!newDevice.name || !newDevice.width || !newDevice.height}
+                      className="flex-1"
+                    >
+                      Add Device
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setShowAddDevice(false)}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
           
           {/* Online Status */}
@@ -177,6 +326,22 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
                       <RefreshCw className="w-4 h-4 animate-spin" />
                       <span>Loading online devices...</span>
                     </div>
+                  </div>
+                )}
+                {!isLoadingOnlineDevices && filteredDevices.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <div className="mb-4">No devices found matching your search</div>
+                    <div className="text-sm text-gray-400 mb-4">
+                      Try searching by device name, resolution (e.g., "1920x1080"), or dimensions
+                    </div>
+                    <Button 
+                      onClick={() => setShowAddDevice(true)}
+                      variant="outline"
+                      className="mx-auto"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Your Device
+                    </Button>
                   </div>
                 )}
                 {filteredDevices.map((device) => (
