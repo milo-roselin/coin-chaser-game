@@ -34,23 +34,33 @@ export default function TouchControls() {
 
   return (
     <>
-      {/* Speed control buttons for mobile */}
+      {/* Speed control buttons for touch devices (including iPad) */}
       {isMobile && (
-        <div className="absolute top-4 right-4 flex flex-col gap-2 pointer-events-auto">
-          <button
-            onTouchStart={handleSpeedIncrease}
-            onClick={handleSpeedIncrease}
-            className="bg-blue-500 hover:bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg"
-          >
-            +
-          </button>
-          <button
-            onTouchStart={handleSpeedDecrease}
-            onClick={handleSpeedDecrease}
-            className="bg-blue-500 hover:bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg"
-          >
-            -
-          </button>
+        <div className="absolute top-20 right-4 flex flex-col gap-3 pointer-events-auto z-10">
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onTouchStart={handleSpeedIncrease}
+              onClick={handleSpeedIncrease}
+              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg transition-all duration-150"
+            >
+              +
+            </button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              Speed+
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onTouchStart={handleSpeedDecrease}
+              onClick={handleSpeedDecrease}
+              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg transition-all duration-150"
+            >
+              -
+            </button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              Speed-
+            </span>
+          </div>
         </div>
       )}
       

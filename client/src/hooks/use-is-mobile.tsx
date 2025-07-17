@@ -8,10 +8,16 @@ export function useIsMobile() {
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+      // Check for mobile breakpoint OR touch capability (includes iPad)
+      const isSmallScreen = window.innerWidth < MOBILE_BREAKPOINT
+      const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      setIsMobile(isSmallScreen || hasTouchScreen)
     }
     mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    // Initialize with both screen size and touch capability check
+    const isSmallScreen = window.innerWidth < MOBILE_BREAKPOINT
+    const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    setIsMobile(isSmallScreen || hasTouchScreen)
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
