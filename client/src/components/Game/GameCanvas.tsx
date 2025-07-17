@@ -40,14 +40,36 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size
+    // Set canvas size to exact available viewport
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Use the actual available viewport size, accounting for browser chrome
+      const rect = document.documentElement.getBoundingClientRect();
+      const availableWidth = document.documentElement.clientWidth;
+      const availableHeight = document.documentElement.clientHeight;
+      
+      canvas.width = availableWidth;
+      canvas.height = availableHeight;
+      
+      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (viewport size)`);
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    
+    // Also listen for orientation changes and viewport changes
+    window.addEventListener("orientationchange", () => {
+      setTimeout(resizeCanvas, 100); // Small delay to let orientation settle
+    });
+    
+    // Listen for viewport size changes (like when browser chrome appears/disappears)
+    const resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === document.documentElement) {
+          resizeCanvas();
+        }
+      }
+    });
+    resizeObserver.observe(document.documentElement);
 
     // Initialize game engine
     gameEngineRef.current = new GameEngine(
@@ -98,8 +120,10 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("orientationchange", resizeCanvas);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      resizeObserver.disconnect();
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }

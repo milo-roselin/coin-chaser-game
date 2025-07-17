@@ -16,13 +16,16 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  body {
+  html, body {
     @apply font-sans antialiased bg-background text-foreground;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
   }
 }
 
@@ -30,12 +33,19 @@
   width: 100%;
   height: 100%;
   position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }
 
 canvas {
   width: 100% !important;
   height: 100% !important;
   touch-action: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
 }
 
 /* Prevent button highlighting and focus states */
