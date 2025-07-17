@@ -1180,14 +1180,19 @@ export class GameEngine {
   }
 
   private drawObstacle(ctx: CanvasRenderingContext2D, obstacle: GameObject) {
-    // Don't render obstacles that are too close to the initial camera view
-    // This prevents the TNT flash at startup
-    const obstacleWorldX = obstacle.x;
-    const screenX = obstacleWorldX - this.cameraX;
+    // iPad-specific fix: Skip the startup area rendering restriction on iPad
+    const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
-    // Skip rendering if obstacle would appear in the initial startup area
-    if (screenX >= -50 && screenX <= 400 && this.cameraX < 100) {
-      return; // Don't render TNT near startup area
+    if (!isIPad) {
+      // Don't render obstacles that are too close to the initial camera view
+      // This prevents the TNT flash at startup (but not on iPad where it causes disappearing issues)
+      const obstacleWorldX = obstacle.x;
+      const screenX = obstacleWorldX - this.cameraX;
+      
+      // Skip rendering if obstacle would appear in the initial startup area
+      if (screenX >= -50 && screenX <= 400 && this.cameraX < 100) {
+        return; // Don't render TNT near startup area
+      }
     }
     
     // Draw TNT barrel body
