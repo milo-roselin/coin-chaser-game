@@ -104,35 +104,37 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     };
   }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
 
-  // Handle touch input with direct position tracking
-  const handlePointerDown = (e: React.PointerEvent) => {
-    e.preventDefault();
-    if (gameEngineRef.current && canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        gameEngineRef.current.handlePointerStart(x, y);
-      }
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    e.preventDefault();
-    if (gameEngineRef.current && canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      if (rect) {
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        gameEngineRef.current.handlePointerMove(x, y);
-      }
-    }
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
+  // Handle touch input
+  const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
     if (gameEngineRef.current) {
-      gameEngineRef.current.handlePointerEnd();
+      const touch = e.touches[0];
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        gameEngineRef.current.handleTouchStart(x, y);
+      }
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (gameEngineRef.current) {
+      const touch = e.touches[0];
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        gameEngineRef.current.handleTouchMove(x, y);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (gameEngineRef.current) {
+      gameEngineRef.current.handleTouchEnd();
     }
   };
 
@@ -154,10 +156,9 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         ref={canvasRef}
         className="absolute inset-0 touch-none"
         style={{ touchAction: "none" }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
       
       {/* Clickable pause overlay when paused */}
