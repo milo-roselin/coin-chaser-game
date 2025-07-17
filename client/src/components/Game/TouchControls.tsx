@@ -77,23 +77,25 @@ export default function TouchControls() {
       {/* iPad-style controls: Arrow keys on right side + Speed controls */}
       {isMobile && (
         <>
-          {/* Arrow key controls - positioned 1/4 from bottom on right side */}
-          <div className="absolute right-4 pointer-events-auto z-10" style={{ bottom: '25%' }}>
-            <div className="flex flex-col items-center gap-2">
-              {/* Up arrow */}
-              <button
-                onTouchStart={(e) => handleArrowKeyDown('up', e)}
-                onTouchEnd={(e) => handleArrowKeyUp('up', e)}
-                onMouseDown={(e) => handleArrowKeyDown('up', e)}
-                onMouseUp={(e) => handleArrowKeyUp('up', e)}
-                onMouseLeave={(e) => handleArrowKeyUp('up', e)}
-                className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
-              >
-                ↑
-              </button>
+          {/* Arrow key controls - positioned lower on right side in keyboard layout */}
+          <div className="absolute right-4 pointer-events-auto z-10" style={{ bottom: '15%' }}>
+            <div className="flex flex-col items-center gap-1">
+              {/* Up arrow - top row */}
+              <div className="flex justify-center">
+                <button
+                  onTouchStart={(e) => handleArrowKeyDown('up', e)}
+                  onTouchEnd={(e) => handleArrowKeyUp('up', e)}
+                  onMouseDown={(e) => handleArrowKeyDown('up', e)}
+                  onMouseUp={(e) => handleArrowKeyUp('up', e)}
+                  onMouseLeave={(e) => handleArrowKeyUp('up', e)}
+                  className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
+                >
+                  ↑
+                </button>
+              </div>
               
-              {/* Left and Right arrows */}
-              <div className="flex gap-2">
+              {/* Left, Down, Right arrows - bottom row (standard keyboard layout) */}
+              <div className="flex gap-1">
                 <button
                   onTouchStart={(e) => handleArrowKeyDown('left', e)}
                   onTouchEnd={(e) => handleArrowKeyUp('left', e)}
@@ -103,6 +105,16 @@ export default function TouchControls() {
                   className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
                 >
                   ←
+                </button>
+                <button
+                  onTouchStart={(e) => handleArrowKeyDown('down', e)}
+                  onTouchEnd={(e) => handleArrowKeyUp('down', e)}
+                  onMouseDown={(e) => handleArrowKeyDown('down', e)}
+                  onMouseUp={(e) => handleArrowKeyUp('down', e)}
+                  onMouseLeave={(e) => handleArrowKeyUp('down', e)}
+                  className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
+                >
+                  ↓
                 </button>
                 <button
                   onTouchStart={(e) => handleArrowKeyDown('right', e)}
@@ -115,18 +127,6 @@ export default function TouchControls() {
                   →
                 </button>
               </div>
-              
-              {/* Down arrow */}
-              <button
-                onTouchStart={(e) => handleArrowKeyDown('down', e)}
-                onTouchEnd={(e) => handleArrowKeyUp('down', e)}
-                onMouseDown={(e) => handleArrowKeyDown('down', e)}
-                onMouseUp={(e) => handleArrowKeyUp('down', e)}
-                onMouseLeave={(e) => handleArrowKeyUp('down', e)}
-                className="bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white w-14 h-14 rounded-md border-2 border-gray-600 flex items-center justify-center shadow-lg transition-all duration-150 font-mono text-lg font-bold"
-              >
-                ↓
-              </button>
             </div>
           </div>
 
