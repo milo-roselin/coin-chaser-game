@@ -2,18 +2,12 @@ import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHand
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { GameEngine } from "@/lib/gameEngine";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 
-interface GameCanvasRef {
-  togglePause: () => void;
-}
-
-const GameCanvas = forwardRef<GameCanvasRef>((props, ref) => {
+const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const isMobile = useIsMobile();
 
   const { 
     updateScore, 
@@ -110,10 +104,8 @@ const GameCanvas = forwardRef<GameCanvasRef>((props, ref) => {
     };
   }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
 
-  // Handle touch input - disabled for mobile devices (use joystick instead)
+  // Handle touch input
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (isMobile) return;
-    
     e.preventDefault();
     if (gameEngineRef.current) {
       const touch = e.touches[0];
@@ -127,8 +119,6 @@ const GameCanvas = forwardRef<GameCanvasRef>((props, ref) => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (isMobile) return;
-    
     e.preventDefault();
     if (gameEngineRef.current) {
       const touch = e.touches[0];
@@ -142,8 +132,6 @@ const GameCanvas = forwardRef<GameCanvasRef>((props, ref) => {
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (isMobile) return;
-    
     e.preventDefault();
     if (gameEngineRef.current) {
       gameEngineRef.current.handleTouchEnd();
