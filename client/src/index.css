@@ -68,6 +68,32 @@ html {
 body {
   overscroll-behavior: none !important;
   touch-action: manipulation !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    height: -webkit-fill-available !important;
+  }
+  
+  #root {
+    height: -webkit-fill-available !important;
+  }
+  
+  canvas {
+    height: -webkit-fill-available !important;
+  }
+}
+
+/* Additional iPad Safari fixes */
+@media screen and (device-width: 820px) and (device-height: 1180px),
+       screen and (device-width: 834px) and (device-height: 1194px),
+       screen and (device-width: 1024px) and (device-height: 1366px) {
+  html, body, #root {
+    height: 100vh !important;
+    min-height: 100vh !important;
+  }
 }
 
 /* Prevent button highlighting and focus states */

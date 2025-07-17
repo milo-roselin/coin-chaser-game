@@ -42,10 +42,15 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     // Set canvas size to exact available viewport
     const resizeCanvas = () => {
-      // Use visual viewport API if available, otherwise fall back to window dimensions
+      // For iPad/mobile devices, use a more conservative approach
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       let availableWidth, availableHeight;
       
-      if (window.visualViewport) {
+      if (isIOS) {
+        // On iOS devices, use window.innerWidth/Height which gives the viewport excluding browser chrome
+        availableWidth = window.innerWidth;
+        availableHeight = window.innerHeight;
+      } else if (window.visualViewport) {
         availableWidth = window.visualViewport.width;
         availableHeight = window.visualViewport.height;
       } else {
@@ -57,7 +62,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       canvas.width = availableWidth;
       canvas.height = availableHeight;
       
-      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (visual viewport)`);
+      console.log(`Canvas resized to: ${availableWidth}x${availableHeight} (${isIOS ? 'iOS' : 'visual viewport'})`);
     };
 
     resizeCanvas();
