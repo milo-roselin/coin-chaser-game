@@ -40,14 +40,32 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size
+    // Set canvas size to match screen exactly
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Get the actual screen dimensions
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      
+      // Set canvas size to match screen exactly
+      canvas.width = screenWidth;
+      canvas.height = screenHeight;
+      
+      // Also update the canvas style to ensure it fills the screen
+      canvas.style.width = screenWidth + 'px';
+      canvas.style.height = screenHeight + 'px';
+      
+      // If game engine exists, update its dimensions
+      if (gameEngineRef.current) {
+        gameEngineRef.current.updateDimensions(screenWidth, screenHeight);
+      }
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", () => {
+      // Delay resize to ensure proper orientation change handling
+      setTimeout(resizeCanvas, 100);
+    });
 
     // Initialize game engine
     gameEngineRef.current = new GameEngine(
@@ -98,6 +116,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("orientationchange", resizeCanvas);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       if (animationFrameRef.current) {
