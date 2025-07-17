@@ -72,9 +72,11 @@ export class GameEngine {
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
 
-    // Initialize goal (portal) - position it at the same spot where player stops (right at control panel edge)
-    // For mobile: at the edge of the control panel, for desktop: at the end of the level
-    const portalX = isMobile ? this.levelWidth - controlPanelWidth - 120 : this.levelWidth - 120;
+    // Initialize goal (portal) - position it so it can be reached when player is at the right edge
+    // The portal should be positioned where the player can reach it at the control panel boundary
+    // Since the player boundary is dynamic based on camera position, we need to position the portal
+    // at the absolute rightmost position where it would be accessible
+    const portalX = this.levelWidth - controlPanelWidth - 120;
     this.goal = {
       x: portalX,
       y: canvasHeight / 2 - 60,
@@ -83,6 +85,9 @@ export class GameEngine {
       color: '#8B5CF6',
       type: 'goal'
     };
+
+    // Debug logging
+    console.log(`Portal positioning: isMobile=${isMobile}, levelWidth=${this.levelWidth}, controlPanelWidth=${controlPanelWidth}, portalX=${portalX}`);
 
     // Portal image no longer needed - using custom rendering
 
@@ -721,6 +726,11 @@ export class GameEngine {
     // This means the rightmost position should be relative to the current camera position + canvas width - control panel width
     const rightBoundary = this.cameraX + this.canvasWidth - controlPanelWidth;
     const maxPlayerX = Math.min(this.levelWidth - this.player.width, rightBoundary - this.player.width);
+    
+    // Debug logging for player boundaries
+    if (this.player.x > maxPlayerX - 100) { // Only log when near the boundary
+      console.log(`Player boundary: cameraX=${this.cameraX}, canvasWidth=${this.canvasWidth}, controlPanelWidth=${controlPanelWidth}, rightBoundary=${rightBoundary}, maxPlayerX=${maxPlayerX}, playerX=${this.player.x}`);
+    }
     
     this.player.x = Math.max(0, Math.min(maxPlayerX, this.player.x));
     this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
