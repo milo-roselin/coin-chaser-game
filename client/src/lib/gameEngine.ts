@@ -251,8 +251,8 @@ export class GameEngine {
 
     // Add multiple rows of TNT barrier patrols to prevent edge-hugging strategies
     // But keep them away from the portal area (right side)
-    const numBarriers = 12 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 8)
-    const barrierRows = 3; // Multiple rows of barriers (increased from 2)
+    const numBarriers = 18 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 12)
+    const barrierRows = 2; // Multiple rows of barriers (back to 2)
     const portalSafeZone = 200; // Keep TNT away from portal area
     
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
@@ -327,7 +327,7 @@ export class GameEngine {
     // Right edge barrier patrols removed to keep portal area clear
 
     // Add additional dense TNT guards on top and bottom edges for increased difficulty
-    const additionalTopBottomGuards = 6 + Math.floor(this.level / 3); // More guards in higher levels
+    const additionalTopBottomGuards = 10 + Math.floor(this.level / 3); // More guards in higher levels (increased from 6)
     
     // Additional top edge guards (closer spacing, different patrol patterns)
     for (let i = 0; i < additionalTopBottomGuards; i++) {
@@ -372,7 +372,7 @@ export class GameEngine {
     }
 
     // Add staggered TNT guards on top and bottom for varied movement patterns
-    const staggeredGuards = 4 + Math.floor(this.level / 4); // More staggered guards in higher levels
+    const staggeredGuards = 8 + Math.floor(this.level / 4); // More staggered guards in higher levels (increased from 4)
     
     // Staggered top guards with different Y positions
     for (let i = 0; i < staggeredGuards; i++) {
