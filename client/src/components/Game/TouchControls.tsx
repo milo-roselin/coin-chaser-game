@@ -123,12 +123,12 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <Button
                 onClick={handlePause}
                 size="sm"
-                variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
+                variant="default"
+                className="bg-blue-600 hover:bg-blue-500 border-blue-400 text-white w-16 h-12 relative z-50 shadow-lg"
               >
                 <Pause className="h-4 w-4" />
               </Button>
-              <span className="text-xs text-gray-300">
+              <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
                 SPACE
               </span>
             </div>
@@ -137,12 +137,12 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <Button
                 onClick={handleHome}
                 size="sm"
-                variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
+                variant="default"
+                className="bg-red-600 hover:bg-red-500 border-red-400 text-white w-16 h-12 relative z-50 shadow-lg"
               >
                 <Home className="h-4 w-4" />
               </Button>
-              <span className="text-xs text-gray-300">
+              <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
                 H
               </span>
             </div>
@@ -151,12 +151,12 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <Button
                 onClick={handleAudioSettings}
                 size="sm"
-                variant="outline"
-                className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12 relative z-50"
+                variant="default"
+                className="bg-green-600 hover:bg-green-500 border-green-400 text-white w-16 h-12 relative z-50 shadow-lg"
               >
                 <Settings className="h-4 w-4" />
               </Button>
-              <span className="text-xs text-gray-300">
+              <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
                 A
               </span>
             </div>

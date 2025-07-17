@@ -118,9 +118,13 @@ export class GameEngine {
       let clusterX, clusterY;
       let attempts = 0;
       
-      // Find a position that's not too close to existing clusters
+      // Find a position that's not too close to existing clusters and respects control panel
+      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const controlPanelWidth = isMobile ? 128 : 0;
+      const maxClusterX = this.levelWidth - 400; // Keep clusters away from right edge
+      
       do {
-        clusterX = 300 + Math.random() * (this.levelWidth - 800);
+        clusterX = 300 + Math.random() * (maxClusterX - 300);
         clusterY = 100 + Math.random() * (this.canvasHeight - 200);
         attempts++;
       } while (attempts < 50 && clusterPositions.some(pos => 
@@ -142,13 +146,17 @@ export class GameEngine {
         let coinX, coinY;
         let coinAttempts = 0;
         
-        // Ensure coins are placed in valid positions
+        // Ensure coins are placed in valid positions and respect control panel
+        const isMobileForCoins = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const controlPanelWidthForCoins = isMobileForCoins ? 128 : 0;
+        const maxCoinX = this.levelWidth - 200; // Keep coins away from control panel area
+        
         do {
           coinX = clusterX + (Math.random() - 0.5) * 160;
           coinY = clusterY + (Math.random() - 0.5) * 120;
           coinAttempts++;
         } while (coinAttempts < 20 && (
-          coinX < 50 || coinX > this.levelWidth - 50 || // Keep away from edges
+          coinX < 50 || coinX > maxCoinX || // Keep away from edges and control panel
           coinY < 50 || coinY > this.canvasHeight - 50
         ));
         
@@ -158,8 +166,8 @@ export class GameEngine {
           coinY = clusterY;
         }
         
-        // Ensure coin is within playable area
-        coinX = Math.max(50, Math.min(this.levelWidth - 50, coinX));
+        // Ensure coin is within playable area and doesn't overlap control panel
+        coinX = Math.max(50, Math.min(maxCoinX, coinX));
         coinY = Math.max(50, Math.min(this.canvasHeight - 50, coinY));
         
         this.coins.push({
@@ -761,6 +769,19 @@ export class GameEngine {
           obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
           obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
           
+          // Prevent circular obstacles from moving into control panel area
+          const isMobileForCircular = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          if (isMobileForCircular) {
+            const controlPanelWidth = 128;
+            const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
+            if (obstacle.x > maxObstacleX) {
+              // Adjust the circular movement to stay within bounds
+              const adjustedAngle = angle + Math.PI; // Move to opposite side of circle
+              obstacle.x = centerX + Math.cos(adjustedAngle) * radius - obstacle.width / 2;
+              obstacle.y = centerY + Math.sin(adjustedAngle) * radius - obstacle.height / 2;
+            }
+          }
+          
           // Update velocity for movement indicators
           obstacle.vx = Math.cos(angle + Math.PI / 2) * 2;
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
@@ -789,6 +810,17 @@ export class GameEngine {
           }
           if (obstacle.patrolStartY !== undefined && obstacle.patrolEndY !== undefined) {
             obstacle.y = Math.max(obstacle.patrolStartY, Math.min(obstacle.patrolEndY - obstacle.height, obstacle.y));
+          }
+          
+          // Prevent obstacles from moving into control panel area
+          const isMobileForObstacles = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          if (isMobileForObstacles) {
+            const controlPanelWidth = 128;
+            const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
+            if (obstacle.x > maxObstacleX) {
+              obstacle.x = maxObstacleX;
+              if (obstacle.vx > 0) obstacle.vx = -obstacle.vx; // Reverse direction if moving right
+            }
           }
         }
       }
