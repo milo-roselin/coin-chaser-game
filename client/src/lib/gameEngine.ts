@@ -99,32 +99,7 @@ export class GameEngine {
     this.validateLevelReachability();
   }
 
-  // Method to update canvas dimensions when screen size changes
-  updateDimensions(newWidth: number, newHeight: number) {
-    this.canvasWidth = newWidth;
-    this.canvasHeight = newHeight;
-    this.levelWidth = newWidth * 3; // Level is 3 screens wide
-    
-    // Update player position to remain proportional
-    this.player.y = Math.min(this.player.y, newHeight - this.player.height);
-    
-    // Recalculate portal position for new dimensions
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobile ? 128 : 0;
-    const maxCameraX = this.levelWidth - newWidth + controlPanelWidth;
-    const maxPlayerX = maxCameraX + newWidth - controlPanelWidth - 30;
-    const portalX = maxPlayerX - 150;
-    
-    this.goal.x = portalX;
-    this.goal.y = newHeight / 2 - 60;
-    
-    // Update camera bounds
-    this.cameraX = Math.max(0, Math.min(this.levelWidth - newWidth, this.cameraX));
-    
-    // Regenerate level with new dimensions
-    this.generateLevel();
-    this.validateLevelReachability();
-  }
+
 
   private generateLevel() {
     this.coins = [];

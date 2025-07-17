@@ -40,66 +40,14 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to match the actual visible area (accounting for browser UI)
+    // Set canvas size
     const resizeCanvas = () => {
-      let canvasWidth, canvasHeight;
-      
-      canvasWidth = window.innerWidth;
-      canvasHeight = window.innerHeight;
-      
-      // Create a test element to measure actual visible area
-      const testElement = document.createElement('div');
-      testElement.style.position = 'fixed';
-      testElement.style.top = '0';
-      testElement.style.left = '0';
-      testElement.style.width = '100%';
-      testElement.style.height = '100%';
-      testElement.style.pointerEvents = 'none';
-      testElement.style.zIndex = '-1';
-      document.body.appendChild(testElement);
-      
-      // Get the actual visible area
-      const rect = testElement.getBoundingClientRect();
-      const actualVisibleHeight = rect.height;
-      
-      // Remove test element
-      document.body.removeChild(testElement);
-      
-      // Use a very conservative approach: subtract a large amount to ensure visibility
-      const browserUIBuffer = Math.max(250, canvasHeight * 0.3); // At least 250px or 30% of height
-      canvasHeight = Math.max(actualVisibleHeight - browserUIBuffer, 200);
-      
-      // Set canvas size
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      
-      // Update canvas style and position it below browser UI
-      canvas.style.width = canvasWidth + 'px';
-      canvas.style.height = canvasHeight + 'px';
-      canvas.style.position = 'fixed';
-      canvas.style.top = (window.innerHeight - canvasHeight) + 'px';
-      canvas.style.left = '0px';
-      canvas.style.zIndex = '1000';
-      
-      // If game engine exists, update its dimensions
-      if (gameEngineRef.current) {
-        gameEngineRef.current.updateDimensions(canvasWidth, canvasHeight);
-      }
-      
-      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (positioned at top: ${window.innerHeight - canvasHeight}px, buffer: ${browserUIBuffer}px)`);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("orientationchange", () => {
-      // Delay resize to ensure proper orientation change handling
-      setTimeout(resizeCanvas, 100);
-    });
-    
-    // Listen for Visual Viewport changes if available
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", resizeCanvas);
-    }
 
     // Initialize game engine
     gameEngineRef.current = new GameEngine(
@@ -150,10 +98,6 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
-      window.removeEventListener("orientationchange", resizeCanvas);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", resizeCanvas);
-      }
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       if (animationFrameRef.current) {
