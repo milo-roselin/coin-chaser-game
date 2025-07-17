@@ -97,6 +97,10 @@ export class GameEngine {
 
     this.generateLevel();
     this.validateLevelReachability();
+    
+    // Initialize camera position to follow player from the start
+    // This prevents any TNT flash issues at game startup
+    this.updateCameraPosition();
   }
 
 
@@ -750,16 +754,8 @@ export class GameEngine {
       }
     }
 
-    // First calculate camera position
-    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
-    const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
-    const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
-    
-    this.cameraX = Math.max(0, Math.min(
-      maxCameraX,
-      this.player.x - effectiveCanvasWidthForCamera / 2
-    ));
+    // Update camera position
+    this.updateCameraPosition();
 
     // Keep player in bounds - account for control panel on mobile
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -1403,6 +1399,19 @@ export class GameEngine {
   // Linear interpolation helper for smooth movement
   private lerp(current: number, target: number, factor: number): number {
     return current + (target - current) * factor;
+  }
+
+  private updateCameraPosition() {
+    // Calculate camera position to follow player
+    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
+    const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
+    const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
+    
+    this.cameraX = Math.max(0, Math.min(
+      maxCameraX,
+      this.player.x - effectiveCanvasWidthForCamera / 2
+    ));
   }
 
 
