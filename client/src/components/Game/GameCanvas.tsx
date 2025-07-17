@@ -45,6 +45,25 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       // Scroll to top to ensure we're at the beginning of the page
       window.scrollTo(0, 0);
       
+      // For iPad, try to request fullscreen mode
+      const requestFullscreen = async () => {
+        try {
+          if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else if ((document.documentElement as any).webkitRequestFullscreen) {
+            await (document.documentElement as any).webkitRequestFullscreen();
+          }
+        } catch (err) {
+          console.log('Fullscreen not available, using viewport approach');
+        }
+      };
+      
+      // Try fullscreen on iPad
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIPad) {
+        requestFullscreen();
+      }
+      
       // Force body to be exactly viewport size
       document.body.style.margin = '0';
       document.body.style.padding = '0';
@@ -63,22 +82,53 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       document.documentElement.style.overflow = 'hidden';
     };
 
-    // Set canvas size using CSS viewport dimensions
+    // Set canvas size using the most aggressive approach possible
     const resizeCanvas = () => {
       ensureFullViewport();
       
-      // Use window.innerWidth/Height for consistent sizing
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      // Try multiple methods to get true screen size
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      let viewportWidth, viewportHeight;
+      
+      if (isIPad) {
+        // For iPad, use the largest available dimensions
+        viewportWidth = Math.max(
+          window.innerWidth,
+          screen.width,
+          screen.availWidth,
+          document.documentElement.clientWidth
+        );
+        viewportHeight = Math.max(
+          window.innerHeight, 
+          screen.height,
+          screen.availHeight,
+          document.documentElement.clientHeight
+        );
+        
+        // If still getting small dimensions, force iPad common sizes based on detected screen
+        if (viewportWidth < 800) {
+          // Use actual screen dimensions if available, otherwise use common iPad sizes
+          viewportWidth = screen.width > 0 ? screen.width : 1024;
+          viewportHeight = screen.height > 0 ? screen.height : 768;
+        }
+      } else {
+        viewportWidth = window.innerWidth;
+        viewportHeight = window.innerHeight;
+      }
+      
       const dpr = window.devicePixelRatio || 1;
       
       // Set canvas internal resolution
       canvas.width = viewportWidth * dpr;
       canvas.height = viewportHeight * dpr;
       
-      // Set canvas display size
+      // Force canvas display size with multiple methods
       canvas.style.width = viewportWidth + 'px';
       canvas.style.height = viewportHeight + 'px';
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.zIndex = '1000';
       
       // Scale the context to match device pixel ratio
       const ctx = canvas.getContext('2d');
@@ -86,7 +136,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         ctx.scale(dpr, dpr);
       }
       
-      console.log(`Canvas forced to: ${canvas.width}x${canvas.height} (internal), ${viewportWidth}x${viewportHeight} (display), DPR: ${dpr}`);
+      console.log(`Canvas forced to: ${canvas.width}x${canvas.height} (internal), ${viewportWidth}x${viewportHeight} (display), DPR: ${dpr}, screen: ${screen.width}x${screen.height}, window: ${window.innerWidth}x${window.innerHeight}`);
     };
 
     resizeCanvas();
