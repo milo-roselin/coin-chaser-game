@@ -243,7 +243,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
       )}
       
       {/* Game instructions */}
-      <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
+      <div className={`absolute bottom-4 left-4 pointer-events-none ${isMobile ? 'right-36' : 'right-4'}`}>
         <div className="bg-black/50 text-white text-center py-2 px-4 rounded-lg text-sm">
           {isMobile ? 
             "Use arrow buttons to move • Collect yellow coins • Avoid TNT guards • Reach the portal • +/- to change speed" :
