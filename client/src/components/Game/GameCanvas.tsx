@@ -44,34 +44,49 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const resizeCanvas = () => {
       let canvasWidth, canvasHeight;
       
-      // Always account for browser UI elements
       canvasWidth = window.innerWidth;
       canvasHeight = window.innerHeight;
       
-      // Subtract estimated browser UI space
-      // In most browsers: tabs (40-50px) + address bar (35-45px) + bookmarks bar (30px optional) + extra margin
-      const estimatedBrowserUI = 200; // Very aggressive estimate to ensure full visibility
-      canvasHeight = Math.max(canvasHeight - estimatedBrowserUI, 250); // Minimum height
+      // Create a test element to measure actual visible area
+      const testElement = document.createElement('div');
+      testElement.style.position = 'fixed';
+      testElement.style.top = '0';
+      testElement.style.left = '0';
+      testElement.style.width = '100%';
+      testElement.style.height = '100%';
+      testElement.style.pointerEvents = 'none';
+      testElement.style.zIndex = '-1';
+      document.body.appendChild(testElement);
       
-      // Additional check: if we're in an iframe or embedded context, be more conservative
-      if (window !== window.parent) {
-        canvasHeight = Math.max(canvasHeight - 100, 250); // Extra space for iframe context
-      }
+      // Get the actual visible area
+      const rect = testElement.getBoundingClientRect();
+      const actualVisibleHeight = rect.height;
       
-      // Set canvas size to match visible area
+      // Remove test element
+      document.body.removeChild(testElement);
+      
+      // Use a very conservative approach: subtract a large amount to ensure visibility
+      const browserUIBuffer = Math.max(250, canvasHeight * 0.3); // At least 250px or 30% of height
+      canvasHeight = Math.max(actualVisibleHeight - browserUIBuffer, 200);
+      
+      // Set canvas size
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
       
-      // Update canvas style
+      // Update canvas style and position it below browser UI
       canvas.style.width = canvasWidth + 'px';
       canvas.style.height = canvasHeight + 'px';
+      canvas.style.position = 'fixed';
+      canvas.style.top = (window.innerHeight - canvasHeight) + 'px';
+      canvas.style.left = '0px';
+      canvas.style.zIndex = '1000';
       
       // If game engine exists, update its dimensions
       if (gameEngineRef.current) {
         gameEngineRef.current.updateDimensions(canvasWidth, canvasHeight);
       }
       
-      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (original: ${window.innerWidth}x${window.innerHeight}, reduced by ${200 + (window !== window.parent ? 100 : 0)}px for browser UI)`);
+      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (positioned at top: ${window.innerHeight - canvasHeight}px, buffer: ${browserUIBuffer}px)`);
     };
 
     resizeCanvas();
