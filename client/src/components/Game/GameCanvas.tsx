@@ -40,25 +40,29 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size to match available viewport space
+    // Set canvas size to match the actual visible area (accounting for browser UI)
     const resizeCanvas = () => {
-      // Get the available viewport dimensions (accounting for browser UI)
-      const availableWidth = window.innerWidth;
-      const availableHeight = window.innerHeight;
+      let canvasWidth, canvasHeight;
       
-      // Also check document client dimensions for better accuracy
-      const docWidth = document.documentElement.clientWidth;
-      const docHeight = document.documentElement.clientHeight;
+      // Always account for browser UI elements
+      canvasWidth = window.innerWidth;
+      canvasHeight = window.innerHeight;
       
-      // Use the smaller of the two to ensure we don't exceed available space
-      const canvasWidth = Math.min(availableWidth, docWidth);
-      const canvasHeight = Math.min(availableHeight, docHeight);
+      // Subtract estimated browser UI space
+      // In most browsers: tabs (35-40px) + address bar (30-35px) + bookmarks bar (30px optional)
+      const estimatedBrowserUI = 100; // More aggressive estimate to ensure visibility
+      canvasHeight = Math.max(canvasHeight - estimatedBrowserUI, 300); // Minimum height
       
-      // Set canvas size to match available space
+      // Additional check: if we're in an iframe or embedded context, be more conservative
+      if (window !== window.parent) {
+        canvasHeight = Math.max(canvasHeight - 50, 300); // Extra space for iframe context
+      }
+      
+      // Set canvas size to match visible area
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
       
-      // Update canvas style to fill the available space
+      // Update canvas style
       canvas.style.width = canvasWidth + 'px';
       canvas.style.height = canvasHeight + 'px';
       
@@ -67,7 +71,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         gameEngineRef.current.updateDimensions(canvasWidth, canvasHeight);
       }
       
-      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (viewport: ${availableWidth}x${availableHeight}, doc: ${docWidth}x${docHeight})`);
+      console.log(`Canvas resized to: ${canvasWidth}x${canvasHeight} (original: ${window.innerWidth}x${window.innerHeight}, reduced by ${100 + (window !== window.parent ? 50 : 0)}px for browser UI)`);
     };
 
     resizeCanvas();
@@ -76,6 +80,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       // Delay resize to ensure proper orientation change handling
       setTimeout(resizeCanvas, 100);
     });
+    
+    // Listen for Visual Viewport changes if available
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeCanvas);
+    }
 
     // Initialize game engine
     gameEngineRef.current = new GameEngine(
@@ -127,6 +136,9 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("orientationchange", resizeCanvas);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", resizeCanvas);
+      }
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       if (animationFrameRef.current) {
