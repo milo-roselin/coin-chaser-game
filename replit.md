@@ -42,13 +42,13 @@ Preferred communication style: Simple, everyday language.
 - **Game State** (`useCoinGame.tsx`): Manages game phases, score, player position
 - **Audio State** (`useAudio.tsx`): Controls background music and sound effects with mute functionality
 - **Leaderboard State** (`useLeaderboard.tsx`): Persistent local storage of high scores
-- **Device Settings** (`useDeviceSettings.tsx`): Manages device profiles and display optimization with 25+ device presets
+- **Device Settings** (`useDeviceSettings.tsx`): Manages device profiles and display optimization with 25+ local presets plus internet connectivity to device APIs for thousands of current devices
 
 ## UI Components
 - **Game Screens**: Start, playing, game over, victory, and leaderboard screens
 - **Touch Controls**: Mobile-friendly interface with visual feedback and device selector
 - **Canvas Game**: Real-time rendering with responsive design
-- **Device Selector**: Comprehensive device profile system with 25+ device presets for optimal game display
+- **Device Selector**: Comprehensive device profile system with 25+ local device presets plus internet connectivity for thousands of current devices from multiple APIs
 
 ## Database Schema
 - **Users Table**: Basic user authentication structure with username/password

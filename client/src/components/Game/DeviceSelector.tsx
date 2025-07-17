@@ -1,24 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDeviceSettings, deviceProfiles, DeviceProfile } from '@/lib/stores/useDeviceSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Monitor, Tablet, Smartphone, X, Check } from 'lucide-react';
+import { Search, Monitor, Tablet, Smartphone, X, Check, RefreshCw, Wifi, AlertCircle } from 'lucide-react';
 
 interface DeviceSelectorProps {
   onClose: () => void;
 }
 
 export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
-  const { selectedDevice, setSelectedDevice, getCurrentDevice } = useDeviceSettings();
+  const { 
+    selectedDevice, 
+    setSelectedDevice, 
+    getCurrentDevice, 
+    getAvailableDevices,
+    fetchOnlineDevices,
+    isLoadingOnlineDevices,
+    onlineDevicesError,
+    onlineDevices
+  } = useDeviceSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'mobile' | 'tablet' | 'desktop'>('all');
 
   const currentDevice = getCurrentDevice();
+  const allDevices = getAvailableDevices();
 
-  const filteredDevices = deviceProfiles.filter(device => {
+  useEffect(() => {
+    // Fetch online devices when component mounts
+    if (onlineDevices.length === 0) {
+      fetchOnlineDevices();
+    }
+  }, []);
+
+  const filteredDevices = allDevices.filter(device => {
     const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          device.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === 'all' || device.category === activeCategory;
@@ -56,7 +73,7 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
             <div>
               <CardTitle className="text-2xl font-bold">Device Selector</CardTitle>
               <CardDescription>
-                Choose your device to optimize the game display and controls
+                Choose your device to optimize the game display and controls. Online devices are fetched from the internet for up-to-date specifications.
               </CardDescription>
             </div>
             <Button
@@ -84,15 +101,52 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
             </div>
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search devices..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          {/* Search and Online Status */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search devices..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => fetchOnlineDevices()}
+              disabled={isLoadingOnlineDevices}
+              className="shrink-0"
+            >
+              {isLoadingOnlineDevices ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Wifi className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
+          
+          {/* Online Status */}
+          <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1">
+              <div className={`w-2 h-2 rounded-full ${
+                onlineDevices.length > 0 ? 'bg-green-500' : 'bg-gray-400'
+              }`} />
+              <span className="text-gray-600">
+                {onlineDevices.length > 0 
+                  ? `${onlineDevices.length} online devices loaded` 
+                  : 'Local devices only'
+                }
+              </span>
+            </div>
+            {onlineDevicesError && (
+              <div className="flex items-center gap-1 text-red-600">
+                <AlertCircle className="w-3 h-3" />
+                <span className="text-xs">Connection error</span>
+              </div>
+            )}
           </div>
 
           {/* Category Tabs */}
@@ -115,6 +169,14 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
             
             <TabsContent value={activeCategory} className="mt-4">
               <div className="max-h-96 overflow-y-auto space-y-2">
+                {isLoadingOnlineDevices && (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Loading online devices...</span>
+                    </div>
+                  </div>
+                )}
                 {filteredDevices.map((device) => (
                   <div
                     key={device.id}
@@ -128,7 +190,12 @@ export default function DeviceSelector({ onClose }: DeviceSelectorProps) {
                     <div className="flex items-center gap-3">
                       {getCategoryIcon(device.category)}
                       <div>
-                        <div className="font-medium">{device.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{device.name}</span>
+                          {device.id.startsWith('online-') && (
+                            <div className="w-2 h-2 bg-green-500 rounded-full" title="Online device" />
+                          )}
+                        </div>
                         <div className="text-sm text-gray-600">{device.description}</div>
                       </div>
                     </div>

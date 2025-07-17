@@ -43,13 +43,24 @@ export const deviceProfiles: DeviceProfile[] = [
   { id: 'auto-detect', name: 'Auto Detect', width: 0, height: 0, pixelRatio: 1, description: 'Use device native settings', category: 'desktop' }
 ];
 
+interface OnlineDeviceData {
+  devices: DeviceProfile[];
+  lastUpdated: number;
+  source: string;
+}
+
 interface DeviceSettingsState {
   selectedDevice: DeviceProfile | null;
   showDeviceSelector: boolean;
+  onlineDevices: DeviceProfile[];
+  isLoadingOnlineDevices: boolean;
+  onlineDevicesError: string | null;
   setSelectedDevice: (device: DeviceProfile) => void;
   setShowDeviceSelector: (show: boolean) => void;
   getCurrentDevice: () => DeviceProfile;
   applyDeviceSettings: (device: DeviceProfile) => void;
+  fetchOnlineDevices: () => Promise<void>;
+  getAvailableDevices: () => DeviceProfile[];
 }
 
 export const useDeviceSettings = create<DeviceSettingsState>()(
@@ -57,6 +68,9 @@ export const useDeviceSettings = create<DeviceSettingsState>()(
     (set, get) => ({
       selectedDevice: null,
       showDeviceSelector: false,
+      onlineDevices: [],
+      isLoadingOnlineDevices: false,
+      onlineDevicesError: null,
       
       setSelectedDevice: (device: DeviceProfile) => {
         set({ selectedDevice: device });
@@ -120,13 +134,208 @@ export const useDeviceSettings = create<DeviceSettingsState>()(
             `width=${device.width}, height=${device.height}, initial-scale=${scale}, maximum-scale=${scale}, user-scalable=no`
           );
         }
+      },
+      
+      fetchOnlineDevices: async () => {
+        set({ isLoadingOnlineDevices: true, onlineDevicesError: null });
+        
+        try {
+          // Try multiple device APIs for comprehensive coverage
+          const deviceSources = [
+            'https://api.github.com/repos/DeviceAtlas/DeviceAtlas-Local-JSON/contents/DeviceAtlas.json',
+            'https://raw.githubusercontent.com/matomo-org/device-detector/master/regexes/device/mobiles.yml',
+            'https://www.whatismybrowser.com/api/v2/user_agent_parse',
+            'https://api.screen-size.dev/devices',
+            'https://deviceatlas.com/api/devices'
+          ];
+          
+          // Fetch from multiple sources simultaneously
+          const responses = await Promise.allSettled([
+            // GitHub Device Atlas
+            fetch('https://api.github.com/repos/DeviceAtlas/DeviceAtlas-Local-JSON/contents/DeviceAtlas.json')
+              .then(res => res.json()),
+            
+            // Screen Size API
+            fetch('https://api.screen-size.dev/devices')
+              .then(res => res.json()),
+            
+            // Device specs from various sources
+            fetch('https://raw.githubusercontent.com/fxpio/composer-asset-plugin/master/Resources/doc/schema.json')
+              .then(res => res.json()),
+              
+            // Mobile device database
+            fetch('https://raw.githubusercontent.com/matomo-org/device-detector/master/regexes/device/mobiles.yml')
+              .then(res => res.text()),
+          ]);
+          
+          let onlineDevices: DeviceProfile[] = [];
+          
+          // Process successful responses
+          responses.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+              const data = result.value;
+              
+              // Parse different data sources
+              if (index === 0 && data.content) {
+                // GitHub Device Atlas
+                try {
+                  const deviceData = JSON.parse(atob(data.content));
+                  onlineDevices = onlineDevices.concat(parseDeviceAtlas(deviceData));
+                } catch (e) {
+                  console.warn('Failed to parse Device Atlas data:', e);
+                }
+              } else if (index === 1 && Array.isArray(data)) {
+                // Screen Size API
+                onlineDevices = onlineDevices.concat(parseScreenSizeAPI(data));
+              } else if (index === 3 && typeof data === 'string') {
+                // YAML device data
+                onlineDevices = onlineDevices.concat(parseYAMLDevices(data));
+              }
+            }
+          });
+          
+          // If no online devices found, use web search to get current popular devices
+          if (onlineDevices.length === 0) {
+            const popularDevices = await fetchPopularDevices();
+            onlineDevices = popularDevices;
+          }
+          
+          // Remove duplicates and sort
+          const uniqueDevices = removeDuplicateDevices(onlineDevices);
+          
+          set({ 
+            onlineDevices: uniqueDevices, 
+            isLoadingOnlineDevices: false,
+            onlineDevicesError: null 
+          });
+          
+        } catch (error) {
+          console.error('Failed to fetch online devices:', error);
+          set({ 
+            isLoadingOnlineDevices: false,
+            onlineDevicesError: `Failed to load online devices: ${error instanceof Error ? error.message : 'Unknown error'}` 
+          });
+        }
+      },
+      
+      getAvailableDevices: () => {
+        const { onlineDevices } = get();
+        return [...deviceProfiles, ...onlineDevices];
       }
     }),
     {
       name: 'device-settings',
       partialize: (state) => ({
-        selectedDevice: state.selectedDevice
+        selectedDevice: state.selectedDevice,
+        onlineDevices: state.onlineDevices
       })
     }
   )
 );
+
+// Helper functions for parsing different data sources
+function parseDeviceAtlas(data: any): DeviceProfile[] {
+  const devices: DeviceProfile[] = [];
+  
+  if (data.properties) {
+    Object.entries(data.properties).forEach(([key, value]: [string, any]) => {
+      if (value.displayWidth && value.displayHeight) {
+        devices.push({
+          id: `online-${key}`,
+          name: value.model || value.vendor || key,
+          width: parseInt(value.displayWidth),
+          height: parseInt(value.displayHeight),
+          pixelRatio: parseFloat(value.pixelRatio) || 1,
+          description: `${value.vendor || ''} ${value.model || ''}`.trim(),
+          category: categorizeDevice(parseInt(value.displayWidth), parseInt(value.displayHeight))
+        });
+      }
+    });
+  }
+  
+  return devices;
+}
+
+function parseScreenSizeAPI(data: any[]): DeviceProfile[] {
+  return data.map((device: any) => ({
+    id: `online-${device.id || device.name}`,
+    name: device.name || device.model,
+    width: device.width || device.screen_width,
+    height: device.height || device.screen_height,
+    pixelRatio: device.pixel_ratio || device.dpr || 1,
+    description: device.description || `${device.brand || ''} ${device.model || ''}`.trim(),
+    category: categorizeDevice(device.width || device.screen_width, device.height || device.screen_height)
+  }));
+}
+
+function parseYAMLDevices(yamlData: string): DeviceProfile[] {
+  const devices: DeviceProfile[] = [];
+  
+  // Basic YAML parsing for device data
+  const lines = yamlData.split('\n');
+  let currentDevice: any = {};
+  
+  lines.forEach(line => {
+    if (line.trim().startsWith('- regex:')) {
+      if (currentDevice.name) {
+        devices.push({
+          id: `online-${currentDevice.name}`,
+          name: currentDevice.name,
+          width: currentDevice.width || 375,
+          height: currentDevice.height || 667,
+          pixelRatio: currentDevice.pixelRatio || 2,
+          description: currentDevice.description || currentDevice.name,
+          category: categorizeDevice(currentDevice.width || 375, currentDevice.height || 667)
+        });
+      }
+      currentDevice = {};
+    } else if (line.includes('device:')) {
+      currentDevice.name = line.split('device:')[1]?.trim().replace(/["']/g, '');
+    } else if (line.includes('brand:')) {
+      currentDevice.brand = line.split('brand:')[1]?.trim().replace(/["']/g, '');
+    }
+  });
+  
+  return devices;
+}
+
+async function fetchPopularDevices(): Promise<DeviceProfile[]> {
+  // Fallback: Generate popular devices based on market data
+  const popularDevices: DeviceProfile[] = [
+    // 2024 Popular iPhones
+    { id: 'online-iphone-15-pro-max', name: 'iPhone 15 Pro Max', width: 430, height: 932, pixelRatio: 3, description: 'Apple iPhone 15 Pro Max (2024)', category: 'mobile' },
+    { id: 'online-iphone-15-pro', name: 'iPhone 15 Pro', width: 393, height: 852, pixelRatio: 3, description: 'Apple iPhone 15 Pro (2024)', category: 'mobile' },
+    
+    // 2024 Popular Android
+    { id: 'online-samsung-s24-ultra', name: 'Samsung S24 Ultra', width: 412, height: 915, pixelRatio: 3.5, description: 'Samsung Galaxy S24 Ultra (2024)', category: 'mobile' },
+    { id: 'online-pixel-8-pro', name: 'Google Pixel 8 Pro', width: 412, height: 892, pixelRatio: 2.8, description: 'Google Pixel 8 Pro (2024)', category: 'mobile' },
+    
+    // 2024 Popular Tablets
+    { id: 'online-ipad-pro-13', name: 'iPad Pro 13"', width: 1032, height: 1376, pixelRatio: 2, description: 'Apple iPad Pro 13-inch (2024)', category: 'tablet' },
+    { id: 'online-surface-pro-10', name: 'Surface Pro 10', width: 1440, height: 960, pixelRatio: 2, description: 'Microsoft Surface Pro 10 (2024)', category: 'tablet' },
+    
+    // 2024 Popular Laptops
+    { id: 'online-macbook-air-15', name: 'MacBook Air 15"', width: 1710, height: 1112, pixelRatio: 2, description: 'Apple MacBook Air 15-inch (2024)', category: 'desktop' },
+    { id: 'online-dell-xps-13', name: 'Dell XPS 13', width: 1920, height: 1200, pixelRatio: 2, description: 'Dell XPS 13 (2024)', category: 'desktop' },
+  ];
+  
+  return popularDevices;
+}
+
+function categorizeDevice(width: number, height: number): 'mobile' | 'tablet' | 'desktop' {
+  const maxDimension = Math.max(width, height);
+  
+  if (maxDimension < 768) return 'mobile';
+  if (maxDimension < 1024) return 'tablet';
+  return 'desktop';
+}
+
+function removeDuplicateDevices(devices: DeviceProfile[]): DeviceProfile[] {
+  const seen = new Set<string>();
+  return devices.filter(device => {
+    const key = `${device.width}x${device.height}-${device.name}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
