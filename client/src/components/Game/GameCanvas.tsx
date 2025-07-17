@@ -157,7 +157,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 touch-none"
-        style={{ touchAction: "none", paddingRight: isMobile ? "128px" : "0" }}
+        style={{ touchAction: "none" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

@@ -95,8 +95,9 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
 
   return (
     <>
-      {/* iPad-style controls: All controls in unified right panel */}
-      {isMobile && (
+      {/* Control panel - shows different content based on device */}
+      {isMobile ? (
+        /* Mobile/iPad: Full control panel with all controls */
         <div className="absolute top-0 right-0 h-full w-32 bg-gray-800 border-l-2 border-gray-600 flex flex-col items-center justify-between py-6 pointer-events-auto z-10">
           {/* Action Buttons - Top */}
           <div className="flex flex-col gap-3">
@@ -206,6 +207,37 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 →
               </button>
             </div>
+          </div>
+        </div>
+      ) : (
+        /* Desktop: Only action buttons in top-right corner */
+        <div className="absolute top-4 right-4 flex flex-col gap-2 pointer-events-auto z-10">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handlePause}
+              size="sm"
+              variant="outline"
+              className="bg-white/90 hover:bg-white border-gray-300"
+            >
+              <Pause className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              SPACE/ESC
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleHome}
+              size="sm"
+              variant="outline"
+              className="bg-white/90 hover:bg-white border-gray-300"
+            >
+              <Home className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+              H
+            </span>
           </div>
         </div>
       )}
