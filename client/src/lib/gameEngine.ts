@@ -843,14 +843,15 @@ export class GameEngine {
   }
 
   public render(ctx: CanvasRenderingContext2D) {
-    // Clear canvas
-    ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    // Clear canvas with black background first
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     // Save context for camera transform
     ctx.save();
     ctx.translate(-this.cameraX, 0);
 
-    // Draw background pattern
+    // Draw background pattern only in the game area
     this.drawBackground(ctx);
 
     // Draw goal
@@ -868,6 +869,12 @@ export class GameEngine {
     // Restore context
     ctx.restore();
 
+    // Draw control panel area on mobile
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      this.drawControlPanelBackground(ctx);
+    }
+
     // Draw UI elements (not affected by camera)
     this.drawUI(ctx);
     
@@ -879,11 +886,11 @@ export class GameEngine {
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
-    // Draw grass background
+    // Draw grass background only in the playable area
     ctx.fillStyle = '#22C55E';
     ctx.fillRect(0, 0, this.levelWidth, this.canvasHeight);
 
-    // Draw grid pattern
+    // Draw grid pattern only in the playable area
     ctx.strokeStyle = '#16A34A';
     ctx.lineWidth = 1;
     for (let x = 0; x < this.levelWidth; x += 50) {
@@ -898,6 +905,24 @@ export class GameEngine {
       ctx.lineTo(this.levelWidth, y);
       ctx.stroke();
     }
+  }
+
+  private drawControlPanelBackground(ctx: CanvasRenderingContext2D) {
+    // Draw control panel background area
+    const controlPanelWidth = 128;
+    const panelX = this.canvasWidth - controlPanelWidth;
+    
+    // Draw panel background with slight transparency
+    ctx.fillStyle = 'rgba(45, 45, 45, 0.95)';
+    ctx.fillRect(panelX, 0, controlPanelWidth, this.canvasHeight);
+    
+    // Draw panel border
+    ctx.strokeStyle = '#666666';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(panelX, 0);
+    ctx.lineTo(panelX, this.canvasHeight);
+    ctx.stroke();
   }
 
   private drawPlayer(ctx: CanvasRenderingContext2D) {
