@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { Trophy, Play, Volume2, VolumeX, Lock, Settings } from "lucide-react";
+import { useCoinBank } from "@/lib/stores/useCoinBank";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings, Coins } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
+  const { totalCoins, sessionCoins } = useCoinBank();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAudioSettings, setShowAudioSettings] = useState(false);
@@ -154,16 +156,33 @@ export default function StartScreen() {
         </div>
         <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
         <p className="text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
-        {highestLevelUnlocked > 1 && (
-          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
-            <p className="text-sm font-semibold text-purple-700">
-              Checkpoint: Level {highestLevelUnlocked} Unlocked
-            </p>
-            <p className="text-xs text-purple-600">
-              Total Score: {totalScore.toLocaleString()}
-            </p>
+        <div className="mt-4 space-y-2">
+          {/* Coin Bank Display */}
+          <div className="p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300">
+            <div className="flex items-center justify-center space-x-2">
+              <Coins className="h-5 w-5 text-yellow-600" />
+              <p className="text-sm font-semibold text-yellow-800">
+                Coin Bank: {totalCoins.toLocaleString()}
+              </p>
+            </div>
+            {sessionCoins > 0 && (
+              <p className="text-xs text-yellow-700 text-center mt-1">
+                +{sessionCoins} this session
+              </p>
+            )}
           </div>
-        )}
+          
+          {highestLevelUnlocked > 1 && (
+            <div className="p-3 bg-purple-100 rounded-lg">
+              <p className="text-sm font-semibold text-purple-700">
+                Checkpoint: Level {highestLevelUnlocked} Unlocked
+              </p>
+              <p className="text-xs text-purple-600">
+                Total Score: {totalScore.toLocaleString()}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Main Menu Card */}

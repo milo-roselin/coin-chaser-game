@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector, persist } from "zustand/middleware";
 import { useAudio } from "./useAudio";
+import { useCoinBank } from "./useCoinBank";
 
 export type GameState = "start" | "playing" | "gameOver" | "victory" | "leaderboard" | "nextLevel";
 
@@ -62,6 +63,10 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       resetGame: () => {
+        // Reset session coins in bank when starting new game
+        const { resetSessionCoins } = useCoinBank.getState();
+        resetSessionCoins();
+        
         set((state) => ({ 
           gameState: "start",
           score: 0,
@@ -132,6 +137,10 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       updateCoinsCollected: () => {
+        // Add coin to the bank
+        const { addCoins } = useCoinBank.getState();
+        addCoins(1);
+        
         set((state) => ({ 
           coinsCollected: state.coinsCollected + 1,
           totalCoinsCollected: state.totalCoinsCollected + 1

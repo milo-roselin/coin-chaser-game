@@ -4,11 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
-import { Trophy, Home, Upload, Lock } from "lucide-react";
+import { useCoinBank } from "@/lib/stores/useCoinBank";
+import { Trophy, Home, Upload, Lock, Coins } from "lucide-react";
 
 export default function VictoryScreen() {
   const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
   const { addScore } = useLeaderboard();
+  const { totalCoins, sessionCoins } = useCoinBank();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
   const [levelInput, setLevelInput] = useState("");
@@ -146,6 +148,19 @@ export default function VictoryScreen() {
             </div>
             <div className="text-sm text-gray-500">
               Total Coins: <span className="font-semibold text-yellow-600">{totalCoinsCollected}</span>
+            </div>
+            <div className="p-2 bg-yellow-50 rounded-lg border border-yellow-200 mt-2">
+              <div className="flex items-center justify-center space-x-2">
+                <Coins className="h-4 w-4 text-yellow-600" />
+                <span className="text-sm font-semibold text-yellow-800">
+                  Coin Bank: {totalCoins.toLocaleString()}
+                </span>
+              </div>
+              {sessionCoins > 0 && (
+                <p className="text-xs text-yellow-700 text-center">
+                  +{sessionCoins} this session
+                </p>
+              )}
             </div>
           </div>
 

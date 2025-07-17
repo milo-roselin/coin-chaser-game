@@ -105,3 +105,4 @@ The application is architected for scalability with clear separation between fro
 - **Leaderboard Restrictions**: Players can only edit their own name (multiple edits allowed)
 - **Audio System Updates**: Game now starts with audio unmuted by default, with mute controls available in home screen and during gameplay
 - **TNT Flash Fix**: Added initialization flag to prevent rendering TNT obstacles before camera is properly positioned, eliminating visual flash at startup
+- **Coin Bank System**: Added persistent coin bank that saves all coins collected across game sessions, with display on start screen and victory screen
