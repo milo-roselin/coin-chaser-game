@@ -752,7 +752,10 @@ export class GameEngine {
     const movementThreshold = 0.1; // Small threshold to prevent jittery animation
     this.isMoving = Math.abs(moveX) > movementThreshold || Math.abs(moveY) > movementThreshold;
     if (this.isMoving) {
-      this.animationFrame += 0.3 * this.gameSpeed; // Animation speed matches player speed
+      // Calculate animation speed based on actual movement speed
+      const currentSpeed = Math.sqrt(moveX * moveX + moveY * moveY);
+      const normalizedSpeed = currentSpeed / 12; // 12 is our base speed
+      this.animationFrame += 0.4 * normalizedSpeed; // Animation speed matches actual movement
       // Update facing direction based on horizontal movement
       if (moveX > 0) {
         this.facingDirection = 1; // Moving right
