@@ -51,27 +51,16 @@ export default function CoinBankDisplay({ className = "", showSessionCoins = fal
             strokeWidth="2"
           />
           
-          {/* Pot handles */}
-          <path
-            d="M25 50 Q18 50 18 55 Q18 60 25 60"
-            fill="none"
-            stroke="#1a1a1a"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-          <path
-            d="M75 50 Q82 50 82 55 Q82 60 75 60"
-            fill="none"
-            stroke="#1a1a1a"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-          
-          {/* 3D Gold coins inside pot with depth and layering */}
+          {/* 3D Gold coins only at top of pot with depth and layering */}
           <defs>
             <radialGradient id="coinGradient" cx="35%" cy="35%">
               <stop offset="0%" stopColor="#FFED4E" />
               <stop offset="70%" stopColor="#FFD700" />
+              <stop offset="100%" stopColor="#B8860B" />
+            </radialGradient>
+            <radialGradient id="coinGradientMid" cx="35%" cy="35%">
+              <stop offset="0%" stopColor="#FFD700" />
+              <stop offset="70%" stopColor="#DAA520" />
               <stop offset="100%" stopColor="#B8860B" />
             </radialGradient>
             <radialGradient id="coinGradientBack" cx="35%" cy="35%">
@@ -81,24 +70,27 @@ export default function CoinBankDisplay({ className = "", showSessionCoins = fal
             </radialGradient>
           </defs>
           
-          {/* Bottom/back layer coins */}
-          <ellipse cx="40" cy="62" rx="4" ry="2" fill="url(#coinGradientBack)" opacity="0.8" />
-          <ellipse cx="55" cy="63" rx="3.5" ry="1.8" fill="url(#coinGradientBack)" opacity="0.8" />
-          <ellipse cx="45" cy="66" rx="3" ry="1.5" fill="url(#coinGradientBack)" opacity="0.8" />
+          {/* Gold coins clustered at top opening only for 3D effect */}
+          {/* Back layer - deeper in pot, smaller perspective */}
+          <ellipse cx="45" cy="44" rx="3" ry="1.2" fill="url(#coinGradientBack)" opacity="0.7" />
+          <ellipse cx="52" cy="45" rx="2.5" ry="1" fill="url(#coinGradientBack)" opacity="0.7" />
+          <ellipse cx="38" cy="46" rx="2.8" ry="1.1" fill="url(#coinGradientBack)" opacity="0.7" />
           
-          {/* Middle layer coins */}
-          <ellipse cx="35" cy="58" rx="4.5" ry="2.5" fill="url(#coinGradient)" opacity="0.9" />
-          <ellipse cx="60" cy="59" rx="4" ry="2.2" fill="url(#coinGradient)" opacity="0.9" />
-          <ellipse cx="50" cy="61" rx="3.5" ry="2" fill="url(#coinGradient)" opacity="0.9" />
+          {/* Middle layer - partially visible */}
+          <ellipse cx="42" cy="42" rx="4" ry="1.8" fill="url(#coinGradientMid)" opacity="0.85" />
+          <ellipse cx="55" cy="43" rx="3.5" ry="1.6" fill="url(#coinGradientMid)" opacity="0.85" />
+          <ellipse cx="48" cy="44" rx="3.2" ry="1.5" fill="url(#coinGradientMid)" opacity="0.85" />
           
-          {/* Top/front layer coins - most visible */}
-          <ellipse cx="42" cy="54" rx="5" ry="3" fill="url(#coinGradient)" />
-          <ellipse cx="58" cy="55" rx="4.5" ry="2.8" fill="url(#coinGradient)" />
-          <ellipse cx="48" cy="57" rx="4" ry="2.5" fill="url(#coinGradient)" />
+          {/* Top layer - most visible, spilling over rim */}
+          <ellipse cx="45" cy="40" rx="5" ry="2.5" fill="url(#coinGradient)" />
+          <ellipse cx="52" cy="41" rx="4.5" ry="2.2" fill="url(#coinGradient)" />
+          <ellipse cx="38" cy="42" rx="4.2" ry="2" fill="url(#coinGradient)" />
+          <ellipse cx="49" cy="39" rx="3.8" ry="1.8" fill="url(#coinGradient)" />
           
-          {/* Coin shine effects */}
-          <ellipse cx="42" cy="52" rx="2" ry="1" fill="#FFFF99" opacity="0.6" />
-          <ellipse cx="58" cy="53" rx="1.8" ry="0.9" fill="#FFFF99" opacity="0.6" />
+          {/* Coin shine effects on top coins only */}
+          <ellipse cx="45" cy="38.5" rx="2.5" ry="1" fill="#FFFF99" opacity="0.7" />
+          <ellipse cx="52" cy="39.5" rx="2" ry="0.8" fill="#FFFF99" opacity="0.7" />
+          <ellipse cx="38" cy="40.5" rx="1.8" ry="0.7" fill="#FFFF99" opacity="0.6" />
           
           {/* Magical sparkles */}
           <g fill="#FFFFFF" opacity="0.9">
