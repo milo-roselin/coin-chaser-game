@@ -30,6 +30,7 @@ export class GameEngine {
   private goal: GameObject;
   private callbacks: GameCallbacks;
   private touchPosition: { x: number; y: number } | null = null;
+  private previousTouchPosition: { x: number; y: number } | null = null;
   private isTouching = false;
   private levelWidth: number;
   private cameraX = 0;
@@ -484,10 +485,12 @@ export class GameEngine {
   public handleTouchStart(x: number, y: number) {
     this.isTouching = true;
     this.touchPosition = { x, y };
+    this.previousTouchPosition = { x, y };
   }
 
   public handleTouchMove(x: number, y: number) {
     if (this.isTouching) {
+      this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
     }
   }
@@ -495,6 +498,7 @@ export class GameEngine {
   public handleTouchEnd() {
     this.isTouching = false;
     this.touchPosition = null;
+    this.previousTouchPosition = null;
   }
 
   public handleKeyDown(key: string) {
@@ -558,20 +562,22 @@ export class GameEngine {
                            this.keys['KeyW'] || this.keys['KeyA'] || 
                            this.keys['KeyS'] || this.keys['KeyD'];
     
-    if (!hasKeyboardInput && this.isTouching && this.touchPosition) {
-      const worldTouchX = this.touchPosition.x + this.cameraX;
-      const worldTouchY = this.touchPosition.y;
+    if (!hasKeyboardInput && this.isTouching && this.touchPosition && this.previousTouchPosition) {
+      // Calculate finger movement delta
+      const fingerDeltaX = this.touchPosition.x - this.previousTouchPosition.x;
+      const fingerDeltaY = this.touchPosition.y - this.previousTouchPosition.y;
       
-      const dx = worldTouchX - (this.player.x + this.player.width / 2);
-      const dy = worldTouchY - (this.player.y + this.player.height / 2);
+      // Scale factor to make player movement match finger speed
+      const touchSpeedScale = 1.2; // Adjust this to fine-tune responsiveness
       
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      // Set target velocity based on finger movement speed
+      targetVelX = fingerDeltaX * touchSpeedScale;
+      targetVelY = fingerDeltaY * touchSpeedScale;
       
-      if (distance > 5) {
-        const touchSpeed = 3 * this.gameSpeed;
-        targetVelX = (dx / distance) * touchSpeed;
-        targetVelY = (dy / distance) * touchSpeed;
-      }
+      // Apply maximum speed limits
+      const maxTouchSpeed = baseSpeed * 2 * this.gameSpeed;
+      targetVelX = Math.max(-maxTouchSpeed, Math.min(maxTouchSpeed, targetVelX));
+      targetVelY = Math.max(-maxTouchSpeed, Math.min(maxTouchSpeed, targetVelY));
     }
     
     // Smooth velocity interpolation for better stopping
