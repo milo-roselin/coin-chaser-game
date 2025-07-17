@@ -30,9 +30,25 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     }
   };
 
+  const handleAudioSettings = () => {
+    setShowAudioSettings(true);
+  };
+
   useEffect(() => {
     // Touch controls are handled by the canvas component
     // This component just provides visual feedback
+    
+    // Add keyboard shortcut for audio settings
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === 'a' || e.key === 'A') {
+        handleAudioSettings();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   const handleSpeedIncrease = () => {
@@ -133,7 +149,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
             
             <div className="flex flex-col items-center gap-1">
               <Button
-                onClick={() => setShowAudioSettings(true)}
+                onClick={handleAudioSettings}
                 size="sm"
                 variant="outline"
                 className="bg-gray-700 hover:bg-gray-600 border-gray-500 text-white w-16 h-12"
@@ -141,7 +157,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 <Settings className="h-4 w-4" />
               </Button>
               <span className="text-xs text-gray-300">
-                Audio
+                A
               </span>
             </div>
           </div>
@@ -258,7 +274,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
           
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => setShowAudioSettings(true)}
+              onClick={handleAudioSettings}
               size="sm"
               variant="outline"
               className="bg-white/90 hover:bg-white border-gray-300"
@@ -266,7 +282,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <Settings className="h-4 w-4" />
             </Button>
             <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-              Audio
+              A
             </span>
           </div>
         </div>
