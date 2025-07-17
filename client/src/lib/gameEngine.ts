@@ -236,20 +236,25 @@ export class GameEngine {
         const patrolRadius = 60 + Math.random() * 40;
         const startAngle = (Math.PI + i * Math.PI / 2) % (Math.PI * 2); // Different starting positions
         
-        this.obstacles.push({
-          x: clusterX + Math.cos(startAngle) * patrolRadius,
-          y: clusterY + Math.sin(startAngle) * patrolRadius,
-          width: 35,
-          height: 35,
-          color: '#8B4513',
-          type: 'obstacle',
-          vx: 1 + Math.random() * 0.5,
-          vy: 1 + Math.random() * 0.5,
-          patrolStartX: clusterX,
-          patrolStartY: clusterY,
-          patrolEndX: patrolRadius,
-          patrolEndY: startAngle
-        });
+        const tntX = clusterX + Math.cos(startAngle) * patrolRadius;
+        
+        // Only add if far from player start
+        if (tntX > 400) {
+          this.obstacles.push({
+            x: tntX,
+            y: clusterY + Math.sin(startAngle) * patrolRadius,
+            width: 35,
+            height: 35,
+            color: '#8B4513',
+            type: 'obstacle',
+            vx: 1 + Math.random() * 0.5,
+            vy: 1 + Math.random() * 0.5,
+            patrolStartX: clusterX,
+            patrolStartY: clusterY,
+            patrolEndX: patrolRadius,
+            patrolEndY: startAngle
+          });
+        }
       }
     }
 
@@ -265,7 +270,7 @@ export class GameEngine {
       const maxLinearX = this.levelWidth - 300 - controlPanelWidthForLinear; // Keep away from right edge and control panel
       
       do {
-        x = 250 + Math.random() * (maxLinearX - 250);
+        x = 500 + Math.random() * (maxLinearX - 500); // Start further from player (was 250)
         y = 80 + Math.random() * (this.canvasHeight - 160);
         attempts++;
       } while (attempts < 20 && clusterPositions.some(pos => 
@@ -332,9 +337,9 @@ export class GameEngine {
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
       for (let i = 0; i < numBarriers; i++) {
-        const x = 80 + (i * (this.levelWidth - portalSafeZone - 160) / numBarriers);
-        // Only add if not in portal area
-        if (x < this.levelWidth - portalSafeZone) {
+        const x = 600 + (i * (this.levelWidth - portalSafeZone - 600) / numBarriers); // Start further right (was 80)
+        // Only add if not in portal area and far from start
+        if (x < this.levelWidth - portalSafeZone && x > 500) {
           this.obstacles.push({
             x: x,
             y: 20 + (row * 40), // Multiple rows
@@ -344,7 +349,7 @@ export class GameEngine {
             type: 'obstacle',
             vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
             vy: 0,
-            patrolStartX: 50,
+            patrolStartX: 500, // Start patrol further right (was 50)
             patrolEndX: this.levelWidth - portalSafeZone,
             patrolStartY: 20 + (row * 40),
             patrolEndY: 20 + (row * 40)
@@ -1169,6 +1174,16 @@ export class GameEngine {
   }
 
   private drawObstacle(ctx: CanvasRenderingContext2D, obstacle: GameObject) {
+    // Don't render obstacles that are too close to the initial camera view
+    // This prevents the TNT flash at startup
+    const obstacleWorldX = obstacle.x;
+    const screenX = obstacleWorldX - this.cameraX;
+    
+    // Skip rendering if obstacle would appear in the initial startup area
+    if (screenX >= -50 && screenX <= 400 && this.cameraX < 100) {
+      return; // Don't render TNT near startup area
+    }
+    
     // Draw TNT barrel body
     ctx.fillStyle = obstacle.color; // Brown color
     ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
