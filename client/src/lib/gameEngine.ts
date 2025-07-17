@@ -1105,22 +1105,28 @@ export class GameEngine {
 
   private drawUI(ctx: CanvasRenderingContext2D) {
     // Draw UI elements like level, score, coins collected, etc.
+    // Make text responsive to screen size
+    const isSmallScreen = this.canvasWidth < 768;
+    const fontSize = isSmallScreen ? 16 : 20;
+    const margin = isSmallScreen ? 10 : 20;
+    const lineHeight = isSmallScreen ? 25 : 30;
+    
     ctx.fillStyle = "#333";
-    ctx.font = "bold 20px Arial";
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.textAlign = "left";
     
     // Level display
-    ctx.fillText(`Level: ${this.level}`, 20, 40);
+    ctx.fillText(`Level: ${this.level}`, margin, 40);
     
     // Score
-    ctx.fillText(`Score: ${this.score}`, 20, 70);
+    ctx.fillText(`Score: ${this.score}`, margin, 40 + lineHeight);
     
     // Coins collected vs total coins in level
     const totalCoins = this.coins.length + this.coinsCollected;
-    ctx.fillText(`Coins: ${this.coinsCollected}/${totalCoins}`, 20, 100);
+    ctx.fillText(`Coins: ${this.coinsCollected}/${totalCoins}`, margin, 40 + lineHeight * 2);
     
     // Game speed indicator
-    ctx.fillText(`Speed: ${this.gameSpeed}x`, 20, 130);
+    ctx.fillText(`Speed: ${this.gameSpeed}x`, margin, 40 + lineHeight * 3);
     
     // Progress indicator removed - clusters monitor not needed
     
@@ -1136,11 +1142,11 @@ export class GameEngine {
     ctx.fillStyle = '#8B5CF6';
     ctx.fillRect(20, 140, barWidth * levelProgress, 10);
     
-    // Draw mini-map (centered at top)
-    const miniMapWidth = 150;
-    const miniMapHeight = 30;
+    // Draw mini-map (centered at top) - responsive
+    const miniMapWidth = isSmallScreen ? 120 : 150;
+    const miniMapHeight = isSmallScreen ? 24 : 30;
     const miniMapX = (this.canvasWidth - miniMapWidth) / 2;
-    const miniMapY = 20;
+    const miniMapY = isSmallScreen ? 15 : 20;
     
     // Dark background with border
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -1180,5 +1186,22 @@ export class GameEngine {
     return current + (target - current) * factor;
   }
 
-
+  public updateDimensions(width: number, height: number) {
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+    this.levelWidth = width * 3; // Level is 3 screens wide
+    
+    // Update goal position based on new dimensions
+    this.goal.x = this.levelWidth - 120;
+    this.goal.y = height / 2 - 60;
+    
+    // Keep player within new bounds
+    this.player.y = Math.max(0, Math.min(height - this.player.height, this.player.y));
+    
+    // Update camera position
+    this.cameraX = Math.max(0, Math.min(
+      this.levelWidth - this.canvasWidth,
+      this.player.x - this.canvasWidth / 2
+    ));
+  }
 }
