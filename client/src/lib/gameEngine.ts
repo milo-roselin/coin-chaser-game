@@ -504,10 +504,10 @@ export class GameEngine {
       
       // Calculate distance for speed scaling
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      const maxDistance = 100; // Maximum distance for full speed
+      const maxDistance = 80; // Maximum distance for full speed (reduced from 100)
       
-      // Normalize and scale velocity
-      const speed = Math.min(distance / maxDistance, 1) * 8; // Max speed of 8
+      // Normalize and scale velocity with lower sensitivity
+      const speed = Math.min(distance / maxDistance, 1) * 3; // Max speed of 3 (reduced from 8)
       
       if (distance > 0) {
         const directionX = deltaX / distance;
@@ -609,9 +609,9 @@ export class GameEngine {
     
     // Handle touch input velocity
     if (this.isTouching) {
-      // Use target velocity from touch for smooth joystick-like control
-      this.playerVelocity.x = this.lerp(this.playerVelocity.x, this.targetVelocity.x, 0.8);
-      this.playerVelocity.y = this.lerp(this.playerVelocity.y, this.targetVelocity.y, 0.8);
+      // Use target velocity from touch for smooth joystick-like control with reduced responsiveness
+      this.playerVelocity.x = this.lerp(this.playerVelocity.x, this.targetVelocity.x, 0.4);
+      this.playerVelocity.y = this.lerp(this.playerVelocity.y, this.targetVelocity.y, 0.4);
     } else {
       // Apply velocity interpolation for keyboard input
       this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
