@@ -567,24 +567,31 @@ export class GameEngine {
       const fingerDeltaX = this.touchPosition.x - this.previousTouchPosition.x;
       const fingerDeltaY = this.touchPosition.y - this.previousTouchPosition.y;
       
-      // Scale factor to make player movement match finger speed
-      const touchSpeedScale = 1.2; // Adjust this to fine-tune responsiveness
+      // For touch input, directly move the player to match finger movement
+      // This provides immediate 1:1 response without lag
+      const directMovement = 0.8; // How much to move directly vs through velocity
       
-      // Set target velocity based on finger movement speed
-      targetVelX = fingerDeltaX * touchSpeedScale;
-      targetVelY = fingerDeltaY * touchSpeedScale;
+      // Move player directly based on finger movement
+      this.player.x += fingerDeltaX * directMovement;
+      this.player.y += fingerDeltaY * directMovement;
+      
+      // Also set velocity for smooth animation and collision detection
+      const touchSpeedScale = 3.0; // Higher scale for remaining velocity component
+      targetVelX = fingerDeltaX * touchSpeedScale * (1 - directMovement);
+      targetVelY = fingerDeltaY * touchSpeedScale * (1 - directMovement);
       
       // Apply maximum speed limits
-      const maxTouchSpeed = baseSpeed * 2 * this.gameSpeed;
+      const maxTouchSpeed = baseSpeed * 4 * this.gameSpeed;
       targetVelX = Math.max(-maxTouchSpeed, Math.min(maxTouchSpeed, targetVelX));
       targetVelY = Math.max(-maxTouchSpeed, Math.min(maxTouchSpeed, targetVelY));
     }
     
-    // Smooth velocity interpolation for better stopping
-    this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
-                                      targetVelX === 0 ? deceleration : acceleration);
-    this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
-                                      targetVelY === 0 ? deceleration : acceleration);
+    // More immediate response for touch input, smoother for keyboard
+    const isTouchInput = this.isTouching && this.touchPosition && this.previousTouchPosition;
+    const responseRate = isTouchInput ? 0.95 : (targetVelX === 0 && targetVelY === 0 ? deceleration : acceleration);
+    
+    this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, responseRate);
+    this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, responseRate);
     
     // Apply velocity to player position
     this.player.x += this.playerVelocity.x;
