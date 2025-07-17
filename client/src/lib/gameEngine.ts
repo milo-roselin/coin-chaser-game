@@ -106,7 +106,7 @@ export class GameEngine {
     // Add a small delay before marking as initialized to ensure proper setup
     setTimeout(() => {
       this.isInitialized = true;
-    }, 50); // 50ms delay
+    }, 150); // Increased to 150ms delay to ensure canvas is ready
   }
 
 
@@ -693,6 +693,10 @@ export class GameEngine {
 
   public togglePause() {
     this.isPaused = !this.isPaused;
+  }
+
+  public isReady(): boolean {
+    return this.isInitialized;
   }
 
   public update() {

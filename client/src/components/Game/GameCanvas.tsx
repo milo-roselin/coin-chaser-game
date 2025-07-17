@@ -26,8 +26,14 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     if (gameEngineRef.current && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        gameEngineRef.current.update();
-        gameEngineRef.current.render(ctx);
+        // Clear canvas to black while waiting for initialization
+        if (!gameEngineRef.current.isReady()) {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        } else {
+          gameEngineRef.current.update();
+          gameEngineRef.current.render(ctx);
+        }
       }
     }
     animationFrameRef.current = requestAnimationFrame(gameLoop);
@@ -224,12 +230,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
-    // Start game loop with a small delay to ensure everything is initialized
-    setTimeout(() => {
-      if (gameEngineRef.current) {
-        animationFrameRef.current = requestAnimationFrame(gameLoop);
-      }
-    }, 100); // 100ms delay
+    // Start game loop immediately but with proper initialization checks
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
