@@ -107,12 +107,18 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   // Handle touch input
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameEngineRef.current) {
+    if (gameEngineRef.current && canvasRef.current) {
       const touch = e.touches[0];
-      const rect = canvasRef.current?.getBoundingClientRect();
+      const rect = canvasRef.current.getBoundingClientRect();
       if (rect) {
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
+        // Get device pixel ratio for accurate coordinates
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const scaleX = canvasRef.current.width / rect.width;
+        const scaleY = canvasRef.current.height / rect.height;
+        
+        const x = (touch.clientX - rect.left) * scaleX;
+        const y = (touch.clientY - rect.top) * scaleY;
+        
         gameEngineRef.current.handleTouchStart(x, y);
       }
     }
@@ -120,12 +126,18 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameEngineRef.current) {
+    if (gameEngineRef.current && canvasRef.current) {
       const touch = e.touches[0];
-      const rect = canvasRef.current?.getBoundingClientRect();
+      const rect = canvasRef.current.getBoundingClientRect();
       if (rect) {
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
+        // Get device pixel ratio for accurate coordinates
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const scaleX = canvasRef.current.width / rect.width;
+        const scaleY = canvasRef.current.height / rect.height;
+        
+        const x = (touch.clientX - rect.left) * scaleX;
+        const y = (touch.clientY - rect.top) * scaleY;
+        
         gameEngineRef.current.handleTouchMove(x, y);
       }
     }

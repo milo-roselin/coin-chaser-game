@@ -486,6 +486,17 @@ export class GameEngine {
     this.isTouching = true;
     this.touchPosition = { x, y };
     this.previousTouchPosition = { x, y };
+    
+    // Set player position directly to finger position for immediate response
+    this.player.x = x - this.player.width / 2;
+    this.player.y = y - this.player.height / 2;
+    
+    // Keep player in bounds
+    this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+    this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
+    
+    // Update camera immediately
+    this.updateCamera();
   }
 
   public handleTouchMove(x: number, y: number) {
@@ -493,20 +504,20 @@ export class GameEngine {
       this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
       
-      // Immediate position update - no waiting for game loop
+      // Direct position tracking - set player to finger position
       if (this.previousTouchPosition) {
         const deltaX = x - this.previousTouchPosition.x;
         const deltaY = y - this.previousTouchPosition.y;
         
-        // Move player immediately
-        this.player.x += deltaX;
-        this.player.y += deltaY;
+        // Set player position directly to finger position (centered on player)
+        this.player.x = x - this.player.width / 2;
+        this.player.y = y - this.player.height / 2;
         
         // Keep player in bounds
         this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
         this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
         
-        // Update velocity for animation
+        // Update velocity for animation (based on movement delta)
         this.playerVelocity.x = deltaX;
         this.playerVelocity.y = deltaY;
         
