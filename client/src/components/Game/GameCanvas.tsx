@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { GameEngine } from "@/lib/gameEngine";
 
 const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
@@ -8,6 +9,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const isMobile = useIsMobile();
 
   const { 
     updateScore, 
@@ -104,10 +106,10 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     };
   }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
 
-  // Handle touch input
+  // Handle touch input - disabled for mobile devices (using arrow buttons instead)
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameEngineRef.current) {
+    if (gameEngineRef.current && !isMobile) {
       const touch = e.touches[0];
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
@@ -120,7 +122,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameEngineRef.current) {
+    if (gameEngineRef.current && !isMobile) {
       const touch = e.touches[0];
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
@@ -133,7 +135,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameEngineRef.current) {
+    if (gameEngineRef.current && !isMobile) {
       gameEngineRef.current.handleTouchEnd();
     }
   };

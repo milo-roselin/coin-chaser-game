@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useIsMobile } from '../../hooks/use-is-mobile';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function TouchControls() {
   const touchAreaRef = useRef<HTMLDivElement>(null);
@@ -32,42 +33,108 @@ export default function TouchControls() {
     document.dispatchEvent(event);
   };
 
+  const handleArrowKey = (direction: string) => {
+    const keyMap = {
+      up: { key: 'ArrowUp', code: 'ArrowUp' },
+      down: { key: 'ArrowDown', code: 'ArrowDown' },
+      left: { key: 'ArrowLeft', code: 'ArrowLeft' },
+      right: { key: 'ArrowRight', code: 'ArrowRight' }
+    };
+
+    const keyData = keyMap[direction as keyof typeof keyMap];
+    if (keyData) {
+      const event = new KeyboardEvent('keydown', {
+        key: keyData.key,
+        code: keyData.code,
+        bubbles: true
+      });
+      document.dispatchEvent(event);
+    }
+  };
+
   return (
     <>
-      {/* Speed control buttons for touch devices (including iPad) */}
+      {/* iPad-style controls: Arrow keys on right side + Speed controls */}
       {isMobile && (
-        <div className="absolute top-20 right-4 flex flex-col gap-3 pointer-events-auto z-10">
-          <div className="flex flex-col items-center gap-1">
-            <button
-              onTouchStart={handleSpeedIncrease}
-              onClick={handleSpeedIncrease}
-              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg transition-all duration-150"
-            >
-              +
-            </button>
-            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-              Speed+
-            </span>
+        <>
+          {/* Arrow key controls - positioned 1/4 from bottom on right side */}
+          <div className="absolute right-4 pointer-events-auto z-10" style={{ bottom: '25%' }}>
+            <div className="flex flex-col items-center gap-2">
+              {/* Up arrow */}
+              <button
+                onTouchStart={() => handleArrowKey('up')}
+                onClick={() => handleArrowKey('up')}
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+              >
+                <ChevronUp className="w-6 h-6" />
+              </button>
+              
+              {/* Left and Right arrows */}
+              <div className="flex gap-2">
+                <button
+                  onTouchStart={() => handleArrowKey('left')}
+                  onClick={() => handleArrowKey('left')}
+                  className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onTouchStart={() => handleArrowKey('right')}
+                  onClick={() => handleArrowKey('right')}
+                  className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </div>
+              
+              {/* Down arrow */}
+              <button
+                onTouchStart={() => handleArrowKey('down')}
+                onClick={() => handleArrowKey('down')}
+                className="bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white w-12 h-12 rounded-lg flex items-center justify-center shadow-lg transition-all duration-150"
+              >
+                <ChevronDown className="w-6 h-6" />
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <button
-              onTouchStart={handleSpeedDecrease}
-              onClick={handleSpeedDecrease}
-              className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg transition-all duration-150"
-            >
-              -
-            </button>
-            <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-              Speed-
-            </span>
+
+          {/* Speed control buttons - positioned at top right */}
+          <div className="absolute top-20 right-4 flex flex-col gap-3 pointer-events-auto z-10">
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onTouchStart={handleSpeedIncrease}
+                onClick={handleSpeedIncrease}
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+              >
+                +
+              </button>
+              <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+                Speed+
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onTouchStart={handleSpeedDecrease}
+                onClick={handleSpeedDecrease}
+                className="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-150"
+              >
+                -
+              </button>
+              <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
+                Speed-
+              </span>
+            </div>
           </div>
-        </div>
+        </>
       )}
       
       {/* Game instructions */}
       <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
         <div className="bg-black/50 text-white text-center py-2 px-4 rounded-lg text-sm">
-          Use arrow keys or WASD to move • Tap and hold also works • Collect yellow coins • Avoid TNT guards • Reach the portal • +/- to change speed
+          {isMobile ? 
+            "Use arrow buttons to move • Collect yellow coins • Avoid TNT guards • Reach the portal • +/- to change speed" :
+            "Use arrow keys or WASD to move • Collect yellow coins • Avoid TNT guards • Reach the portal • +/- to change speed"
+          }
         </div>
       </div>
     </>
