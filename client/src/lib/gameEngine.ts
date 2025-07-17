@@ -31,6 +31,7 @@ export class GameEngine {
   private callbacks: GameCallbacks;
   private touchPosition: { x: number; y: number } | null = null;
   private previousTouchPosition: { x: number; y: number } | null = null;
+  private touchOffset: { x: number; y: number } | null = null;
   private isTouching = false;
   private levelWidth: number;
   private cameraX = 0;
@@ -487,20 +488,16 @@ export class GameEngine {
     this.touchPosition = { x, y };
     this.previousTouchPosition = { x, y };
     
-    // Set player position directly to pointer position with camera offset
-    const worldX = x + this.cameraX;
-    this.player.x = worldX - this.player.width / 2;
-    this.player.y = y - this.player.height / 2;
+    // Store the offset between touch position and current player position
+    // This allows dragging the player relative to where they currently are
+    const currentPlayerScreenX = this.player.x - this.cameraX + this.player.width / 2;
+    const currentPlayerScreenY = this.player.y + this.player.height / 2;
     
-    // Keep player in bounds
-    this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
-    this.player.y = Math.max(0, Math.min(this.canvasHeight - this.player.height, this.player.y));
-    
-    // Update camera immediately
-    this.updateCamera();
-    
-    // Notify callback of player movement
-    this.callbacks.onPlayerMove(this.player.x, this.player.y);
+    // Calculate the offset from touch to player center
+    this.touchOffset = {
+      x: currentPlayerScreenX - x,
+      y: currentPlayerScreenY - y
+    };
   }
 
   public handlePointerMove(x: number, y: number) {
@@ -508,10 +505,16 @@ export class GameEngine {
       this.previousTouchPosition = this.touchPosition;
       this.touchPosition = { x, y };
       
-      // Set player position directly to pointer position with camera offset
-      const worldX = x + this.cameraX;
+      // Calculate new player position based on touch + offset
+      const newPlayerCenterX = x + (this.touchOffset?.x || 0);
+      const newPlayerCenterY = y + (this.touchOffset?.y || 0);
+      
+      // Convert to world coordinates
+      const worldX = newPlayerCenterX + this.cameraX;
+      
+      // Set player position
       this.player.x = worldX - this.player.width / 2;
-      this.player.y = y - this.player.height / 2;
+      this.player.y = newPlayerCenterY - this.player.height / 2;
       
       // Keep player in bounds
       this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
@@ -551,6 +554,7 @@ export class GameEngine {
     this.isTouching = false;
     this.touchPosition = null;
     this.previousTouchPosition = null;
+    this.touchOffset = null;
   }
 
   public handleKeyDown(key: string) {
