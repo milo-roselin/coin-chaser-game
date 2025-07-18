@@ -91,7 +91,7 @@ export class GameEngine {
     };
 
     // Debug logging
-    console.log(`Portal positioning: isMobile=${isMobile}, levelWidth=${this.levelWidth}, controlPanelWidth=${controlPanelWidth}, maxCameraX=${maxCameraX}, maxPlayerX=${maxPlayerX}, portalX=${portalX}`);
+    console.log(`Portal positioning: levelWidth=${this.levelWidth}, portalX=${portalX}`);
 
     // Portal image no longer needed - using custom rendering
 
@@ -798,7 +798,7 @@ export class GameEngine {
     
     // Debug logging for player boundaries
     if (this.player.x > maxPlayerX - 100) { // Only log when near the boundary
-      console.log(`Player boundary: cameraX=${this.cameraX}, canvasWidth=${this.canvasWidth}, controlPanelWidth=${controlPanelWidth}, rightBoundary=${rightBoundary}, maxPlayerX=${maxPlayerX}, playerX=${this.player.x}`);
+      console.log(`Player boundary: cameraX=${this.cameraX}, canvasWidth=${this.canvasWidth}, maxPlayerX=${maxPlayerX}, playerX=${this.player.x}`);
     }
     
     this.player.x = Math.max(0, Math.min(maxPlayerX, this.player.x));
@@ -839,16 +839,7 @@ export class GameEngine {
           
           if (!isIPadForCircular) {
             // Only apply constraints on non-iPad devices to prevent circular TNT issues
-            const isMobileForCircular = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobileForCircular) {
-              const controlPanelWidth = 128;
-              const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
-              
-              // If the TNT would go into the control panel area, just constrain it
-              if (obstacle.x > maxObstacleX) {
-                obstacle.x = maxObstacleX;
-              }
-            }
+            // No safe zone restrictions - circular obstacles can move freely
           }
           
           // Update velocity for movement indicators
@@ -890,21 +881,7 @@ export class GameEngine {
             obstacle.y = Math.max(0, Math.min(this.canvasHeight - obstacle.height, obstacle.y));
           }
           
-          // iPad-specific: Don't constrain linear TNT movement as aggressively
-          const isIPadForLinearObstacles = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-          
-          if (!isIPadForLinearObstacles) {
-            // Prevent obstacles from moving into control panel area (except on iPad)
-            const isMobileForObstacles = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobileForObstacles) {
-              const controlPanelWidth = 128;
-              const maxObstacleX = this.canvasWidth - controlPanelWidth - obstacle.width;
-              if (obstacle.x > maxObstacleX) {
-                obstacle.x = maxObstacleX;
-                if (obstacle.vx > 0) obstacle.vx = -obstacle.vx; // Reverse direction if moving right
-              }
-            }
-          }
+          // No safe zone restrictions - obstacles can move freely
         }
       }
     });
@@ -970,11 +947,7 @@ export class GameEngine {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    // Draw control panel area on mobile BEFORE anything else to prevent green overflow
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-      this.drawControlPanelBackground(ctx);
-    }
+    // No control panel drawing - safe zone completely disabled
 
     // Save context for camera transform
     ctx.save();
@@ -1010,8 +983,8 @@ export class GameEngine {
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
     // Calculate the actual game area (exclude control panel on mobile)
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobile ? 128 : 0;
+    // No safe zone restrictions for control panel
+    const controlPanelWidth = 0;
     const gameAreaWidth = this.canvasWidth - controlPanelWidth;
     
     // Only draw background within the visible game area and up to level width
@@ -1963,8 +1936,8 @@ export class GameEngine {
 
   private updateCameraPosition() {
     // Calculate camera position to follow player
-    const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
+    // No safe zone restrictions for camera positioning
+    const controlPanelWidthForCamera = 0;
     const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
     const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
     
