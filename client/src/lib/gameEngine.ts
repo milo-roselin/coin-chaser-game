@@ -516,10 +516,10 @@ export class GameEngine {
       }
     }
 
-    // Define safe starting zone - player starts at (50, 300) so create safe area around it
+    // Define safe starting zone - player starts at (50, 300) so create minimal safe area
     const playerStartX = 50;
     const playerStartY = 300;
-    const safeZoneRadius = 80; // Safe zone radius around starting position
+    const safeZoneRadius = 35; // Minimal safe zone - just the starting squares
     
     // Filter obstacles to create safe starting zone while allowing movement everywhere else
     this.obstacles = this.obstacles.filter(obs => {
@@ -924,7 +924,7 @@ export class GameEngine {
           // Check if TNT is getting too close to player starting position and redirect it
           const playerStartX = 50;
           const playerStartY = 300;
-          const dangerZoneRadius = 60; // Slightly smaller than safe zone for dynamic avoidance
+          const dangerZoneRadius = 30; // Minimal danger zone - just the starting squares
           
           const distanceToStart = Math.sqrt(
             Math.pow(obstacle.x + obstacle.width/2 - playerStartX - 15, 2) + 
