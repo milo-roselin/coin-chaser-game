@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle } from "react";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
+import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { GameEngine } from "@/lib/gameEngine";
 
@@ -21,6 +22,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     currentLevel
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
+  const { getSelectedAvatar } = usePlayerAvatar();
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -209,6 +211,16 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       },
       currentLevel
     );
+
+    // Set the selected avatar
+    const selectedAvatar = getSelectedAvatar();
+    if (selectedAvatar) {
+      gameEngineRef.current.setAvatar({
+        id: selectedAvatar.id,
+        name: selectedAvatar.name,
+        image: selectedAvatar.image
+      });
+    }
 
     // Add keyboard event listeners
     const handleKeyDown = (e: KeyboardEvent) => {

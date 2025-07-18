@@ -5,6 +5,7 @@ interface CoinBankState {
   totalCoins: number;
   sessionCoins: number;
   addCoins: (amount: number) => void;
+  spendCoins: (amount: number) => boolean;
   resetSessionCoins: () => void;
   getTotalCoins: () => number;
   getSessionCoins: () => number;
@@ -21,6 +22,17 @@ export const useCoinBank = create<CoinBankState>()(
           totalCoins: state.totalCoins + amount,
           sessionCoins: state.sessionCoins + amount,
         }));
+      },
+
+      spendCoins: (amount: number) => {
+        const { totalCoins } = get();
+        if (totalCoins >= amount) {
+          set((state) => ({
+            totalCoins: state.totalCoins - amount,
+          }));
+          return true;
+        }
+        return false;
       },
       
       resetSessionCoins: () => {

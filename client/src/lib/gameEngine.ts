@@ -15,6 +15,12 @@ export interface GameObject {
   patrolEndY?: number; // patrol end position
 }
 
+export interface AvatarInfo {
+  id: string;
+  name: string;
+  image?: string;
+}
+
 export interface GameCallbacks {
   onCoinCollected: (score: number) => void;
   onObstacleHit: () => void;
@@ -43,6 +49,8 @@ export class GameEngine {
   private animationFrame = 0;
   private isMoving = false;
   private facingDirection = 1; // 1 for right, -1 for left
+  private currentAvatar: AvatarInfo = { id: 'leprechaun', name: 'Leprechaun' };
+  private avatarImages: { [key: string]: HTMLImageElement } = {};
   private portalImage: HTMLImageElement | null = null;
   private coinsNeededForPortal = 5; // Number of coins needed to activate portal
   private gameSpeed = 1; // Speed multiplier for the game
@@ -706,6 +714,19 @@ export class GameEngine {
     this.isPaused = !this.isPaused;
   }
 
+  public setAvatar(avatar: AvatarInfo) {
+    this.currentAvatar = avatar;
+    
+    // Load avatar image if it has one
+    if (avatar.image && !this.avatarImages[avatar.id]) {
+      const img = new Image();
+      img.src = avatar.image;
+      img.onload = () => {
+        this.avatarImages[avatar.id] = img;
+      };
+    }
+  }
+
   public isReady(): boolean {
     return this.isInitialized;
   }
@@ -1078,7 +1099,25 @@ export class GameEngine {
       ctx.scale(-1, 1);
       ctx.translate(-centerX, 0);
     }
+
+    // Check if we have a custom avatar image
+    if (this.currentAvatar.id === 'count-olaf' && this.avatarImages['count-olaf']) {
+      // Draw Count Olaf image
+      const img = this.avatarImages['count-olaf'];
+      ctx.drawImage(img, x - 10, y - 20, w + 20, h + 30);
+    } else {
+      // Draw default leprechaun avatar
+      this.drawLeprechaunAvatar(ctx, x, y, w, h, centerX);
+    }
     
+    // Restore the transformation matrix
+    ctx.restore();
+    
+    // Reset text alignment
+    ctx.textAlign = 'left';
+  }
+
+  private drawLeprechaunAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // Draw top hat with rounded edges
     ctx.fillStyle = '#1A1A1A';
     ctx.beginPath();
@@ -1183,12 +1222,6 @@ export class GameEngine {
       ctx.roundRect(centerX + 0, y + h + 3, 8, 3, 1); // Right shoe
       ctx.fill();
     }
-    
-    // Restore the transformation matrix
-    ctx.restore();
-    
-    // Reset text alignment
-    ctx.textAlign = 'left';
   }
 
   private drawCoin(ctx: CanvasRenderingContext2D, coin: GameObject) {

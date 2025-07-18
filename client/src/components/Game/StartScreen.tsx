@@ -3,16 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { Trophy, Play, Volume2, VolumeX, Lock, Settings } from "lucide-react";
+import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
+import { useCoinBank } from "@/lib/stores/useCoinBank";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
+import { AvatarSelector } from "./AvatarSelector";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
+  const { getSelectedAvatar } = usePlayerAvatar();
+  const { totalCoins } = useCoinBank();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAudioSettings, setShowAudioSettings] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
 
   const handleStartGame = () => {
     // Enable audio context on user interaction
@@ -207,6 +213,17 @@ export default function StartScreen() {
             <span className="ml-auto text-sm opacity-75">[L]</span>
           </Button>
 
+          <Button 
+            onClick={() => setShowAvatarSelector(true)}
+            variant="outline"
+            size="lg"
+            className="w-full text-lg py-4 border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-semibold rounded-xl"
+          >
+            <User className="mr-2 h-5 w-5" />
+            Choose Avatar
+            <span className="ml-2 text-sm text-yellow-500">({totalCoins} coins)</span>
+          </Button>
+
           <div className="flex gap-2">
             <Button 
               onClick={toggleMute}
@@ -300,6 +317,13 @@ export default function StartScreen() {
         isOpen={showAudioSettings} 
         onClose={() => setShowAudioSettings(false)} 
       />
+
+      {/* Avatar Selector Modal */}
+      {showAvatarSelector && (
+        <AvatarSelector 
+          onClose={() => setShowAvatarSelector(false)} 
+        />
+      )}
     </div>
   );
 }
