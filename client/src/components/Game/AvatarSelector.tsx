@@ -127,31 +127,13 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                         </div>
                       </div>
                     ) : avatar.id === 'ebenezer-scrooge' ? (
-                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
-                        {/* Scrooge complete body */}
-                        <div className="w-8 h-10 bg-pink-100 rounded-full relative">
-                          {/* Head */}
-                          <div className="w-6 h-6 bg-pink-100 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
-                            {/* Wrinkles */}
-                            <div className="absolute top-1 left-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
-                            <div className="absolute top-2 right-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
-                            {/* Eyes */}
-                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                            {/* Long nose */}
-                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-pink-300 rounded-full"></div>
-                            {/* Frown */}
-                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-gray-500 rounded-full"></div>
-                            {/* Nightcap */}
-                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-5 h-3 bg-white rounded-t-full"></div>
-                            <div className="absolute -top-1 right-0 w-2 h-2 bg-white rounded-full"></div>
-                          </div>
-                          {/* Body - white nightgown */}
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-white rounded-b-full"></div>
-                          {/* Arms */}
-                          <div className="absolute top-6 left-0 w-1 h-2 bg-pink-100 rounded-full"></div>
-                          <div className="absolute top-6 right-0 w-1 h-2 bg-pink-100 rounded-full"></div>
-                        </div>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
+                        <img 
+                          src="/scrooge-avatar.png" 
+                          alt="Ebenezer Scrooge" 
+                          className="w-full h-full object-cover"
+                          style={{ imageRendering: 'pixelated' }}
+                        />
                       </div>
                     ) : avatar.id === 'wario' ? (
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
