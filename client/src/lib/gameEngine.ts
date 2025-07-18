@@ -549,28 +549,54 @@ export class GameEngine {
     });
     
     // Add protective brick wall around the safe starting zone
-    const wallThickness = 20;
-    const wallDistance = 45; // Distance from player start to place the wall
+    const wallThickness = 25;
+    const wallDistance = 60; // Distance from player start to place the wall
     
-    // Create a semi-circular protective wall around the starting position
-    const wallSegments = 12; // Number of wall segments
-    for (let i = 0; i < wallSegments; i++) {
-      const angle = (Math.PI / wallSegments) * i - Math.PI / 2; // Semi-circle from top to bottom
-      const wallX = playerStartX + Math.cos(angle) * wallDistance;
-      const wallY = playerStartY + Math.sin(angle) * wallDistance;
+    console.log(`Creating protective walls around player start: (${playerStartX}, ${playerStartY})`);
+    
+    // Create a more visible wall formation - simple rectangular barrier
+    const wallPositions = [
+      // Top wall
+      { x: playerStartX - 40, y: playerStartY - 60 },
+      { x: playerStartX - 15, y: playerStartY - 60 },
+      { x: playerStartX + 10, y: playerStartY - 60 },
+      { x: playerStartX + 35, y: playerStartY - 60 },
       
-      // Only place wall segments that are within reasonable bounds and not too close to edges
-      if (wallX > 30 && wallX < 200 && wallY > 30 && wallY < this.canvasHeight - 30) {
+      // Bottom wall
+      { x: playerStartX - 40, y: playerStartY + 60 },
+      { x: playerStartX - 15, y: playerStartY + 60 },
+      { x: playerStartX + 10, y: playerStartY + 60 },
+      { x: playerStartX + 35, y: playerStartY + 60 },
+      
+      // Left wall
+      { x: playerStartX - 65, y: playerStartY - 35 },
+      { x: playerStartX - 65, y: playerStartY - 10 },
+      { x: playerStartX - 65, y: playerStartY + 15 },
+      { x: playerStartX - 65, y: playerStartY + 40 },
+      
+      // Right wall
+      { x: playerStartX + 60, y: playerStartY - 35 },
+      { x: playerStartX + 60, y: playerStartY - 10 },
+      { x: playerStartX + 60, y: playerStartY + 15 },
+      { x: playerStartX + 60, y: playerStartY + 40 }
+    ];
+    
+    wallPositions.forEach((pos, index) => {
+      // Make sure walls are within canvas bounds
+      if (pos.x > 10 && pos.x < 300 && pos.y > 10 && pos.y < this.canvasHeight - 10) {
+        console.log(`Adding wall segment ${index} at (${pos.x}, ${pos.y})`);
         this.obstacles.push({
-          x: wallX,
-          y: wallY,
+          x: pos.x,
+          y: pos.y,
           width: wallThickness,
           height: wallThickness,
           color: '#8B4513', // Brown brick color
           type: 'wall' // Static wall, doesn't move
         });
       }
-    }
+    });
+    
+    console.log(`Total obstacles after wall creation: ${this.obstacles.length}`);
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
     this.coins = this.coins.filter(coin => {
@@ -1780,9 +1806,10 @@ export class GameEngine {
     // iPad-specific fix: Skip the startup area rendering restriction on iPad
     const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
-    if (!isIPad) {
+    if (!isIPad && obstacle.type !== 'wall') {
       // Don't render obstacles that are too close to the initial camera view
       // This prevents the TNT flash at startup (but not on iPad where it causes disappearing issues)
+      // Always render walls regardless of camera position
       const obstacleWorldX = obstacle.x;
       const screenX = obstacleWorldX - this.cameraX;
       
