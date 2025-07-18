@@ -21,23 +21,12 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
   const { playCoin } = useAudio();
 
   const handleAvatarSelect = (avatarId: string) => {
-    if (isAvatarUnlocked(avatarId)) {
-      selectAvatar(avatarId);
-      playCoin(); // Play selection sound
+    // All avatars are now free, so just unlock and select
+    if (!isAvatarUnlocked(avatarId)) {
+      unlockAvatar(avatarId);
     }
-  };
-
-  const handleAvatarUnlock = (avatarId: string) => {
-    const avatar = availableAvatars.find(a => a.id === avatarId);
-    if (!avatar) return;
-
-    if (totalCoins >= avatar.unlockCost) {
-      if (spendCoins(avatar.unlockCost)) {
-        unlockAvatar(avatarId);
-        selectAvatar(avatarId);
-        playCoin(); // Play unlock sound
-      }
-    }
+    selectAvatar(avatarId);
+    playCoin(); // Play selection sound
   };
 
   return (
@@ -61,9 +50,7 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
 
         <div className="space-y-3">
           {availableAvatars.map(avatar => {
-            const isUnlocked = isAvatarUnlocked(avatar.id);
             const isSelected = selectedAvatar === avatar.id;
-            const canAfford = totalCoins >= avatar.unlockCost;
 
             return (
               <div
@@ -74,15 +61,8 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                     ? 'border-yellow-400 bg-yellow-900 bg-opacity-30' 
                     : 'border-gray-600 hover:border-yellow-600'
                   }
-                  ${!isUnlocked && !canAfford ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
-                onClick={() => {
-                  if (isUnlocked) {
-                    handleAvatarSelect(avatar.id);
-                  } else if (canAfford) {
-                    handleAvatarUnlock(avatar.id);
-                  }
-                }}
+                onClick={() => handleAvatarSelect(avatar.id)}
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
@@ -121,19 +101,6 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                       )}
                     </div>
                     <p className="text-gray-300 text-sm">{avatar.description}</p>
-                    
-                    {!isUnlocked && (
-                      <div className="mt-1">
-                        <div className={`text-sm font-semibold ${canAfford ? 'text-yellow-400' : 'text-red-400'}`}>
-                          Cost: {avatar.unlockCost} coins
-                        </div>
-                        {!canAfford && (
-                          <div className="text-red-400 text-xs">
-                            Need {avatar.unlockCost - totalCoins} more coins
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
