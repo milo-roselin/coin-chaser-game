@@ -1214,42 +1214,28 @@ export class GameEngine {
     // Enable smooth rendering for clean, flat appearance like thumbnail
     ctx.imageSmoothingEnabled = true;
     
-    // Draw black top hat - clean rectangular shape like thumbnail
+    // Draw black top hat - very flat rectangular like thumbnail
     ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.roundRect(x + 3, y - 25, w - 6, 18, 1); // Very subtle rounding
-    ctx.fill();
+    ctx.fillRect(x + 3, y - 25, w - 6, 18); // Completely flat rectangle
     
-    // Draw hat brim - smooth and flat
-    ctx.beginPath();
-    ctx.roundRect(x + 1, y - 8, w - 2, 3, 1);
-    ctx.fill();
+    // Draw hat brim - completely flat
+    ctx.fillRect(x + 1, y - 8, w - 2, 3);
     
-    // Draw white hair as smooth sideburns
+    // Draw white hair as perfect rectangles on sides
     ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.roundRect(x + 1, y - 2, 4, 12, 2); // Left sideburn with smooth edges
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(x + w - 5, y - 2, 4, 12, 2); // Right sideburn with smooth edges
-    ctx.fill();
+    ctx.fillRect(x + 1, y - 2, 4, 12); // Left sideburn - perfectly flat
+    ctx.fillRect(x + w - 5, y - 2, 4, 12); // Right sideburn - perfectly flat
     
-    // Draw smooth rectangular face like thumbnail
-    ctx.fillStyle = '#D2B48C'; // Tan skin tone
-    ctx.beginPath();
-    ctx.roundRect(x + 5, y - 2, w - 10, 14, 2); // Smooth face shape
-    ctx.fill();
+    // Draw perfectly rectangular face like thumbnail
+    ctx.fillStyle = '#D2B48C'; // Tan skin tone matching thumbnail
+    ctx.fillRect(x + 5, y - 2, w - 10, 14); // Perfectly flat face
     
-    // Draw gray eyebrows - smooth rectangular shapes
+    // Draw gray eyebrows - perfect rectangles
     ctx.fillStyle = '#A0A0A0';
-    ctx.beginPath();
-    ctx.roundRect(x + 7, y + 1, 3, 2, 1); // Left eyebrow
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(x + w - 10, y + 1, 3, 2, 1); // Right eyebrow
-    ctx.fill();
+    ctx.fillRect(x + 7, y + 1, 3, 2); // Left eyebrow - completely flat
+    ctx.fillRect(x + w - 10, y + 1, 3, 2); // Right eyebrow - completely flat
     
-    // Draw small black circular eyes - perfectly smooth
+    // Draw small black circular eyes - perfectly round
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(x + 8, y + 4, 1.5, 0, Math.PI * 2);
@@ -1258,34 +1244,27 @@ export class GameEngine {
     ctx.arc(x + w - 8, y + 4, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw simple nose - smooth line
+    // Draw simple nose - just a tiny line
     ctx.fillStyle = '#D2B48C';
-    ctx.beginPath();
-    ctx.roundRect(centerX - 0.5, y + 6, 1, 3, 0.5);
-    ctx.fill();
+    ctx.fillRect(centerX - 0.5, y + 6, 1, 3);
     
-    // Draw white beard - smooth teardrop shape like thumbnail
+    // Draw white beard - simplified teardrop like thumbnail
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX, y + 10); // Top point
-    ctx.bezierCurveTo(centerX - 6, y + 11, centerX - 6, y + 16, centerX - 4, y + 18); // Left curve
-    ctx.bezierCurveTo(centerX - 2, y + 20, centerX + 2, y + 20, centerX + 4, y + 18); // Bottom curve
-    ctx.bezierCurveTo(centerX + 6, y + 16, centerX + 6, y + 11, centerX, y + 10); // Right curve back to top
+    ctx.ellipse(centerX, y + 15, 5, 6, 0, 0, Math.PI * 2); // Simple oval beard
     ctx.fill();
     
-    // Add subtle beard shading - very smooth
+    // Add subtle beard detail - smaller oval
     ctx.fillStyle = '#F8F8F8';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 15, 2.5, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 15, 3, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw dark navy coat - clean and structured like thumbnail
-    ctx.fillStyle = '#1a1a2e'; // Dark navy from reference
-    ctx.beginPath();
-    ctx.roundRect(x + 2, y + 18, w - 4, h - 20, 2); // Smooth coat body
-    ctx.fill();
+    // Draw dark navy coat - perfectly rectangular like thumbnail
+    ctx.fillStyle = '#1a1a2e'; // Dark navy matching thumbnail
+    ctx.fillRect(x + 2, y + 18, w - 4, h - 20); // Perfectly flat coat
     
-    // Draw white V-neck collar - clean geometric shape
+    // Draw white V-neck collar - sharp geometric shape
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.moveTo(x + 4, y + 18); // Top left
@@ -1297,7 +1276,7 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw two black buttons - perfectly circular like thumbnail
+    // Draw two black buttons - perfectly circular
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(centerX, y + 32, 1.5, 0, Math.PI * 2);
@@ -1306,22 +1285,16 @@ export class GameEngine {
     ctx.arc(centerX, y + 38, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan hands/arms - smooth rounded rectangles
+    // Draw tan hands/arms - perfect rectangles
     ctx.fillStyle = '#D2B48C';
-    ctx.beginPath();
-    ctx.roundRect(x - 1, y + 24, 3, 8, 1); // Left arm
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(x + w - 2, y + 24, 3, 8, 1); // Right arm
-    ctx.fill();
+    ctx.fillRect(x - 1, y + 24, 3, 8); // Left arm - completely flat
+    ctx.fillRect(x + w - 2, y + 24, 3, 8); // Right arm - completely flat
     
-    // Draw gray rectangular pants - smooth like thumbnail
+    // Draw gray rectangular pants - perfectly flat like thumbnail
     ctx.fillStyle = '#808080';
-    ctx.beginPath();
-    ctx.roundRect(x + 6, y + 42, w - 12, h - 44, 1); // Smooth pants body
-    ctx.fill();
+    ctx.fillRect(x + 6, y + 42, w - 12, h - 44); // Perfectly flat pants
     
-    // Draw black rectangular shoes - smooth edges
+    // Draw black rectangular shoes - completely flat
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
       // Slower, more careful movement for old age
@@ -1330,22 +1303,14 @@ export class GameEngine {
       
       const leftShoeX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
       const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
-      ctx.beginPath();
-      ctx.roundRect(leftShoeX, leftShoeY, 6, 4, 1);
-      ctx.fill();
+      ctx.fillRect(leftShoeX, leftShoeY, 6, 4); // Completely flat shoe
       
       const rightShoeX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
       const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
-      ctx.beginPath();
-      ctx.roundRect(rightShoeX, rightShoeY, 6, 4, 1);
-      ctx.fill();
+      ctx.fillRect(rightShoeX, rightShoeY, 6, 4); // Completely flat shoe
     } else {
-      ctx.beginPath();
-      ctx.roundRect(centerX - 6, y + h - 3, 6, 4, 1);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.roundRect(centerX + 1, y + h - 3, 6, 4, 1);
-      ctx.fill();
+      ctx.fillRect(centerX - 6, y + h - 3, 6, 4); // Completely flat shoe
+      ctx.fillRect(centerX + 1, y + h - 3, 6, 4); // Completely flat shoe
     }
   }
 
