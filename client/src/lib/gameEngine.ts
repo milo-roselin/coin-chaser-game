@@ -214,11 +214,8 @@ export class GameEngine {
       const tntStartX = clusterX + Math.cos(startAngle) * patrolRadius;
       const tntStartY = clusterY + Math.sin(startAngle) * patrolRadius;
       
-      // iPad-specific: Allow TNT in start area, other devices keep restriction
-      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const minStartX = isIPad ? 150 : 300; // Allow TNT closer to start on iPad
-      
-      if (tntStartX > minStartX) { // Keep TNT away from immediate player start area
+      // Allow TNT anywhere in the level, removing safe zone
+      if (true) { // TNT can spawn anywhere now
         this.obstacles.push({
           x: tntStartX,
           y: tntStartY,
@@ -250,9 +247,8 @@ export class GameEngine {
         
         const tntX = clusterX + Math.cos(startAngle) * patrolRadius;
         
-        // iPad-specific: Allow TNT in start area, other devices keep restriction
-        const isIPadForAdditional = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const minStartXForAdditional = isIPadForAdditional ? 200 : 400;
+        // Allow TNT anywhere in the level, removing safe zone
+        const minStartXForAdditional = 50; // Allow TNT anywhere
         
         if (tntX > minStartXForAdditional) {
           this.obstacles.push({
@@ -356,9 +352,9 @@ export class GameEngine {
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
       for (let i = 0; i < numBarriers; i++) {
-        const x = 600 + (i * (this.levelWidth - portalSafeZone - 600) / numBarriers); // Start further right (was 80)
-        // Only add if not in portal area and far from start
-        if (x < this.levelWidth - portalSafeZone && x > 500) {
+        const x = 80 + (i * (this.levelWidth - portalSafeZone - 80) / numBarriers); // Start from the left edge
+        // Only add if not in portal area
+        if (x < this.levelWidth - portalSafeZone) {
           this.obstacles.push({
             x: x,
             y: 20 + (row * 40), // Multiple rows
@@ -368,7 +364,7 @@ export class GameEngine {
             type: 'obstacle',
             vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
             vy: 0,
-            patrolStartX: 500, // Start patrol further right (was 50)
+            patrolStartX: 50, // Start patrol from the left edge
             patrolEndX: this.levelWidth - portalSafeZone,
             patrolStartY: 20 + (row * 40),
             patrolEndY: 20 + (row * 40)
@@ -516,12 +512,12 @@ export class GameEngine {
       }
     }
 
-    // Ensure no obstacles are too close to player start or portal area
+    // Only ensure obstacles don't overlap with portal area
     this.obstacles = this.obstacles.filter(obs => 
       obs.x <= 60 || // Allow left wall patrols and barriers
       obs.y <= 60 || // Allow top wall patrols and barriers
       obs.y >= this.canvasHeight - 60 || // Allow bottom wall patrols and barriers
-      (obs.x >= 200 && obs.x < this.levelWidth - 200) // Regular safe zone for other obstacles, larger portal safe zone
+      obs.x < this.levelWidth - 200 // Only filter out obstacles too close to portal
     );
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
