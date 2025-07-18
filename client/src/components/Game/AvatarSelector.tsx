@@ -65,111 +65,135 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                 onClick={() => handleAvatarSelect(avatar.id)}
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                     {avatar.id === 'leprechaun' ? (
-                      <div className="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center relative">
-                        {/* Mr. MoneyBags face */}
-                        <div className="w-8 h-8 bg-pink-200 rounded-full relative">
-                          {/* Mustache */}
-                          <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-gray-700 rounded-full"></div>
-                          {/* Eyes */}
-                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                          {/* Top hat */}
-                          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-black rounded-t-full"></div>
-                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-7 h-1 bg-black rounded-full"></div>
-                        </div>
-                        {/* Dollar sign */}
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
-                          <span className="text-green-800 text-xs font-bold">$</span>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Mr. MoneyBags complete body */}
+                        <div className="w-8 h-10 bg-pink-200 rounded-full relative">
+                          {/* Face */}
+                          <div className="w-6 h-6 bg-pink-200 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
+                            {/* Mustache */}
+                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-gray-700 rounded-full"></div>
+                            {/* Eyes */}
+                            <div className="absolute top-1 left-1 w-1 h-1 bg-black rounded-full"></div>
+                            <div className="absolute top-1 right-1 w-1 h-1 bg-black rounded-full"></div>
+                            {/* Top hat */}
+                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-5 h-3 bg-black rounded-t-full"></div>
+                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-black rounded-full"></div>
+                          </div>
+                          {/* Body - green suit */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-green-700 rounded-b-full"></div>
+                          {/* Arms */}
+                          <div className="absolute top-6 left-0 w-1 h-2 bg-pink-200 rounded-full"></div>
+                          <div className="absolute top-6 right-0 w-1 h-2 bg-pink-200 rounded-full"></div>
                         </div>
                       </div>
                     ) : avatar.id === 'count-olaf' ? (
-                      <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center relative">
-                        {/* Count Olaf face */}
-                        <div className="w-8 h-8 bg-yellow-100 rounded-full relative">
-                          {/* Unibrow */}
-                          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-black rounded-full"></div>
-                          {/* Eyes */}
-                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                          {/* Nose */}
-                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-pink-300 rounded-full"></div>
-                          {/* Mouth */}
-                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
-                          {/* Hair */}
-                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-7 h-2 bg-gray-600 rounded-t-full"></div>
-                        </div>
-                        {/* Theater mask */}
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white rounded-full flex items-center justify-center">
-                          <span className="text-black text-xs">🎭</span>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Count Olaf complete body */}
+                        <div className="w-8 h-10 bg-yellow-100 rounded-full relative">
+                          {/* Face */}
+                          <div className="w-6 h-6 bg-yellow-100 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
+                            {/* Unibrow */}
+                            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-5 h-0.5 bg-black rounded-full"></div>
+                            {/* Eyes */}
+                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                            {/* Nose */}
+                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-pink-300 rounded-full"></div>
+                            {/* Mouth */}
+                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
+                            {/* Hair */}
+                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-gray-600 rounded-t-full"></div>
+                          </div>
+                          {/* Body - black suit */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-black rounded-b-full"></div>
+                          {/* Arms */}
+                          <div className="absolute top-6 left-0 w-1 h-2 bg-yellow-100 rounded-full"></div>
+                          <div className="absolute top-6 right-0 w-1 h-2 bg-yellow-100 rounded-full"></div>
                         </div>
                       </div>
                     ) : avatar.id === 'tom-nook' ? (
-                      <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center relative">
-                        {/* Tom Nook face */}
-                        <div className="w-8 h-8 bg-amber-600 rounded-full relative">
-                          {/* Ears */}
-                          <div className="absolute -top-1 left-1 w-2 h-3 bg-amber-600 rounded-full"></div>
-                          <div className="absolute -top-1 right-1 w-2 h-3 bg-amber-600 rounded-full"></div>
-                          {/* Dark mask around eyes */}
-                          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-gray-800 rounded-full"></div>
-                          {/* Eyes */}
-                          <div className="absolute top-2 left-1.5 w-1 h-1 bg-white rounded-full"></div>
-                          <div className="absolute top-2 right-1.5 w-1 h-1 bg-white rounded-full"></div>
-                          {/* Nose */}
-                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-black rounded-full"></div>
-                          {/* Snout */}
-                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-2 bg-tan rounded-full"></div>
-                        </div>
-                        {/* Blue apron */}
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">🏪</span>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Tom Nook complete body */}
+                        <div className="w-8 h-10 bg-amber-600 rounded-full relative">
+                          {/* Head */}
+                          <div className="w-6 h-6 bg-amber-600 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
+                            {/* Ears */}
+                            <div className="absolute -top-1 left-0 w-2 h-2 bg-amber-600 rounded-full"></div>
+                            <div className="absolute -top-1 right-0 w-2 h-2 bg-amber-600 rounded-full"></div>
+                            {/* Dark mask around eyes */}
+                            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-5 h-2 bg-gray-800 rounded-full"></div>
+                            {/* Eyes */}
+                            <div className="absolute top-1.5 left-1 w-1 h-1 bg-white rounded-full"></div>
+                            <div className="absolute top-1.5 right-1 w-1 h-1 bg-white rounded-full"></div>
+                            {/* Nose */}
+                            <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-black rounded-full"></div>
+                            {/* Snout */}
+                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-1 bg-yellow-200 rounded-full"></div>
+                          </div>
+                          {/* Body - blue apron */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-blue-500 rounded-b-full"></div>
+                          {/* Arms */}
+                          <div className="absolute top-6 left-0 w-1 h-2 bg-amber-600 rounded-full"></div>
+                          <div className="absolute top-6 right-0 w-1 h-2 bg-amber-600 rounded-full"></div>
                         </div>
                       </div>
                     ) : avatar.id === 'ebenezer-scrooge' ? (
-                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center relative">
-                        {/* Scrooge face */}
-                        <div className="w-8 h-8 bg-pink-100 rounded-full relative">
-                          {/* Wrinkles */}
-                          <div className="absolute top-1 left-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
-                          <div className="absolute top-2 right-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
-                          {/* Eyes */}
-                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                          {/* Long nose */}
-                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-pink-300 rounded-full"></div>
-                          {/* Frown */}
-                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-gray-500 rounded-full transform rotate-12"></div>
-                          {/* Nightcap */}
-                          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-white rounded-t-full"></div>
-                          <div className="absolute -top-1 right-0 w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                        {/* Coin */}
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
-                          <span className="text-green-800 text-xs">₤</span>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Scrooge complete body */}
+                        <div className="w-8 h-10 bg-pink-100 rounded-full relative">
+                          {/* Head */}
+                          <div className="w-6 h-6 bg-pink-100 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
+                            {/* Wrinkles */}
+                            <div className="absolute top-1 left-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
+                            <div className="absolute top-2 right-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
+                            {/* Eyes */}
+                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                            {/* Long nose */}
+                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-pink-300 rounded-full"></div>
+                            {/* Frown */}
+                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-gray-500 rounded-full"></div>
+                            {/* Nightcap */}
+                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-5 h-3 bg-white rounded-t-full"></div>
+                            <div className="absolute -top-1 right-0 w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                          {/* Body - white nightgown */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-white rounded-b-full"></div>
+                          {/* Arms */}
+                          <div className="absolute top-6 left-0 w-1 h-2 bg-pink-100 rounded-full"></div>
+                          <div className="absolute top-6 right-0 w-1 h-2 bg-pink-100 rounded-full"></div>
                         </div>
                       </div>
                     ) : avatar.id === 'wario' ? (
-                      <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center relative">
-                        {/* Wario face */}
-                        <div className="w-8 h-8 bg-yellow-200 rounded-full relative">
-                          {/* Fat cheeks */}
-                          <div className="absolute top-2 left-0 w-2 h-3 bg-yellow-300 rounded-full"></div>
-                          <div className="absolute top-2 right-0 w-2 h-3 bg-yellow-300 rounded-full"></div>
-                          {/* Eyes */}
-                          <div className="absolute top-2 left-1.5 w-1 h-1 bg-black rounded-full"></div>
-                          <div className="absolute top-2 right-1.5 w-1 h-1 bg-black rounded-full"></div>
-                          {/* Big nose */}
-                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-pink-300 rounded-full"></div>
-                          {/* Mustache */}
-                          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-800 rounded-full"></div>
-                          {/* Grin */}
-                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-red-500 rounded-full"></div>
-                        </div>
-                        {/* Yellow cap with W */}
-                        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-yellow-400 rounded-t-full flex items-center justify-center">
-                          <span className="text-purple-800 text-xs font-bold">W</span>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Wario complete body */}
+                        <div className="w-8 h-10 bg-yellow-200 rounded-full relative">
+                          {/* Head */}
+                          <div className="w-6 h-6 bg-yellow-200 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
+                            {/* Fat cheeks */}
+                            <div className="absolute top-2 left-0 w-1 h-2 bg-yellow-300 rounded-full"></div>
+                            <div className="absolute top-2 right-0 w-1 h-2 bg-yellow-300 rounded-full"></div>
+                            {/* Eyes */}
+                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                            {/* Big nose */}
+                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-pink-300 rounded-full"></div>
+                            {/* Mustache */}
+                            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-yellow-800 rounded-full"></div>
+                            {/* Grin */}
+                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
+                            {/* Yellow cap with W */}
+                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-5 h-3 bg-yellow-400 rounded-t-full flex items-center justify-center">
+                              <span className="text-purple-800 text-xs font-bold">W</span>
+                            </div>
+                          </div>
+                          {/* Body - purple overalls */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-purple-600 rounded-b-full"></div>
+                          {/* Arms */}
+                          <div className="absolute top-6 left-0 w-1 h-2 bg-yellow-200 rounded-full"></div>
+                          <div className="absolute top-6 right-0 w-1 h-2 bg-yellow-200 rounded-full"></div>
                         </div>
                       </div>
                     ) : (
