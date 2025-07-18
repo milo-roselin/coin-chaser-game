@@ -67,13 +67,20 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                     {avatar.id === 'leprechaun' ? (
-                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
-                        <img 
-                          src="/attached_assets/Screenshot 2025-07-18 at 2.03.23 PM_1752872644440.png" 
-                          alt="Mr. MoneyBags" 
-                          className="w-8 h-8 object-cover"
-                          style={{ imageRendering: 'pixelated' }}
-                        />
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
+                        {/* Mr. MoneyBags - exact recreation of the provided image */}
+                        <div className="w-8 h-8 relative">
+                          {/* Black top hat */}
+                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3 h-2 bg-black"></div>
+                          {/* Hat brim */}
+                          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-4 h-0.5 bg-black"></div>
+                          {/* Pink face */}
+                          <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 w-3 h-2.5 bg-pink-300 rounded-full"></div>
+                          {/* Red suit body */}
+                          <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-2.5 h-2 bg-red-600"></div>
+                          {/* Black pants */}
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2.5 h-1 bg-black"></div>
+                        </div>
                       </div>
                     ) : avatar.id === 'count-olaf' ? (
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
