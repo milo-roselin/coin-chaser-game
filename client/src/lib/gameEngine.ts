@@ -1100,11 +1100,10 @@ export class GameEngine {
       ctx.translate(-centerX, 0);
     }
 
-    // Check if we have a custom avatar image
-    if (this.currentAvatar.id === 'count-olaf' && this.avatarImages['count-olaf']) {
-      // Draw Count Olaf image
-      const img = this.avatarImages['count-olaf'];
-      ctx.drawImage(img, x - 10, y - 20, w + 20, h + 30);
+    // Check which avatar to draw
+    if (this.currentAvatar.id === 'count-olaf') {
+      // Draw animated Count Olaf avatar
+      this.drawCountOlafAvatar(ctx, x, y, w, h, centerX);
     } else {
       // Draw default leprechaun avatar
       this.drawLeprechaunAvatar(ctx, x, y, w, h, centerX);
@@ -1115,6 +1114,123 @@ export class GameEngine {
     
     // Reset text alignment
     ctx.textAlign = 'left';
+  }
+
+  private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
+    // Draw tall black hat
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.roundRect(x + 4, y - 20, w - 8, 15, 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y - 28, w - 12, 8, 1);
+    ctx.fill();
+    
+    // Draw pale head as circle
+    ctx.fillStyle = '#F5F5DC'; // Pale beige
+    ctx.beginPath();
+    ctx.arc(centerX, y + 8, 10, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw the signature unibrow (thick black line across both eyes)
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 7, y + 3, 14, 3, 1);
+    ctx.fill();
+    
+    // Draw narrow eyes underneath the unibrow
+    ctx.fillStyle = '#8B0000'; // Dark red eyes
+    ctx.beginPath();
+    ctx.arc(centerX - 3, y + 6, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 3, y + 6, 1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw hooked nose
+    ctx.fillStyle = '#F5F5DC';
+    ctx.beginPath();
+    ctx.ellipse(centerX + 1, y + 10, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw thin mustache
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 4, y + 12, 8, 1, 0.5);
+    ctx.fill();
+    
+    // Draw tall, thin body (dark suit)
+    ctx.fillStyle = '#1C1C1C'; // Very dark gray
+    ctx.beginPath();
+    ctx.roundRect(x + 5, y + 18, w - 10, h - 20, 2);
+    ctx.fill();
+    
+    // Draw white dress shirt
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 20, w - 16, h - 24, 1);
+    ctx.fill();
+    
+    // Draw theatrical collar
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 18, w - 12, 4, 1);
+    ctx.fill();
+    
+    // Draw dark vest/waistcoat
+    ctx.fillStyle = '#2F2F2F';
+    ctx.beginPath();
+    ctx.roundRect(x + 9, y + 22, w - 18, h - 28, 1);
+    ctx.fill();
+    
+    // Add theatrical buttons
+    ctx.fillStyle = '#FFD700'; // Gold buttons
+    ctx.beginPath();
+    ctx.arc(centerX, y + 28, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX, y + 35, 1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw legs (thin and dark)
+    ctx.fillStyle = '#1C1C1C';
+    if (this.isMoving) {
+      // Animated legs when moving
+      const legCycle = Math.sin(Date.now() * 0.01) * 3;
+      const forwardOffset = 2;
+      
+      // Left leg
+      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(leftLegX, leftLegY, 3, 8); // Thinner legs
+      
+      // Right leg
+      const rightLegX = centerX + 3 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(rightLegX, rightLegY, 3, 8); // Thinner legs
+      
+      // Draw pointed shoes (theatrical)
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.ellipse(leftLegX + 1, leftLegY + 8, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(rightLegX + 1, rightLegY + 8, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Static legs when not moving
+      ctx.fillRect(centerX - 6, y + h - 4, 3, 8); // Left leg (thinner)
+      ctx.fillRect(centerX + 3, y + h - 4, 3, 8); // Right leg (thinner)
+      
+      // Draw static pointed shoes
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.ellipse(centerX - 5, y + h + 4, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(centerX + 4, y + h + 4, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   private drawLeprechaunAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {

@@ -30,7 +30,7 @@ const defaultAvatars: Avatar[] = [
   {
     id: 'count-olaf',
     name: 'Count Olaf',
-    image: '/images/count-olaf.png',
+    image: '', // Animated avatar, no image needed
     unlockCost: 10,
     description: 'The villainous actor from A Series of Unfortunate Events'
   }

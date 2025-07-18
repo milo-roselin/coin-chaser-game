@@ -18,12 +18,12 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
   } = usePlayerAvatar();
   
   const { totalCoins, spendCoins } = useCoinBank();
-  const { playSound } = useAudio();
+  const { playCoin } = useAudio();
 
   const handleAvatarSelect = (avatarId: string) => {
     if (isAvatarUnlocked(avatarId)) {
       selectAvatar(avatarId);
-      playSound('coin'); // Play selection sound
+      playCoin(); // Play selection sound
     }
   };
 
@@ -35,7 +35,7 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
       if (spendCoins(avatar.unlockCost)) {
         unlockAvatar(avatarId);
         selectAvatar(avatarId);
-        playSound('coin'); // Play unlock sound
+        playCoin(); // Play unlock sound
       }
     }
   };
@@ -86,14 +86,16 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
-                    {avatar.image ? (
-                      <img 
-                        src={avatar.image} 
-                        alt={avatar.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
+                    {avatar.id === 'leprechaun' ? (
+                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">🍀</span>
+                      </div>
+                    ) : avatar.id === 'count-olaf' ? (
+                      <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">🎭</span>
+                      </div>
                     ) : (
-                      <div className="w-10 h-10 bg-green-500 rounded-full"></div>
+                      <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
                     )}
                   </div>
                   
