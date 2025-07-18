@@ -85,20 +85,92 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                         </div>
                       </div>
                     ) : avatar.id === 'count-olaf' ? (
-                      <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">🎭</span>
+                      <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center relative">
+                        {/* Count Olaf face */}
+                        <div className="w-8 h-8 bg-yellow-100 rounded-full relative">
+                          {/* Unibrow */}
+                          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-black rounded-full"></div>
+                          {/* Eyes */}
+                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                          {/* Nose */}
+                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-pink-300 rounded-full"></div>
+                          {/* Mouth */}
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
+                          {/* Hair */}
+                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-7 h-2 bg-gray-600 rounded-t-full"></div>
+                        </div>
+                        {/* Theater mask */}
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white rounded-full flex items-center justify-center">
+                          <span className="text-black text-xs">🎭</span>
+                        </div>
                       </div>
                     ) : avatar.id === 'tom-nook' ? (
-                      <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">🦝</span>
+                      <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center relative">
+                        {/* Tom Nook face */}
+                        <div className="w-8 h-8 bg-amber-600 rounded-full relative">
+                          {/* Ears */}
+                          <div className="absolute -top-1 left-1 w-2 h-3 bg-amber-600 rounded-full"></div>
+                          <div className="absolute -top-1 right-1 w-2 h-3 bg-amber-600 rounded-full"></div>
+                          {/* Dark mask around eyes */}
+                          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-gray-800 rounded-full"></div>
+                          {/* Eyes */}
+                          <div className="absolute top-2 left-1.5 w-1 h-1 bg-white rounded-full"></div>
+                          <div className="absolute top-2 right-1.5 w-1 h-1 bg-white rounded-full"></div>
+                          {/* Nose */}
+                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-black rounded-full"></div>
+                          {/* Snout */}
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-2 bg-tan rounded-full"></div>
+                        </div>
+                        {/* Blue apron */}
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">🏪</span>
+                        </div>
                       </div>
                     ) : avatar.id === 'ebenezer-scrooge' ? (
-                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">👴</span>
+                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center relative">
+                        {/* Scrooge face */}
+                        <div className="w-8 h-8 bg-pink-100 rounded-full relative">
+                          {/* Wrinkles */}
+                          <div className="absolute top-1 left-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
+                          <div className="absolute top-2 right-1 w-2 h-0.5 bg-gray-400 rounded-full"></div>
+                          {/* Eyes */}
+                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                          {/* Long nose */}
+                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-pink-300 rounded-full"></div>
+                          {/* Frown */}
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-gray-500 rounded-full transform rotate-12"></div>
+                          {/* Nightcap */}
+                          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-white rounded-t-full"></div>
+                          <div className="absolute -top-1 right-0 w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        {/* Coin */}
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
+                          <span className="text-green-800 text-xs">₤</span>
+                        </div>
                       </div>
                     ) : avatar.id === 'wario' ? (
-                      <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <span className="text-purple-800 text-xs font-bold">W</span>
+                      <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center relative">
+                        {/* Wario face */}
+                        <div className="w-8 h-8 bg-yellow-200 rounded-full relative">
+                          {/* Fat cheeks */}
+                          <div className="absolute top-2 left-0 w-2 h-3 bg-yellow-300 rounded-full"></div>
+                          <div className="absolute top-2 right-0 w-2 h-3 bg-yellow-300 rounded-full"></div>
+                          {/* Eyes */}
+                          <div className="absolute top-2 left-1.5 w-1 h-1 bg-black rounded-full"></div>
+                          <div className="absolute top-2 right-1.5 w-1 h-1 bg-black rounded-full"></div>
+                          {/* Big nose */}
+                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-pink-300 rounded-full"></div>
+                          {/* Mustache */}
+                          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-800 rounded-full"></div>
+                          {/* Grin */}
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-red-500 rounded-full"></div>
+                        </div>
+                        {/* Yellow cap with W */}
+                        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-yellow-400 rounded-t-full flex items-center justify-center">
+                          <span className="text-purple-800 text-xs font-bold">W</span>
+                        </div>
                       </div>
                     ) : (
                       <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
