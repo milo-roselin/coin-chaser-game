@@ -1211,89 +1211,128 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw nightcap
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(centerX, y - 5, 8, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw nightcap tip
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(centerX + 6, y - 12, 3, 4, 0.5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw old, wrinkled face
-    ctx.fillStyle = '#F5DEB3'; // Wheat color for aged skin
-    ctx.beginPath();
-    ctx.ellipse(centerX, y + 8, 9, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw wrinkle lines
-    ctx.strokeStyle = '#D2B48C';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(centerX - 6, y + 5);
-    ctx.lineTo(centerX - 3, y + 6);
-    ctx.moveTo(centerX + 3, y + 6);
-    ctx.lineTo(centerX + 6, y + 5);
-    ctx.stroke();
-    
-    // Draw small, beady eyes
+    // Draw black top hat based on reference image
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX - 3, y + 6, 1, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(centerX + 3, y + 6, 1, 0, Math.PI * 2);
+    ctx.roundRect(x + 4, y - 25, w - 8, 18, 2);
     ctx.fill();
     
-    // Draw hooked nose
-    ctx.fillStyle = '#F5DEB3';
+    // Draw hat brim
     ctx.beginPath();
-    ctx.moveTo(centerX, y + 8);
-    ctx.lineTo(centerX + 2, y + 11);
-    ctx.lineTo(centerX, y + 12);
+    ctx.roundRect(x + 2, y - 8, w - 4, 3, 1);
+    ctx.fill();
+    
+    // Draw white hair on sides
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(x + 2, y + 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w - 2, y + 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw aged, tan face
+    ctx.fillStyle = '#D2B48C'; // Tan skin tone from reference
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 6, 8, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw gray eyebrows (bushy and aged)
+    ctx.fillStyle = '#808080';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 6, y + 1, 4, 2, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(centerX + 2, y + 1, 4, 2, 1);
+    ctx.fill();
+    
+    // Draw small black eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX - 3, y + 4, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 3, y + 4, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw nose
+    ctx.fillStyle = '#D2B48C';
+    ctx.beginPath();
+    ctx.moveTo(centerX, y + 6);
+    ctx.lineTo(centerX + 1, y + 9);
+    ctx.lineTo(centerX, y + 10);
+    ctx.lineTo(centerX - 1, y + 8);
     ctx.closePath();
     ctx.fill();
     
-    // Draw frown
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 1;
+    // Draw white beard from reference
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.arc(centerX, y + 16, 3, 0.3, Math.PI - 0.3);
-    ctx.stroke();
-    
-    // Draw old nightgown
-    ctx.fillStyle = '#F0F8FF'; // Alice blue
-    ctx.beginPath();
-    ctx.roundRect(x + 4, y + 18, w - 8, h - 20, 2);
+    ctx.ellipse(centerX, y + 12, 6, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw nightgown stripes
-    ctx.fillStyle = '#E6E6FA';
-    for (let i = 0; i < 3; i++) {
+    // Add beard texture
+    ctx.fillStyle = '#F0F0F0';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 14, 4, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw dark navy coat from reference
+    ctx.fillStyle = '#1a1a2e'; // Dark navy
+    ctx.beginPath();
+    ctx.roundRect(x + 3, y + 18, w - 6, h - 20, 3);
+    ctx.fill();
+    
+    // Draw white collar
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y + 18);
+    ctx.lineTo(x + w - 6, y + 18);
+    ctx.lineTo(x + w - 4, y + 24);
+    ctx.lineTo(x + 4, y + 24);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw coat buttons
+    ctx.fillStyle = '#000000';
+    for (let i = 0; i < 2; i++) {
       ctx.beginPath();
-      ctx.roundRect(x + 4, y + 22 + i * 8, w - 8, 2, 1);
+      ctx.arc(centerX, y + 25 + i * 6, 1.5, 0, Math.PI * 2);
       ctx.fill();
     }
     
-    // Draw thin, frail legs
-    ctx.fillStyle = '#F5DEB3';
+    // Draw tan arms/hands
+    ctx.fillStyle = '#D2B48C';
+    ctx.beginPath();
+    ctx.roundRect(x - 1, y + 22, 3, 10, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 2, y + 22, 3, 10, 1);
+    ctx.fill();
+    
+    // Draw gray pants from reference
+    ctx.fillStyle = '#808080';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 35, w - 12, h - 37, 2);
+    ctx.fill();
+    
+    // Draw black shoes
+    ctx.fillStyle = '#000000';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.008) * 2; // Slower movement
-      const forwardOffset = 1;
+      // Slower, more careful movement for old age
+      const legCycle = Math.sin(Date.now() * 0.008) * 2;
+      const forwardOffset = 1.5;
       
-      const leftLegX = centerX - 4 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.1;
-      ctx.fillRect(leftLegX, leftLegY, 3, 8);
+      const leftShoeX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(leftShoeX, leftShoeY, 6, 4);
       
-      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.1;
-      ctx.fillRect(rightLegX, rightLegY, 3, 8);
+      const rightShoeX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(rightShoeX, rightShoeY, 6, 4);
     } else {
-      ctx.fillRect(centerX - 4, y + h - 4, 3, 8);
-      ctx.fillRect(centerX + 1, y + h - 4, 3, 8);
+      ctx.fillRect(centerX - 6, y + h - 3, 6, 4);
+      ctx.fillRect(centerX + 1, y + h - 3, 6, 4);
     }
   }
 
