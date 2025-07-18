@@ -1211,7 +1211,7 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Enable smooth rendering for clean, flat appearance
+    // Enable smooth rendering for clean, flat appearance like thumbnail
     ctx.imageSmoothingEnabled = true;
     
     // Draw black top hat - clean rectangular shape like thumbnail
