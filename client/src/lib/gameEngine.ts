@@ -516,13 +516,37 @@ export class GameEngine {
       }
     }
 
-    // Ensure no obstacles are too close to player start or portal area
-    this.obstacles = this.obstacles.filter(obs => 
-      obs.x <= 60 || // Allow left wall patrols and barriers
-      obs.y <= 60 || // Allow top wall patrols and barriers
-      obs.y >= this.canvasHeight - 60 || // Allow bottom wall patrols and barriers
-      (obs.x >= 200 && obs.x < this.levelWidth - 200) // Regular safe zone for other obstacles, larger portal safe zone
-    );
+    // Define safe starting zone - player starts at (50, 300) so create safe area around it
+    const playerStartX = 50;
+    const playerStartY = 300;
+    const safeZoneRadius = 80; // Safe zone radius around starting position
+    
+    // Filter obstacles to create safe starting zone while allowing movement everywhere else
+    this.obstacles = this.obstacles.filter(obs => {
+      // Always allow wall patrols (they move along edges, not through start area)
+      if (obs.x <= 60 || obs.y <= 60 || obs.y >= this.canvasHeight - 60) {
+        return true;
+      }
+      
+      // Keep portal area clear (right side of level)
+      if (obs.x >= this.levelWidth - 200) {
+        return false;
+      }
+      
+      // Check if obstacle is in the safe starting zone
+      const distanceToStart = Math.sqrt(
+        Math.pow(obs.x + obs.width/2 - playerStartX - 15, 2) + // 15 is half player width
+        Math.pow(obs.y + obs.height/2 - playerStartY - 15, 2)   // 15 is half player height
+      );
+      
+      // Remove obstacles that would be directly on top of starting position
+      if (distanceToStart < safeZoneRadius) {
+        return false;
+      }
+      
+      // Allow all other obstacles - they can move everywhere else
+      return true;
+    });
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
     this.coins = this.coins.filter(coin => {
@@ -895,6 +919,28 @@ export class GameEngine {
             if (obstacle.y <= obstacle.patrolStartY || obstacle.y + obstacle.height >= obstacle.patrolEndY) {
               obstacle.vy = -obstacle.vy;
             }
+          }
+          
+          // Check if TNT is getting too close to player starting position and redirect it
+          const playerStartX = 50;
+          const playerStartY = 300;
+          const dangerZoneRadius = 60; // Slightly smaller than safe zone for dynamic avoidance
+          
+          const distanceToStart = Math.sqrt(
+            Math.pow(obstacle.x + obstacle.width/2 - playerStartX - 15, 2) + 
+            Math.pow(obstacle.y + obstacle.height/2 - playerStartY - 15, 2)
+          );
+          
+          // If TNT gets too close to start, gently redirect it away (but don't stop it)
+          if (distanceToStart < dangerZoneRadius) {
+            const angleFromStart = Math.atan2(
+              obstacle.y + obstacle.height/2 - playerStartY - 15,
+              obstacle.x + obstacle.width/2 - playerStartX - 15
+            );
+            // Apply a small push away from the starting position
+            const pushForce = 0.3;
+            obstacle.x += Math.cos(angleFromStart) * pushForce;
+            obstacle.y += Math.sin(angleFromStart) * pushForce;
           }
           
           // iPad-specific: Don't restrict linear TNT to tight patrol bounds on iPad
