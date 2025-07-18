@@ -1211,112 +1211,90 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw black top hat based on reference image
+    // Draw black top hat - very rectangular and flat like reference
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(x + 3, y - 25, w - 6, 18); // Main hat body - perfectly rectangular
+    
+    // Draw hat brim - wider and flatter
+    ctx.fillRect(x + 1, y - 8, w - 2, 3);
+    
+    // Draw white hair as sideburns extending down the face
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(x + 1, y - 2, 4, 12); // Left sideburn
+    ctx.fillRect(x + w - 5, y - 2, 4, 12); // Right sideburn
+    
+    // Draw square/rectangular face like reference - more geometric
+    ctx.fillStyle = '#D2B48C'; // Tan skin tone
+    ctx.fillRect(x + 5, y - 2, w - 10, 14); // Square face shape
+    
+    // Draw gray eyebrows positioned over eyes exactly like reference
+    ctx.fillStyle = '#A0A0A0';
+    ctx.fillRect(x + 7, y + 1, 3, 2); // Left eyebrow
+    ctx.fillRect(x + w - 10, y + 1, 3, 2); // Right eyebrow
+    
+    // Draw small black circular eyes exactly positioned
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.roundRect(x + 4, y - 25, w - 8, 18, 2);
+    ctx.arc(x + 8, y + 4, 1.5, 0, Math.PI * 2);
     ctx.fill();
-    
-    // Draw hat brim
     ctx.beginPath();
-    ctx.roundRect(x + 2, y - 8, w - 4, 3, 1);
+    ctx.arc(x + w - 8, y + 4, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw white hair on sides
+    // Draw simple nose line
+    ctx.fillStyle = '#D2B48C';
+    ctx.fillRect(centerX - 0.5, y + 6, 1, 3);
+    
+    // Draw white beard in exact teardrop shape from reference
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.arc(x + 2, y + 2, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(x + w - 2, y + 2, 4, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw aged, tan face
-    ctx.fillStyle = '#D2B48C'; // Tan skin tone from reference
-    ctx.beginPath();
-    ctx.ellipse(centerX, y + 6, 8, 10, 0, 0, Math.PI * 2);
+    ctx.moveTo(centerX, y + 10); // Top point
+    ctx.quadraticCurveTo(centerX - 6, y + 12, centerX - 5, y + 18); // Left curve
+    ctx.quadraticCurveTo(centerX, y + 20, centerX + 5, y + 18); // Bottom curve
+    ctx.quadraticCurveTo(centerX + 6, y + 12, centerX, y + 10); // Right curve back to top
     ctx.fill();
     
-    // Draw gray eyebrows (bushy and aged)
-    ctx.fillStyle = '#808080';
+    // Add beard inner detail
+    ctx.fillStyle = '#F5F5F5';
     ctx.beginPath();
-    ctx.roundRect(centerX - 6, y + 1, 4, 2, 1);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(centerX + 2, y + 1, 4, 2, 1);
+    ctx.ellipse(centerX, y + 15, 3, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw small black eyes
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(centerX - 3, y + 4, 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(centerX + 3, y + 4, 1.5, 0, Math.PI * 2);
-    ctx.fill();
+    // Draw dark navy coat - very structured and rectangular
+    ctx.fillStyle = '#1a1a2e'; // Dark navy from reference
+    ctx.fillRect(x + 2, y + 18, w - 4, h - 20); // Main coat body
     
-    // Draw nose
-    ctx.fillStyle = '#D2B48C';
+    // Draw white V-neck collar exactly like reference
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX, y + 6);
-    ctx.lineTo(centerX + 1, y + 9);
-    ctx.lineTo(centerX, y + 10);
-    ctx.lineTo(centerX - 1, y + 8);
+    ctx.moveTo(x + 4, y + 18); // Top left
+    ctx.lineTo(x + w - 4, y + 18); // Top right
+    ctx.lineTo(x + w - 6, y + 24); // Right point
+    ctx.lineTo(centerX + 2, y + 28); // Bottom right of V
+    ctx.lineTo(centerX - 2, y + 28); // Bottom left of V
+    ctx.lineTo(x + 6, y + 24); // Left point
     ctx.closePath();
     ctx.fill();
     
-    // Draw white beard from reference
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 6, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Add beard texture
-    ctx.fillStyle = '#F0F0F0';
-    ctx.beginPath();
-    ctx.ellipse(centerX, y + 14, 4, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw dark navy coat from reference
-    ctx.fillStyle = '#1a1a2e'; // Dark navy
-    ctx.beginPath();
-    ctx.roundRect(x + 3, y + 18, w - 6, h - 20, 3);
-    ctx.fill();
-    
-    // Draw white collar
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.moveTo(x + 6, y + 18);
-    ctx.lineTo(x + w - 6, y + 18);
-    ctx.lineTo(x + w - 4, y + 24);
-    ctx.lineTo(x + 4, y + 24);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Draw coat buttons
+    // Draw two black buttons exactly positioned like reference
     ctx.fillStyle = '#000000';
-    for (let i = 0; i < 2; i++) {
-      ctx.beginPath();
-      ctx.arc(centerX, y + 25 + i * 6, 1.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.beginPath();
+    ctx.arc(centerX, y + 32, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX, y + 38, 1.5, 0, Math.PI * 2);
+    ctx.fill();
     
-    // Draw tan arms/hands
+    // Draw tan hands/arms at coat opening
     ctx.fillStyle = '#D2B48C';
-    ctx.beginPath();
-    ctx.roundRect(x - 1, y + 22, 3, 10, 1);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(x + w - 2, y + 22, 3, 10, 1);
-    ctx.fill();
+    ctx.fillRect(x - 1, y + 24, 3, 8); // Left arm
+    ctx.fillRect(x + w - 2, y + 24, 3, 8); // Right arm
     
-    // Draw gray pants from reference
+    // Draw gray rectangular pants like reference
     ctx.fillStyle = '#808080';
-    ctx.beginPath();
-    ctx.roundRect(x + 6, y + 35, w - 12, h - 37, 2);
-    ctx.fill();
+    ctx.fillRect(x + 6, y + 42, w - 12, h - 44); // Pants body
     
-    // Draw black shoes
+    // Draw black rectangular shoes
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
       // Slower, more careful movement for old age
