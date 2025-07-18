@@ -548,6 +548,30 @@ export class GameEngine {
       return true;
     });
     
+    // Add protective brick wall around the safe starting zone
+    const wallThickness = 20;
+    const wallDistance = 45; // Distance from player start to place the wall
+    
+    // Create a semi-circular protective wall around the starting position
+    const wallSegments = 12; // Number of wall segments
+    for (let i = 0; i < wallSegments; i++) {
+      const angle = (Math.PI / wallSegments) * i - Math.PI / 2; // Semi-circle from top to bottom
+      const wallX = playerStartX + Math.cos(angle) * wallDistance;
+      const wallY = playerStartY + Math.sin(angle) * wallDistance;
+      
+      // Only place wall segments that are within reasonable bounds and not too close to edges
+      if (wallX > 30 && wallX < 200 && wallY > 30 && wallY < this.canvasHeight - 30) {
+        this.obstacles.push({
+          x: wallX,
+          y: wallY,
+          width: wallThickness,
+          height: wallThickness,
+          color: '#8B4513', // Brown brick color
+          type: 'wall' // Static wall, doesn't move
+        });
+      }
+    }
+    
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
     this.coins = this.coins.filter(coin => {
       // Check if coin has at least one path (basic accessibility check)
@@ -1779,50 +1803,95 @@ export class GameEngine {
       }
     }
     
-    // Draw TNT barrel body
-    ctx.fillStyle = obstacle.color; // Brown color
-    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    
-    // Add TNT bands
-    ctx.fillStyle = '#654321';
-    ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, 4);
-    ctx.fillRect(obstacle.x, obstacle.y + 16, obstacle.width, 4);
-    ctx.fillRect(obstacle.x, obstacle.y + 24, obstacle.width, 4);
-    
-    // Add TNT text
-    ctx.fillStyle = '#FF0000';
-    ctx.font = 'bold 10px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('TNT', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 3);
-    
-    // Add fuse (small line on top)
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
-    ctx.lineTo(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8);
-    ctx.stroke();
-    
-    // Add spark at fuse tip
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8, 2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Add movement indicator (arrow showing direction)
-    if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 8px Arial';
-      ctx.textAlign = 'center';
+    // Check if this is a wall or TNT obstacle
+    if (obstacle.type === 'wall') {
+      // Draw brick wall
+      ctx.fillStyle = '#8B4513'; // Brown brick color
+      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
       
-      if (obstacle.vx > 0) {
-        ctx.fillText('→', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-      } else if (obstacle.vx < 0) {
-        ctx.fillText('←', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-      } else if (obstacle.vy > 0) {
-        ctx.fillText('↓', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-      } else if (obstacle.vy < 0) {
-        ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      // Add brick texture
+      ctx.strokeStyle = '#654321'; // Darker brown for mortar lines
+      ctx.lineWidth = 1;
+      
+      // Draw horizontal mortar lines
+      for (let i = 0; i < obstacle.height; i += 8) {
+        ctx.beginPath();
+        ctx.moveTo(obstacle.x, obstacle.y + i);
+        ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + i);
+        ctx.stroke();
+      }
+      
+      // Draw vertical mortar lines (offset every other row)
+      for (let i = 0; i < obstacle.width; i += 10) {
+        for (let j = 0; j < obstacle.height; j += 16) {
+          ctx.beginPath();
+          ctx.moveTo(obstacle.x + i, obstacle.y + j);
+          ctx.lineTo(obstacle.x + i, obstacle.y + j + 8);
+          ctx.stroke();
+          
+          // Offset pattern for next row
+          if (j + 8 < obstacle.height) {
+            ctx.beginPath();
+            ctx.moveTo(obstacle.x + i + 5, obstacle.y + j + 8);
+            ctx.lineTo(obstacle.x + i + 5, obstacle.y + j + 16);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // Add slight highlight on top edge
+      ctx.strokeStyle = '#A0522D';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(obstacle.x, obstacle.y);
+      ctx.lineTo(obstacle.x + obstacle.width, obstacle.y);
+      ctx.stroke();
+      
+    } else {
+      // Draw TNT barrel body
+      ctx.fillStyle = obstacle.color; // Brown color
+      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      
+      // Add TNT bands
+      ctx.fillStyle = '#654321';
+      ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, 4);
+      ctx.fillRect(obstacle.x, obstacle.y + 16, obstacle.width, 4);
+      ctx.fillRect(obstacle.x, obstacle.y + 24, obstacle.width, 4);
+      
+      // Add TNT text
+      ctx.fillStyle = '#FF0000';
+      ctx.font = 'bold 10px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('TNT', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 3);
+      // Add fuse (small line on top) - only for TNT
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
+      ctx.lineTo(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8);
+      ctx.stroke();
+      
+      // Add spark at fuse tip - only for TNT
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8, 2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Add movement indicator (arrow showing direction) - only for TNT
+      if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 8px Arial';
+        ctx.textAlign = 'center';
+        
+        if (obstacle.vx > 0) {
+          ctx.fillText('→', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+        } else if (obstacle.vx < 0) {
+          ctx.fillText('←', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+        } else if (obstacle.vy > 0) {
+          ctx.fillText('↓', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+        } else if (obstacle.vy < 0) {
+          ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+        }
       }
     }
   }
