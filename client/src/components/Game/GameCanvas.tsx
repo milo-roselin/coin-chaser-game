@@ -22,7 +22,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     currentLevel
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
-  const { getSelectedAvatar } = usePlayerAvatar();
+  const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -260,6 +260,21 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       }
     };
   }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
+
+  // Update avatar when selection changes
+  useEffect(() => {
+    if (gameEngineRef.current) {
+      const selectedAvatarData = getSelectedAvatar();
+      if (selectedAvatarData) {
+        console.log('Setting avatar to:', selectedAvatarData.id);
+        gameEngineRef.current.setAvatar({
+          id: selectedAvatarData.id,
+          name: selectedAvatarData.name,
+          image: selectedAvatarData.image
+        });
+      }
+    }
+  }, [selectedAvatar, getSelectedAvatar]);
 
   // Handle touch input - disabled for mobile devices (using arrow buttons instead)
   const handleTouchStart = (e: React.TouchEvent) => {
