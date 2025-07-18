@@ -516,87 +516,13 @@ export class GameEngine {
       }
     }
 
-    // Define safe starting zone - player starts at (50, 300) so create minimal safe area
-    const playerStartX = 50;
-    const playerStartY = 300;
-    const safeZoneRadius = 35; // Minimal safe zone - just the starting squares
-    
-    // Filter obstacles to create safe starting zone while allowing movement everywhere else
-    this.obstacles = this.obstacles.filter(obs => {
-      // Always allow wall patrols (they move along edges, not through start area)
-      if (obs.x <= 60 || obs.y <= 60 || obs.y >= this.canvasHeight - 60) {
-        return true;
-      }
-      
-      // Keep portal area clear (right side of level)
-      if (obs.x >= this.levelWidth - 200) {
-        return false;
-      }
-      
-      // Check if obstacle is in the safe starting zone
-      const distanceToStart = Math.sqrt(
-        Math.pow(obs.x + obs.width/2 - playerStartX - 15, 2) + // 15 is half player width
-        Math.pow(obs.y + obs.height/2 - playerStartY - 15, 2)   // 15 is half player height
-      );
-      
-      // Remove obstacles that would be directly on top of starting position
-      if (distanceToStart < safeZoneRadius) {
-        return false;
-      }
-      
-      // Allow all other obstacles - they can move everywhere else
-      return true;
-    });
-    
-    // Add protective brick wall around the safe starting zone
-    const wallThickness = 25;
-    const wallDistance = 60; // Distance from player start to place the wall
-    
-    console.log(`Creating protective walls around player start: (${playerStartX}, ${playerStartY})`);
-    
-    // Create a more visible wall formation - simple rectangular barrier
-    const wallPositions = [
-      // Top wall
-      { x: playerStartX - 40, y: playerStartY - 60 },
-      { x: playerStartX - 15, y: playerStartY - 60 },
-      { x: playerStartX + 10, y: playerStartY - 60 },
-      { x: playerStartX + 35, y: playerStartY - 60 },
-      
-      // Bottom wall
-      { x: playerStartX - 40, y: playerStartY + 60 },
-      { x: playerStartX - 15, y: playerStartY + 60 },
-      { x: playerStartX + 10, y: playerStartY + 60 },
-      { x: playerStartX + 35, y: playerStartY + 60 },
-      
-      // Left wall
-      { x: playerStartX - 65, y: playerStartY - 35 },
-      { x: playerStartX - 65, y: playerStartY - 10 },
-      { x: playerStartX - 65, y: playerStartY + 15 },
-      { x: playerStartX - 65, y: playerStartY + 40 },
-      
-      // Right wall
-      { x: playerStartX + 60, y: playerStartY - 35 },
-      { x: playerStartX + 60, y: playerStartY - 10 },
-      { x: playerStartX + 60, y: playerStartY + 15 },
-      { x: playerStartX + 60, y: playerStartY + 40 }
-    ];
-    
-    wallPositions.forEach((pos, index) => {
-      // Make sure walls are within canvas bounds
-      if (pos.x > 10 && pos.x < 300 && pos.y > 10 && pos.y < this.canvasHeight - 10) {
-        console.log(`Adding wall segment ${index} at (${pos.x}, ${pos.y})`);
-        this.obstacles.push({
-          x: pos.x,
-          y: pos.y,
-          width: wallThickness,
-          height: wallThickness,
-          color: '#8B4513', // Brown brick color
-          type: 'wall' // Static wall, doesn't move
-        });
-      }
-    });
-    
-    console.log(`Total obstacles after wall creation: ${this.obstacles.length}`);
+    // Ensure no obstacles are too close to player start or portal area
+    this.obstacles = this.obstacles.filter(obs => 
+      obs.x <= 60 || // Allow left wall patrols and barriers
+      obs.y <= 60 || // Allow top wall patrols and barriers
+      obs.y >= this.canvasHeight - 60 || // Allow bottom wall patrols and barriers
+      (obs.x >= 200 && obs.x < this.levelWidth - 200) // Regular safe zone for other obstacles, larger portal safe zone
+    );
     
     // Validate coin accessibility - ensure no coins are completely surrounded by obstacles
     this.coins = this.coins.filter(coin => {
@@ -969,28 +895,6 @@ export class GameEngine {
             if (obstacle.y <= obstacle.patrolStartY || obstacle.y + obstacle.height >= obstacle.patrolEndY) {
               obstacle.vy = -obstacle.vy;
             }
-          }
-          
-          // Check if TNT is getting too close to player starting position and redirect it
-          const playerStartX = 50;
-          const playerStartY = 300;
-          const dangerZoneRadius = 30; // Minimal danger zone - just the starting squares
-          
-          const distanceToStart = Math.sqrt(
-            Math.pow(obstacle.x + obstacle.width/2 - playerStartX - 15, 2) + 
-            Math.pow(obstacle.y + obstacle.height/2 - playerStartY - 15, 2)
-          );
-          
-          // If TNT gets too close to start, gently redirect it away (but don't stop it)
-          if (distanceToStart < dangerZoneRadius) {
-            const angleFromStart = Math.atan2(
-              obstacle.y + obstacle.height/2 - playerStartY - 15,
-              obstacle.x + obstacle.width/2 - playerStartX - 15
-            );
-            // Apply a small push away from the starting position
-            const pushForce = 0.3;
-            obstacle.x += Math.cos(angleFromStart) * pushForce;
-            obstacle.y += Math.sin(angleFromStart) * pushForce;
           }
           
           // iPad-specific: Don't restrict linear TNT to tight patrol bounds on iPad
@@ -1806,10 +1710,9 @@ export class GameEngine {
     // iPad-specific fix: Skip the startup area rendering restriction on iPad
     const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
-    if (!isIPad && obstacle.type !== 'wall') {
+    if (!isIPad) {
       // Don't render obstacles that are too close to the initial camera view
       // This prevents the TNT flash at startup (but not on iPad where it causes disappearing issues)
-      // Always render walls regardless of camera position
       const obstacleWorldX = obstacle.x;
       const screenX = obstacleWorldX - this.cameraX;
       
@@ -1830,95 +1733,50 @@ export class GameEngine {
       }
     }
     
-    // Check if this is a wall or TNT obstacle
-    if (obstacle.type === 'wall') {
-      // Draw brick wall
-      ctx.fillStyle = '#8B4513'; // Brown brick color
-      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-      
-      // Add brick texture
-      ctx.strokeStyle = '#654321'; // Darker brown for mortar lines
-      ctx.lineWidth = 1;
-      
-      // Draw horizontal mortar lines
-      for (let i = 0; i < obstacle.height; i += 8) {
-        ctx.beginPath();
-        ctx.moveTo(obstacle.x, obstacle.y + i);
-        ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + i);
-        ctx.stroke();
-      }
-      
-      // Draw vertical mortar lines (offset every other row)
-      for (let i = 0; i < obstacle.width; i += 10) {
-        for (let j = 0; j < obstacle.height; j += 16) {
-          ctx.beginPath();
-          ctx.moveTo(obstacle.x + i, obstacle.y + j);
-          ctx.lineTo(obstacle.x + i, obstacle.y + j + 8);
-          ctx.stroke();
-          
-          // Offset pattern for next row
-          if (j + 8 < obstacle.height) {
-            ctx.beginPath();
-            ctx.moveTo(obstacle.x + i + 5, obstacle.y + j + 8);
-            ctx.lineTo(obstacle.x + i + 5, obstacle.y + j + 16);
-            ctx.stroke();
-          }
-        }
-      }
-      
-      // Add slight highlight on top edge
-      ctx.strokeStyle = '#A0522D';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(obstacle.x, obstacle.y);
-      ctx.lineTo(obstacle.x + obstacle.width, obstacle.y);
-      ctx.stroke();
-      
-    } else {
-      // Draw TNT barrel body
-      ctx.fillStyle = obstacle.color; // Brown color
-      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-      
-      // Add TNT bands
-      ctx.fillStyle = '#654321';
-      ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, 4);
-      ctx.fillRect(obstacle.x, obstacle.y + 16, obstacle.width, 4);
-      ctx.fillRect(obstacle.x, obstacle.y + 24, obstacle.width, 4);
-      
-      // Add TNT text
-      ctx.fillStyle = '#FF0000';
-      ctx.font = 'bold 10px Arial';
+    // Draw TNT barrel body
+    ctx.fillStyle = obstacle.color; // Brown color
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    
+    // Add TNT bands
+    ctx.fillStyle = '#654321';
+    ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, 4);
+    ctx.fillRect(obstacle.x, obstacle.y + 16, obstacle.width, 4);
+    ctx.fillRect(obstacle.x, obstacle.y + 24, obstacle.width, 4);
+    
+    // Add TNT text
+    ctx.fillStyle = '#FF0000';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('TNT', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 3);
+    
+    // Add fuse (small line on top)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
+    ctx.lineTo(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8);
+    ctx.stroke();
+    
+    // Add spark at fuse tip
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8, 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add movement indicator (arrow showing direction)
+    if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 8px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('TNT', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 3);
-      // Add fuse (small line on top) - only for TNT
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
-      ctx.lineTo(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8);
-      ctx.stroke();
       
-      // Add spark at fuse tip - only for TNT
-      ctx.fillStyle = '#FFD700';
-      ctx.beginPath();
-      ctx.arc(obstacle.x + obstacle.width / 2 - 3, obstacle.y - 8, 2, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add movement indicator (arrow showing direction) - only for TNT
-      if (obstacle.vx !== undefined && obstacle.vy !== undefined) {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 8px Arial';
-        ctx.textAlign = 'center';
-        
-        if (obstacle.vx > 0) {
-          ctx.fillText('→', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-        } else if (obstacle.vx < 0) {
-          ctx.fillText('←', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-        } else if (obstacle.vy > 0) {
-          ctx.fillText('↓', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-        } else if (obstacle.vy < 0) {
-          ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
-        }
+      if (obstacle.vx > 0) {
+        ctx.fillText('→', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vx < 0) {
+        ctx.fillText('←', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vy > 0) {
+        ctx.fillText('↓', obstacle.x + obstacle.width / 2, obstacle.y - 2);
+      } else if (obstacle.vy < 0) {
+        ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
       }
     }
   }
