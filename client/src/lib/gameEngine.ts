@@ -78,18 +78,8 @@ export class GameEngine {
       type: 'player'
     };
 
-    // Check if on mobile device to adjust for control panel
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
-
-    // Initialize goal (portal) - position it so it can be reached when player is at the right edge
-    // The player can reach at most: levelWidth - controlPanelWidth - playerWidth
-    // So the portal should be positioned where the player can actually reach it
-    // The rightmost position where the player can be is when the camera is at maximum position
-    // and the player is at the right edge of the visible area (minus control panel)
-    const maxCameraX = this.levelWidth - canvasWidth + controlPanelWidth;
-    const maxPlayerX = maxCameraX + canvasWidth - controlPanelWidth - 30; // 30 is player width
-    const portalX = maxPlayerX - 150; // Position portal further left so it's fully visible and reachable
+    // Initialize goal (portal) - position it at the far right edge of the level
+    const portalX = this.levelWidth - 150; // Position portal at the far right edge
     
     this.goal = {
       x: portalX,
@@ -137,10 +127,8 @@ export class GameEngine {
       let clusterX, clusterY;
       let attempts = 0;
       
-      // Find a position that's not too close to existing clusters and respects control panel
-      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const controlPanelWidth = isMobile ? 128 : 0;
-      const maxClusterX = this.levelWidth - 400; // Keep clusters away from right edge
+      // Find a position that's not too close to existing clusters
+      const maxClusterX = this.levelWidth - 200; // Keep clusters away from right edge
       
       do {
         clusterX = 300 + Math.random() * (maxClusterX - 300);
@@ -165,10 +153,8 @@ export class GameEngine {
         let coinX, coinY;
         let coinAttempts = 0;
         
-        // Ensure coins are placed in valid positions and respect control panel
-        const isMobileForCoins = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const controlPanelWidthForCoins = isMobileForCoins ? 128 : 0;
-        const maxCoinX = this.levelWidth - 200; // Keep coins away from control panel area
+        // Ensure coins are placed in valid positions
+        const maxCoinX = this.levelWidth - 100; // Keep coins away from far right edge
         
         do {
           coinX = clusterX + (Math.random() - 0.5) * 160;
@@ -280,9 +266,7 @@ export class GameEngine {
       let attempts = 0;
       
       // Find positions that are away from coin clusters and control panel
-      const isMobileForLinear = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const controlPanelWidthForLinear = isMobileForLinear ? 128 : 0;
-      const maxLinearX = this.levelWidth - 300 - controlPanelWidthForLinear; // Keep away from right edge and control panel
+      const maxLinearX = this.levelWidth - 200; // Keep away from right edge
       
       // iPad-specific: Allow TNT closer to start for better distribution
       const isIPadForLinear = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -348,10 +332,8 @@ export class GameEngine {
     // But keep them away from the portal area (right side)
     const numBarriers = 18 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 12)
     const barrierRows = 2; // Multiple rows of barriers (back to 2)
-    // Calculate safe zone based on control panel width - make sure it accounts for the new portal position
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
-    const portalSafeZone = 250 + controlPanelWidth; // Keep TNT away from portal area and control panel (increased for new portal position)
+    // Calculate portal safe zone
+    const portalSafeZone = 250; // Keep TNT away from portal area
     
     // Top edge barrier patrols (multiple rows moving horizontally, but not near portal)
     for (let row = 0; row < barrierRows; row++) {
@@ -811,14 +793,8 @@ export class GameEngine {
     // Update camera position
     this.updateCameraPosition();
 
-    // Keep player in bounds - account for control panel on mobile
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
-    
-    // The player should be able to move through the level but stop when they would go under the control panel
-    // This means the rightmost position should be relative to the current camera position + canvas width - control panel width
-    const rightBoundary = this.cameraX + this.canvasWidth - controlPanelWidth;
-    const maxPlayerX = Math.min(this.levelWidth - this.player.width, rightBoundary - this.player.width);
+    // Keep player in bounds - no safe zone restrictions
+    const maxPlayerX = this.levelWidth - this.player.width;
     
     // Debug logging for player boundaries
     if (this.player.x > maxPlayerX - 100) { // Only log when near the boundary
