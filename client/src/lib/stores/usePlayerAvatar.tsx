@@ -22,10 +22,10 @@ interface PlayerAvatarState {
 const defaultAvatars: Avatar[] = [
   {
     id: 'leprechaun',
-    name: 'Leprechaun',
+    name: 'Mr. MoneyBags',
     image: '', // Will be drawn as the current green circle
     unlockCost: 0,
-    description: 'The classic coin collector'
+    description: 'The wealthy gentleman from Monopoly who loves collecting rent and coins'
   },
   {
     id: 'count-olaf',

@@ -67,8 +67,22 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
                     {avatar.id === 'leprechaun' ? (
-                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">🍀</span>
+                      <div className="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center relative">
+                        {/* Mr. MoneyBags face */}
+                        <div className="w-8 h-8 bg-pink-200 rounded-full relative">
+                          {/* Mustache */}
+                          <div className="absolute top-5 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-gray-700 rounded-full"></div>
+                          {/* Eyes */}
+                          <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
+                          <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
+                          {/* Top hat */}
+                          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-black rounded-t-full"></div>
+                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-7 h-1 bg-black rounded-full"></div>
+                        </div>
+                        {/* Dollar sign */}
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full flex items-center justify-center">
+                          <span className="text-green-800 text-xs font-bold">$</span>
+                        </div>
                       </div>
                     ) : avatar.id === 'count-olaf' ? (
                       <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
