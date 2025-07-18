@@ -1102,8 +1102,13 @@ export class GameEngine {
 
     // Check which avatar to draw
     if (this.currentAvatar.id === 'count-olaf') {
-      // Draw animated Count Olaf avatar
       this.drawCountOlafAvatar(ctx, x, y, w, h, centerX);
+    } else if (this.currentAvatar.id === 'tom-nook') {
+      this.drawTomNookAvatar(ctx, x, y, w, h, centerX);
+    } else if (this.currentAvatar.id === 'ebenezer-scrooge') {
+      this.drawEbenezerScroogeAvatar(ctx, x, y, w, h, centerX);
+    } else if (this.currentAvatar.id === 'wario') {
+      this.drawWarioAvatar(ctx, x, y, w, h, centerX);
     } else {
       // Draw default leprechaun avatar
       this.drawLeprechaunAvatar(ctx, x, y, w, h, centerX);
@@ -1114,6 +1119,272 @@ export class GameEngine {
     
     // Reset text alignment
     ctx.textAlign = 'left';
+  }
+
+  private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
+    // Draw Tom Nook's head (brown tanuki)
+    ctx.fillStyle = '#8B4513'; // Brown fur
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 10, 11, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw lighter brown muzzle
+    ctx.fillStyle = '#DEB887';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 12, 6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw black nose
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX, y + 10, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw ears
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 8, y + 2, 4, 6, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 2, 4, 6, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw inner ears
+    ctx.fillStyle = '#DEB887';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 8, y + 2, 2, 3, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 2, 2, 3, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX - 4, y + 8, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 4, y + 8, 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw apron/shirt
+    ctx.fillStyle = '#4169E1'; // Blue apron
+    ctx.beginPath();
+    ctx.roundRect(x + 5, y + 22, w - 10, h - 25, 3);
+    ctx.fill();
+    
+    // Draw apron straps
+    ctx.fillStyle = '#4169E1';
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 18, 3, 8, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 11, y + 18, 3, 8, 1);
+    ctx.fill();
+    
+    // Draw arms
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.ellipse(x + 2, y + 30, 4, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w - 2, y + 30, 4, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw legs
+    ctx.fillStyle = '#8B4513';
+    if (this.isMoving) {
+      const legCycle = Math.sin(Date.now() * 0.01) * 3;
+      const forwardOffset = 2;
+      
+      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(leftLegX, leftLegY, 4, 8);
+      
+      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(rightLegX, rightLegY, 4, 8);
+    } else {
+      ctx.fillRect(centerX - 5, y + h - 4, 4, 8);
+      ctx.fillRect(centerX + 1, y + h - 4, 4, 8);
+    }
+  }
+
+  private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
+    // Draw nightcap
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y - 5, 8, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw nightcap tip
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(centerX + 6, y - 12, 3, 4, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw old, wrinkled face
+    ctx.fillStyle = '#F5DEB3'; // Wheat color for aged skin
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 8, 9, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw wrinkle lines
+    ctx.strokeStyle = '#D2B48C';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 6, y + 5);
+    ctx.lineTo(centerX - 3, y + 6);
+    ctx.moveTo(centerX + 3, y + 6);
+    ctx.lineTo(centerX + 6, y + 5);
+    ctx.stroke();
+    
+    // Draw small, beady eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX - 3, y + 6, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 3, y + 6, 1, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw hooked nose
+    ctx.fillStyle = '#F5DEB3';
+    ctx.beginPath();
+    ctx.moveTo(centerX, y + 8);
+    ctx.lineTo(centerX + 2, y + 11);
+    ctx.lineTo(centerX, y + 12);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw frown
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX, y + 16, 3, 0.3, Math.PI - 0.3);
+    ctx.stroke();
+    
+    // Draw old nightgown
+    ctx.fillStyle = '#F0F8FF'; // Alice blue
+    ctx.beginPath();
+    ctx.roundRect(x + 4, y + 18, w - 8, h - 20, 2);
+    ctx.fill();
+    
+    // Draw nightgown stripes
+    ctx.fillStyle = '#E6E6FA';
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.roundRect(x + 4, y + 22 + i * 8, w - 8, 2, 1);
+      ctx.fill();
+    }
+    
+    // Draw thin, frail legs
+    ctx.fillStyle = '#F5DEB3';
+    if (this.isMoving) {
+      const legCycle = Math.sin(Date.now() * 0.008) * 2; // Slower movement
+      const forwardOffset = 1;
+      
+      const leftLegX = centerX - 4 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(leftLegX, leftLegY, 3, 8);
+      
+      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(rightLegX, rightLegY, 3, 8);
+    } else {
+      ctx.fillRect(centerX - 4, y + h - 4, 3, 8);
+      ctx.fillRect(centerX + 1, y + h - 4, 3, 8);
+    }
+  }
+
+  private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
+    // Draw Wario's cap
+    ctx.fillStyle = '#FFD700'; // Gold/yellow cap
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 2, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw W emblem on cap
+    ctx.fillStyle = '#800080'; // Purple W
+    ctx.font = 'bold 8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('W', centerX, y + 5);
+    
+    // Draw face (round and chubby)
+    ctx.fillStyle = '#FFDBAC'; // Peach skin
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 12, 10, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw large nose
+    ctx.fillStyle = '#FFB6C1'; // Light pink
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 12, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(centerX - 4, y + 9, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 4, y + 9, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw handlebar mustache
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw greedy grin
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, y + 17, 4, 0, Math.PI);
+    ctx.stroke();
+    
+    // Draw yellow shirt
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.roundRect(x + 4, y + 21, w - 8, h - 23, 2);
+    ctx.fill();
+    
+    // Draw purple overalls
+    ctx.fillStyle = '#800080';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 25, w - 12, h - 27, 2);
+    ctx.fill();
+    
+    // Draw overalls straps
+    ctx.fillStyle = '#800080';
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 21, 2, 6, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 10, y + 21, 2, 6, 1);
+    ctx.fill();
+    
+    // Draw chunky legs
+    ctx.fillStyle = '#800080';
+    if (this.isMoving) {
+      const legCycle = Math.sin(Date.now() * 0.012) * 3;
+      const forwardOffset = 2;
+      
+      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(leftLegX, leftLegY, 5, 8);
+      
+      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      ctx.fillRect(rightLegX, rightLegY, 5, 8);
+    } else {
+      ctx.fillRect(centerX - 6, y + h - 4, 5, 8);
+      ctx.fillRect(centerX + 1, y + h - 4, 5, 8);
+    }
   }
 
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {

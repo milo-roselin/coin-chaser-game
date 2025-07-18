@@ -94,6 +94,18 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                       <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs">🎭</span>
                       </div>
+                    ) : avatar.id === 'tom-nook' ? (
+                      <div className="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">🦝</span>
+                      </div>
+                    ) : avatar.id === 'ebenezer-scrooge' ? (
+                      <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">👴</span>
+                      </div>
+                    ) : avatar.id === 'wario' ? (
+                      <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                        <span className="text-purple-800 text-xs font-bold">W</span>
+                      </div>
                     ) : (
                       <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
                     )}

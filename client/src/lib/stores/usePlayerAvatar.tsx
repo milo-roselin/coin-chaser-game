@@ -33,6 +33,27 @@ const defaultAvatars: Avatar[] = [
     image: '', // Animated avatar, no image needed
     unlockCost: 10,
     description: 'The villainous actor from A Series of Unfortunate Events'
+  },
+  {
+    id: 'tom-nook',
+    name: 'Tom Nook',
+    image: '', // Animated avatar, no image needed
+    unlockCost: 25,
+    description: 'The business-savvy tanuki from Animal Crossing'
+  },
+  {
+    id: 'ebenezer-scrooge',
+    name: 'Ebenezer Scrooge',
+    image: '', // Animated avatar, no image needed
+    unlockCost: 50,
+    description: 'The miserly old man who learned the value of generosity'
+  },
+  {
+    id: 'wario',
+    name: 'Wario',
+    image: '', // Animated avatar, no image needed
+    unlockCost: 100,
+    description: 'The greedy anti-hero who loves coins and treasure'
   }
 ];
 
