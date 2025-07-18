@@ -1211,28 +1211,45 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw black top hat - very rectangular and flat like reference
+    // Enable smooth rendering for clean, flat appearance
+    ctx.imageSmoothingEnabled = true;
+    
+    // Draw black top hat - clean rectangular shape like thumbnail
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 3, y - 25, w - 6, 18); // Main hat body - perfectly rectangular
+    ctx.beginPath();
+    ctx.roundRect(x + 3, y - 25, w - 6, 18, 1); // Very subtle rounding
+    ctx.fill();
     
-    // Draw hat brim - wider and flatter
-    ctx.fillRect(x + 1, y - 8, w - 2, 3);
+    // Draw hat brim - smooth and flat
+    ctx.beginPath();
+    ctx.roundRect(x + 1, y - 8, w - 2, 3, 1);
+    ctx.fill();
     
-    // Draw white hair as sideburns extending down the face
+    // Draw white hair as smooth sideburns
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(x + 1, y - 2, 4, 12); // Left sideburn
-    ctx.fillRect(x + w - 5, y - 2, 4, 12); // Right sideburn
+    ctx.beginPath();
+    ctx.roundRect(x + 1, y - 2, 4, 12, 2); // Left sideburn with smooth edges
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 5, y - 2, 4, 12, 2); // Right sideburn with smooth edges
+    ctx.fill();
     
-    // Draw square/rectangular face like reference - more geometric
+    // Draw smooth rectangular face like thumbnail
     ctx.fillStyle = '#D2B48C'; // Tan skin tone
-    ctx.fillRect(x + 5, y - 2, w - 10, 14); // Square face shape
+    ctx.beginPath();
+    ctx.roundRect(x + 5, y - 2, w - 10, 14, 2); // Smooth face shape
+    ctx.fill();
     
-    // Draw gray eyebrows positioned over eyes exactly like reference
+    // Draw gray eyebrows - smooth rectangular shapes
     ctx.fillStyle = '#A0A0A0';
-    ctx.fillRect(x + 7, y + 1, 3, 2); // Left eyebrow
-    ctx.fillRect(x + w - 10, y + 1, 3, 2); // Right eyebrow
+    ctx.beginPath();
+    ctx.roundRect(x + 7, y + 1, 3, 2, 1); // Left eyebrow
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 10, y + 1, 3, 2, 1); // Right eyebrow
+    ctx.fill();
     
-    // Draw small black circular eyes exactly positioned
+    // Draw small black circular eyes - perfectly smooth
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(x + 8, y + 4, 1.5, 0, Math.PI * 2);
@@ -1241,30 +1258,34 @@ export class GameEngine {
     ctx.arc(x + w - 8, y + 4, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw simple nose line
+    // Draw simple nose - smooth line
     ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(centerX - 0.5, y + 6, 1, 3);
+    ctx.beginPath();
+    ctx.roundRect(centerX - 0.5, y + 6, 1, 3, 0.5);
+    ctx.fill();
     
-    // Draw white beard in exact teardrop shape from reference
+    // Draw white beard - smooth teardrop shape like thumbnail
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.moveTo(centerX, y + 10); // Top point
-    ctx.quadraticCurveTo(centerX - 6, y + 12, centerX - 5, y + 18); // Left curve
-    ctx.quadraticCurveTo(centerX, y + 20, centerX + 5, y + 18); // Bottom curve
-    ctx.quadraticCurveTo(centerX + 6, y + 12, centerX, y + 10); // Right curve back to top
+    ctx.bezierCurveTo(centerX - 6, y + 11, centerX - 6, y + 16, centerX - 4, y + 18); // Left curve
+    ctx.bezierCurveTo(centerX - 2, y + 20, centerX + 2, y + 20, centerX + 4, y + 18); // Bottom curve
+    ctx.bezierCurveTo(centerX + 6, y + 16, centerX + 6, y + 11, centerX, y + 10); // Right curve back to top
     ctx.fill();
     
-    // Add beard inner detail
-    ctx.fillStyle = '#F5F5F5';
+    // Add subtle beard shading - very smooth
+    ctx.fillStyle = '#F8F8F8';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 15, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 15, 2.5, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw dark navy coat - very structured and rectangular
+    // Draw dark navy coat - clean and structured like thumbnail
     ctx.fillStyle = '#1a1a2e'; // Dark navy from reference
-    ctx.fillRect(x + 2, y + 18, w - 4, h - 20); // Main coat body
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 18, w - 4, h - 20, 2); // Smooth coat body
+    ctx.fill();
     
-    // Draw white V-neck collar exactly like reference
+    // Draw white V-neck collar - clean geometric shape
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.moveTo(x + 4, y + 18); // Top left
@@ -1276,7 +1297,7 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw two black buttons exactly positioned like reference
+    // Draw two black buttons - perfectly circular like thumbnail
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(centerX, y + 32, 1.5, 0, Math.PI * 2);
@@ -1285,16 +1306,22 @@ export class GameEngine {
     ctx.arc(centerX, y + 38, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan hands/arms at coat opening
+    // Draw tan hands/arms - smooth rounded rectangles
     ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(x - 1, y + 24, 3, 8); // Left arm
-    ctx.fillRect(x + w - 2, y + 24, 3, 8); // Right arm
+    ctx.beginPath();
+    ctx.roundRect(x - 1, y + 24, 3, 8, 1); // Left arm
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 2, y + 24, 3, 8, 1); // Right arm
+    ctx.fill();
     
-    // Draw gray rectangular pants like reference
+    // Draw gray rectangular pants - smooth like thumbnail
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 6, y + 42, w - 12, h - 44); // Pants body
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 42, w - 12, h - 44, 1); // Smooth pants body
+    ctx.fill();
     
-    // Draw black rectangular shoes
+    // Draw black rectangular shoes - smooth edges
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
       // Slower, more careful movement for old age
@@ -1303,14 +1330,22 @@ export class GameEngine {
       
       const leftShoeX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
       const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
-      ctx.fillRect(leftShoeX, leftShoeY, 6, 4);
+      ctx.beginPath();
+      ctx.roundRect(leftShoeX, leftShoeY, 6, 4, 1);
+      ctx.fill();
       
       const rightShoeX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
       const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
-      ctx.fillRect(rightShoeX, rightShoeY, 6, 4);
+      ctx.beginPath();
+      ctx.roundRect(rightShoeX, rightShoeY, 6, 4, 1);
+      ctx.fill();
     } else {
-      ctx.fillRect(centerX - 6, y + h - 3, 6, 4);
-      ctx.fillRect(centerX + 1, y + h - 3, 6, 4);
+      ctx.beginPath();
+      ctx.roundRect(centerX - 6, y + h - 3, 6, 4, 1);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.roundRect(centerX + 1, y + h - 3, 6, 4, 1);
+      ctx.fill();
     }
   }
 
