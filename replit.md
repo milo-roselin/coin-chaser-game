@@ -96,6 +96,17 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 19, 2025 - Progressive Difficulty System
+- **Progressive TNT Scaling**: Implemented level-based difficulty scaling with multiple multipliers:
+  - Coin clusters increase every 2 levels instead of every level
+  - Additional TNT scales with level multiplier (capped at 4x by level 16)
+  - TNT movement speed increases 8-10% per level
+  - Barrier TNT quantity scales with progressive multiplier (capped at 3x)
+  - Circular TNT movement speed scales 8% per level
+- **Balanced Progression**: Each level becomes noticeably more challenging with more TNT and faster movement
+- **Performance Optimized**: All speed and quantity increases are capped to prevent performance issues
+- **Comprehensive Scaling**: Affects all TNT types - circular, linear, barrier, and additional spawns
+
 ## July 18, 2025 - Final Polish Phase
 - **Avatar System Completed**: Implemented 5 playable avatars with unique animated designs:
   - Mr. MoneyBags (Monopoly-themed leprechaun)

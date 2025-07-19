@@ -129,7 +129,7 @@ export class GameEngine {
     this.coinsCollected = 0;
 
     // Generate coins in clusters with better spacing
-    const numClusters = 3 + this.level; // More clusters in higher levels
+    const numClusters = 3 + Math.floor(this.level / 2); // More clusters every 2 levels
     const minDistance = 400; // Minimum distance between clusters
     const clusterPositions: Array<{x: number, y: number}> = [];
     
@@ -223,8 +223,8 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: 8 + Math.random() * 4, // Much faster movement
-          vy: 8 + Math.random() * 4,
+          vx: (8 + Math.random() * 4) * (1 + this.level * 0.08), // Speed scales with level
+          vy: (8 + Math.random() * 4) * (1 + this.level * 0.08), // Speed scales with level
           patrolStartX: clusterX, // center X of circular patrol
           patrolStartY: clusterY, // center Y of circular patrol
           patrolEndX: patrolRadius, // using this as radius
@@ -233,9 +233,11 @@ export class GameEngine {
       }
     }
     
-    // Add additional TNT for higher levels but spread them out differently
+    // Add progressive difficulty scaling for additional TNT
     if (this.level > 1) {
-      const additionalTnt = Math.floor(this.level / 2);
+      // Progressive increase: more TNT every 2 levels, with scaling multiplier
+      const levelMultiplier = Math.min(1 + (this.level - 1) * 0.2, 4); // Cap at 4x
+      const additionalTnt = Math.floor(this.level * levelMultiplier / 2);
       for (let i = 0; i < additionalTnt; i++) {
         const clusterIndex = i % numClusters; // Cycle through clusters
         const clusterX = this.coinClusters[clusterIndex].x;
@@ -258,8 +260,8 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: 8 + Math.random() * 4,
-            vy: 8 + Math.random() * 4,
+            vx: (8 + Math.random() * 4) * (1 + this.level * 0.1), // Speed increases with level
+            vy: (8 + Math.random() * 4) * (1 + this.level * 0.1), // Speed increases with level
             patrolStartX: clusterX,
             patrolStartY: clusterY,
             patrolEndX: patrolRadius,
@@ -335,14 +337,15 @@ export class GameEngine {
       }
     }
 
-    // Add TNT patrols along all outside walls
-    const wallPatrols = 2 + Math.floor(this.level / 3); // More wall patrols in higher levels
+    // Add TNT patrols along all outside walls - progressive scaling
+    const wallPatrols = 2 + Math.floor(this.level * (1 + this.level * 0.1) / 3); // Exponential growth
     
     // Removed wall patrols - now handled by barrier patrols
 
     // Add multiple rows of TNT barrier patrols to prevent edge-hugging strategies
     // But keep them away from the portal area (right side)
-    const numBarriers = 18 + Math.floor(this.level / 2); // More barriers in higher levels (increased from 12)
+    const levelDifficultyMultiplier = Math.min(1 + (this.level - 1) * 0.15, 3); // Progressive scaling
+    const numBarriers = Math.floor((18 + Math.floor(this.level / 2)) * levelDifficultyMultiplier); // Scaled barriers
     const barrierRows = 2; // Multiple rows of barriers (back to 2)
     // Calculate safe zone based on control panel width - make sure it accounts for the new portal position
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -362,7 +365,7 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1), // Alternate directions
+            vx: (1.0 + Math.random() * 1.0) * (row % 2 === 0 ? 1 : -1) * (1 + this.level * 0.05), // Speed scales with level
             vy: 0,
             patrolStartX: 50, // Start patrol from the left edge
             patrolEndX: this.levelWidth - portalSafeZone,
@@ -841,12 +844,15 @@ export class GameEngine {
           // iPad-specific: Use more stable circular movement
           const isIPadForMovement = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
           
+          // Apply level-based speed scaling to circular TNT movement
+          const levelSpeedMultiplier = 1 + (this.level - 1) * 0.08; // 8% increase per level
+          
           if (isIPadForMovement) {
-            // Faster, more stable movement for iPad
-            angle += 0.04; // Increased speed from 0.02
+            // Faster, more stable movement for iPad with level scaling
+            angle += 0.04 * levelSpeedMultiplier;
           } else {
-            // Faster complex movement for other devices
-            angle += 0.035 + (Math.sin(Date.now() * 0.001 + radius) * 0.01); // Increased from 0.015 and 0.005
+            // Faster complex movement for other devices with level scaling
+            angle += (0.035 + (Math.sin(Date.now() * 0.001 + radius) * 0.01)) * levelSpeedMultiplier;
           }
           obstacle.patrolEndY = angle;
           
