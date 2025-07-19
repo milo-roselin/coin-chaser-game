@@ -28,6 +28,10 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     if (gameEngineRef.current && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
+        // Enable smoother rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
         // Clear canvas to black while waiting for initialization
         if (!gameEngineRef.current.isReady()) {
           ctx.fillStyle = '#000000';

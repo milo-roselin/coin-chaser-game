@@ -777,11 +777,11 @@ export class GameEngine {
       }
     }
     
-    // Smooth velocity interpolation for better stopping
+    // Smoother velocity interpolation for better movement feel
     this.playerVelocity.x = this.lerp(this.playerVelocity.x, targetVelX, 
-                                      targetVelX === 0 ? deceleration : acceleration);
+                                      targetVelX === 0 ? 0.9 : 0.85); // Improved smoothness
     this.playerVelocity.y = this.lerp(this.playerVelocity.y, targetVelY, 
-                                      targetVelY === 0 ? deceleration : acceleration);
+                                      targetVelY === 0 ? 0.9 : 0.85); // Improved smoothness
     
     // Apply velocity to player position
     this.player.x += this.playerVelocity.x;
@@ -795,7 +795,7 @@ export class GameEngine {
     const movementThreshold = 0.1; // Small threshold to prevent jittery animation
     this.isMoving = Math.abs(moveX) > movementThreshold || Math.abs(moveY) > movementThreshold;
     if (this.isMoving) {
-      this.animationFrame += 0.3 * this.gameSpeed; // Animation speed matches player speed
+      this.animationFrame += 0.5 * this.gameSpeed; // Smoother animation speed
       // Update facing direction based on horizontal movement
       if (moveX > 0) {
         this.facingDirection = 1; // Moving right
@@ -1157,15 +1157,15 @@ export class GameEngine {
     // Draw legs
     ctx.fillStyle = '#8B4513';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.01) * 3;
-      const forwardOffset = 2;
+      const legCycle = Math.sin(Date.now() * 0.015) * 3; // Smoother leg movement
+      const forwardOffset = 2.5; // Slightly more pronounced movement
       
       const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother vertical bounce
       ctx.fillRect(leftLegX, leftLegY, 4, 8);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother vertical bounce
       ctx.fillRect(rightLegX, rightLegY, 4, 8);
     } else {
       ctx.fillRect(centerX - 5, y + h - 4, 4, 8);
@@ -1260,16 +1260,16 @@ export class GameEngine {
     // Draw black rectangular shoes - completely flat
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
-      // Slower, more careful movement for old age
-      const legCycle = Math.sin(Date.now() * 0.008) * 2;
-      const forwardOffset = 1.5;
+      // Smoother movement for Scrooge
+      const legCycle = Math.sin(Date.now() * 0.012) * 2; // Slightly faster but still dignified
+      const forwardOffset = 2; // More noticeable movement
       
       const leftShoeX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
+      const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.08; // Smoother vertical movement
       ctx.fillRect(leftShoeX, leftShoeY, 6, 4); // Completely flat shoe
       
       const rightShoeX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.1;
+      const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.08; // Smoother vertical movement
       ctx.fillRect(rightShoeX, rightShoeY, 6, 4); // Completely flat shoe
     } else {
       ctx.fillRect(centerX - 6, y + h - 3, 6, 4); // Completely flat shoe
@@ -1351,15 +1351,15 @@ export class GameEngine {
     // Draw chunky legs
     ctx.fillStyle = '#800080';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.012) * 3;
-      const forwardOffset = 2;
+      const legCycle = Math.sin(Date.now() * 0.016) * 3; // Smoother Wario leg movement
+      const forwardOffset = 2.5; // More pronounced chunky movement
       
       const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
       ctx.fillRect(leftLegX, leftLegY, 5, 8);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2;
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
       ctx.fillRect(rightLegX, rightLegY, 5, 8);
     } else {
       ctx.fillRect(centerX - 6, y + h - 4, 5, 8);
@@ -1481,18 +1481,18 @@ export class GameEngine {
     // Draw very thin legs (theatrical and gaunt)
     ctx.fillStyle = '#0F0F0F';
     if (this.isMoving) {
-      // Animated legs when moving (more dramatic movement)
-      const legCycle = Math.sin(Date.now() * 0.012) * 4;
-      const forwardOffset = 3;
+      // Smoother animated legs with theatrical flair
+      const legCycle = Math.sin(Date.now() * 0.018) * 4; // Smoother, faster animation
+      const forwardOffset = 3.5; // More dramatic movement
       
       // Left leg (very thin)
       const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.3;
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Smoother bounce
       ctx.fillRect(leftLegX, leftLegY, 2, 10); // Very thin legs
       
       // Right leg (very thin)
       const rightLegX = centerX + 3 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.3;
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Smoother bounce
       ctx.fillRect(rightLegX, rightLegY, 2, 10); // Very thin legs
       
       // Draw dramatic pointed shoes (like a villain)
@@ -1761,7 +1761,7 @@ export class GameEngine {
       
       for (let i = 0; i < colors.length; i++) {
         const radius = 45 - (i * 6);
-        const animationOffset = Math.sin(time + i * 0.5) * 2;
+        const animationOffset = Math.sin(time * 1.5 + i * 0.8) * 3; // Smoother, more fluid animation
         
         ctx.fillStyle = colors[i];
         ctx.beginPath();
@@ -1769,10 +1769,10 @@ export class GameEngine {
         ctx.fill();
       }
       
-      // Draw central light blue core
+      // Draw central light blue core with smoother pulsing
       ctx.fillStyle = '#87CEEB';
       ctx.beginPath();
-      ctx.arc(centerX, centerY - 10, 8 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
+      ctx.arc(centerX, centerY - 10, 8 + Math.sin(time * 3) * 3, 0, Math.PI * 2); // Faster, smoother pulse
       ctx.fill();
     } else {
       // Draw inactive portal center (dark gray)
@@ -1939,16 +1939,19 @@ export class GameEngine {
   }
 
   private updateCameraPosition() {
-    // Calculate camera position to follow player
+    // Calculate target camera position to follow player
     const isMobileForCamera = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const controlPanelWidthForCamera = isMobileForCamera ? 128 : 0; // 128px control panel on mobile/iPad
     const effectiveCanvasWidthForCamera = this.canvasWidth - controlPanelWidthForCamera;
     const maxCameraX = this.levelWidth - this.canvasWidth + controlPanelWidthForCamera;
     
-    this.cameraX = Math.max(0, Math.min(
+    const targetCameraX = Math.max(0, Math.min(
       maxCameraX,
       this.player.x - effectiveCanvasWidthForCamera / 2
     ));
+    
+    // Smooth camera interpolation for fluid following
+    this.cameraX = this.lerp(this.cameraX, targetCameraX, 0.88); // Smooth camera following
   }
 
 
