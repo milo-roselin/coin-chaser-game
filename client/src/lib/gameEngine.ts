@@ -237,10 +237,14 @@ export class GameEngine {
     }
     
     // Add additional roaming TNT for higher levels that patrol the entire level
-    const roamingTnt = Math.floor(this.level / 2); // More roaming TNT on higher levels
+    const roamingTnt = Math.floor(this.level / 3); // Fewer roaming TNT, only on higher levels
     for (let i = 0; i < roamingTnt; i++) {
-      const x = 100 + Math.random() * (this.levelWidth - 400);
-      const y = 100 + Math.random() * (this.canvasHeight - 200);
+      const x = 200 + Math.random() * (this.levelWidth - 600);
+      const y = 150 + Math.random() * (this.canvasHeight - 300);
+      
+      // Create slower, more predictable roaming patterns
+      const speed = 3 + Math.random() * 2 + (this.level * 0.5); // Much slower roaming speed
+      const direction = Math.random() * Math.PI * 2; // Random direction
       
       this.obstacles.push({
         x: x,
@@ -249,12 +253,12 @@ export class GameEngine {
         height: 35,
         color: '#8B4513',
         type: 'obstacle',
-        vx: (8 + Math.random() * 6 + this.level * 1) * (Math.random() < 0.5 ? -1 : 1), // Moderate roaming TNT
-        vy: (8 + Math.random() * 6 + this.level * 1) * (Math.random() < 0.5 ? -1 : 1),
-        patrolStartX: 0,
-        patrolEndX: this.levelWidth,
-        patrolStartY: 0,
-        patrolEndY: this.canvasHeight
+        vx: Math.cos(direction) * speed, // Smooth directional movement
+        vy: Math.sin(direction) * speed,
+        patrolStartX: 100,
+        patrolEndX: this.levelWidth - 100,
+        patrolStartY: 100,
+        patrolEndY: this.canvasHeight - 100
       });
     }
 
@@ -295,7 +299,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (8 + Math.random() * 6 + this.level * 1.5) * (Math.random() < 0.5 ? -1 : 1), // Moderate movement that scales with level
+          vx: (4 + Math.random() * 3 + this.level * 0.8) * (Math.random() < 0.5 ? -1 : 1), // Slower, smoother movement
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -315,7 +319,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (8 + Math.random() * 6 + this.level * 1.5) * (Math.random() < 0.5 ? -1 : 1), // Moderate movement that scales with level
+          vy: (4 + Math.random() * 3 + this.level * 0.8) * (Math.random() < 0.5 ? -1 : 1), // Slower, smoother movement
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
