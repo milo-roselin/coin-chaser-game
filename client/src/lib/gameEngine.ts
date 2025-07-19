@@ -225,8 +225,8 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: 6 + Math.random() * 4 + (this.level * 1), // Moderate speed that scales with level
-            vy: 6 + Math.random() * 4 + (this.level * 1),
+            vx: 12 + Math.random() * 8 + (this.level * 2), // Much faster movement that scales with level
+            vy: 12 + Math.random() * 8 + (this.level * 2),
             patrolStartX: clusterX, // center X of circular patrol
             patrolStartY: clusterY, // center Y of circular patrol
             patrolEndX: patrolRadius, // using this as radius
@@ -237,14 +237,10 @@ export class GameEngine {
     }
     
     // Add additional roaming TNT for higher levels that patrol the entire level
-    const roamingTnt = Math.floor(this.level / 3); // Fewer roaming TNT, only on higher levels
+    const roamingTnt = Math.floor(this.level / 2); // More roaming TNT on higher levels
     for (let i = 0; i < roamingTnt; i++) {
-      const x = 200 + Math.random() * (this.levelWidth - 600);
-      const y = 150 + Math.random() * (this.canvasHeight - 300);
-      
-      // Create ultra-smooth roaming patterns
-      const speed = 2 + Math.random() * 1.5 + (this.level * 0.3); // Ultra-smooth roaming speed
-      const direction = Math.random() * Math.PI * 2; // Random direction
+      const x = 100 + Math.random() * (this.levelWidth - 400);
+      const y = 100 + Math.random() * (this.canvasHeight - 200);
       
       this.obstacles.push({
         x: x,
@@ -253,12 +249,12 @@ export class GameEngine {
         height: 35,
         color: '#8B4513',
         type: 'obstacle',
-        vx: Math.cos(direction) * speed, // Smooth directional movement
-        vy: Math.sin(direction) * speed,
-        patrolStartX: 100,
-        patrolEndX: this.levelWidth - 100,
-        patrolStartY: 100,
-        patrolEndY: this.canvasHeight - 100
+        vx: (15 + Math.random() * 10 + this.level * 2) * (Math.random() < 0.5 ? -1 : 1), // Very fast roaming TNT
+        vy: (15 + Math.random() * 10 + this.level * 2) * (Math.random() < 0.5 ? -1 : 1),
+        patrolStartX: 0,
+        patrolEndX: this.levelWidth,
+        patrolStartY: 0,
+        patrolEndY: this.canvasHeight
       });
     }
 
@@ -299,7 +295,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (1.5 + Math.random() * 1.5 + this.level * 0.3) * (Math.random() < 0.5 ? -1 : 1), // Ultra-smooth movement
+          vx: (15 + Math.random() * 10 + this.level * 3) * (Math.random() < 0.5 ? -1 : 1), // Much faster movement that scales with level
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -319,7 +315,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (1.5 + Math.random() * 1.5 + this.level * 0.3) * (Math.random() < 0.5 ? -1 : 1), // Ultra-smooth movement
+          vy: (15 + Math.random() * 10 + this.level * 3) * (Math.random() < 0.5 ? -1 : 1), // Much faster movement that scales with level
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -355,7 +351,7 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: (4 + Math.random() * 3 + this.level * 1) * (row % 2 === 0 ? 1 : -1), // Moderate barrier patrols
+            vx: (8 + Math.random() * 6 + this.level * 2) * (row % 2 === 0 ? 1 : -1), // Much faster barrier patrols
             vy: 0,
             patrolStartX: 50, // Start patrol from the left edge
             patrolEndX: this.levelWidth - portalSafeZone,
@@ -379,7 +375,7 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: (4 + Math.random() * 3 + this.level * 1) * (row % 2 === 0 ? -1 : 1), // Moderate barrier patrols
+            vx: (8 + Math.random() * 6 + this.level * 2) * (row % 2 === 0 ? -1 : 1), // Much faster barrier patrols
             vy: 0,
             patrolStartX: 50,
             patrolEndX: this.levelWidth - portalSafeZone,
@@ -402,7 +398,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (2 + Math.random() * 2 + this.level * 0.5) * (col % 2 === 0 ? 1 : -1), // Moderate side barrier patrols
+          vy: (1.0 + Math.random() * 1.0) * (col % 2 === 0 ? 1 : -1), // Alternate directions
           patrolStartX: 20 + (col * 40),
           patrolEndX: 20 + (col * 40),
           patrolStartY: 100,
@@ -427,7 +423,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (3 + Math.random() * 2 + this.level * 0.5) * (i % 2 === 0 ? 1 : -1), // Moderate guard speed
+          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : -1), // Varied speed
           vy: 0,
           patrolStartX: 60,
           patrolEndX: this.levelWidth - portalSafeZone,
@@ -448,7 +444,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (3 + Math.random() * 2 + this.level * 0.5) * (i % 2 === 0 ? -1 : 1), // Moderate guard speed, opposite direction
+          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? -1 : 1), // Varied speed, opposite direction
           vy: 0,
           patrolStartX: 60,
           patrolEndX: this.levelWidth - portalSafeZone,
@@ -835,22 +831,17 @@ export class GameEngine {
           const isIPadForMovement = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
           
           if (isIPadForMovement) {
-            // Moderate movement for iPad that scales with level
-            angle += 0.025 + (this.level * 0.005); // Moderate speed that increases with level
+            // Faster movement for iPad that scales with level
+            angle += 0.04 + (this.level * 0.01); // Faster speed that increases with level
           } else {
-            // Moderate complex movement for other devices that scales with level
-            angle += 0.02 + (this.level * 0.008) + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Moderate variable speed
+            // Faster complex movement for other devices that scales with level
+            angle += 0.03 + (this.level * 0.015) + (Math.sin(Date.now() * 0.001 + radius) * 0.01); // Much faster variable speed
           }
           obstacle.patrolEndY = angle;
           
-          // Calculate new position with smoothing to prevent vibration
-          const targetX = centerX + Math.cos(angle) * radius - obstacle.width / 2;
-          const targetY = centerY + Math.sin(angle) * radius - obstacle.height / 2;
-          
-          // Apply smoothing to prevent micro-movements and vibration
-          const smoothingFactor = 0.8;
-          obstacle.x = obstacle.x * (1 - smoothingFactor) + targetX * smoothingFactor;
-          obstacle.y = obstacle.y * (1 - smoothingFactor) + targetY * smoothingFactor;
+          // Calculate new position
+          obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
+          obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
           
           // iPad-specific: Don't constrain circular TNT movement as aggressively
           const isIPadForCircular = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -862,19 +853,9 @@ export class GameEngine {
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
           
         } else {
-          // Linear movement with smooth animation and vibration prevention
-          const speedDamping = 0.3; // Further reduce speed for ultra-smooth movement
-          const newX = obstacle.x + obstacle.vx * speedDamping;
-          const newY = obstacle.y + obstacle.vy * speedDamping;
-          
-          // Only update position if movement is significant enough (prevents vibration)
-          const minMovement = 0.5;
-          if (Math.abs(newX - obstacle.x) > minMovement) {
-            obstacle.x = newX;
-          }
-          if (Math.abs(newY - obstacle.y) > minMovement) {
-            obstacle.y = newY;
-          }
+          // Linear movement (existing code) without speed multiplier
+          obstacle.x += obstacle.vx;
+          obstacle.y += obstacle.vy;
           
           // Check boundaries and reverse direction if needed
           if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
@@ -889,9 +870,17 @@ export class GameEngine {
             }
           }
           
-          // Keep obstacles within reasonable bounds
+          // iPad-specific: Don't restrict linear TNT to tight patrol bounds on iPad
+          const isIPadForPatrolBounds = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          // Allow obstacles to move freely within the level bounds
           obstacle.x = Math.max(0, Math.min(this.levelWidth - obstacle.width, obstacle.x));
           obstacle.y = Math.max(0, Math.min(this.canvasHeight - obstacle.height, obstacle.y));
+          
+          // iPad-specific: Don't constrain linear TNT movement as aggressively
+          const isIPadForLinearObstacles = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          
+          // Allow linear obstacles to move freely - no control panel constraints
         }
       }
     });
