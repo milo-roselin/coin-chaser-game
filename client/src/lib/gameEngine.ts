@@ -225,8 +225,8 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: 12 + Math.random() * 8 + (this.level * 2), // Much faster movement that scales with level
-            vy: 12 + Math.random() * 8 + (this.level * 2),
+            vx: 6 + Math.random() * 4 + (this.level * 1), // Moderate speed that scales with level
+            vy: 6 + Math.random() * 4 + (this.level * 1),
             patrolStartX: clusterX, // center X of circular patrol
             patrolStartY: clusterY, // center Y of circular patrol
             patrolEndX: patrolRadius, // using this as radius
@@ -249,8 +249,8 @@ export class GameEngine {
         height: 35,
         color: '#8B4513',
         type: 'obstacle',
-        vx: (15 + Math.random() * 10 + this.level * 2) * (Math.random() < 0.5 ? -1 : 1), // Very fast roaming TNT
-        vy: (15 + Math.random() * 10 + this.level * 2) * (Math.random() < 0.5 ? -1 : 1),
+        vx: (8 + Math.random() * 6 + this.level * 1) * (Math.random() < 0.5 ? -1 : 1), // Moderate roaming TNT
+        vy: (8 + Math.random() * 6 + this.level * 1) * (Math.random() < 0.5 ? -1 : 1),
         patrolStartX: 0,
         patrolEndX: this.levelWidth,
         patrolStartY: 0,
@@ -295,7 +295,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (15 + Math.random() * 10 + this.level * 3) * (Math.random() < 0.5 ? -1 : 1), // Much faster movement that scales with level
+          vx: (8 + Math.random() * 6 + this.level * 1.5) * (Math.random() < 0.5 ? -1 : 1), // Moderate movement that scales with level
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -315,7 +315,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (15 + Math.random() * 10 + this.level * 3) * (Math.random() < 0.5 ? -1 : 1), // Much faster movement that scales with level
+          vy: (8 + Math.random() * 6 + this.level * 1.5) * (Math.random() < 0.5 ? -1 : 1), // Moderate movement that scales with level
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -351,7 +351,7 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: (8 + Math.random() * 6 + this.level * 2) * (row % 2 === 0 ? 1 : -1), // Much faster barrier patrols
+            vx: (4 + Math.random() * 3 + this.level * 1) * (row % 2 === 0 ? 1 : -1), // Moderate barrier patrols
             vy: 0,
             patrolStartX: 50, // Start patrol from the left edge
             patrolEndX: this.levelWidth - portalSafeZone,
@@ -375,7 +375,7 @@ export class GameEngine {
             height: 35,
             color: '#8B4513',
             type: 'obstacle',
-            vx: (8 + Math.random() * 6 + this.level * 2) * (row % 2 === 0 ? -1 : 1), // Much faster barrier patrols
+            vx: (4 + Math.random() * 3 + this.level * 1) * (row % 2 === 0 ? -1 : 1), // Moderate barrier patrols
             vy: 0,
             patrolStartX: 50,
             patrolEndX: this.levelWidth - portalSafeZone,
@@ -398,7 +398,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (1.0 + Math.random() * 1.0) * (col % 2 === 0 ? 1 : -1), // Alternate directions
+          vy: (2 + Math.random() * 2 + this.level * 0.5) * (col % 2 === 0 ? 1 : -1), // Moderate side barrier patrols
           patrolStartX: 20 + (col * 40),
           patrolEndX: 20 + (col * 40),
           patrolStartY: 100,
@@ -423,7 +423,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? 1 : -1), // Varied speed
+          vx: (3 + Math.random() * 2 + this.level * 0.5) * (i % 2 === 0 ? 1 : -1), // Moderate guard speed
           vy: 0,
           patrolStartX: 60,
           patrolEndX: this.levelWidth - portalSafeZone,
@@ -444,7 +444,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (1.2 + Math.random() * 0.8) * (i % 2 === 0 ? -1 : 1), // Varied speed, opposite direction
+          vx: (3 + Math.random() * 2 + this.level * 0.5) * (i % 2 === 0 ? -1 : 1), // Moderate guard speed, opposite direction
           vy: 0,
           patrolStartX: 60,
           patrolEndX: this.levelWidth - portalSafeZone,
@@ -831,11 +831,11 @@ export class GameEngine {
           const isIPadForMovement = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
           
           if (isIPadForMovement) {
-            // Faster movement for iPad that scales with level
-            angle += 0.04 + (this.level * 0.01); // Faster speed that increases with level
+            // Moderate movement for iPad that scales with level
+            angle += 0.025 + (this.level * 0.005); // Moderate speed that increases with level
           } else {
-            // Faster complex movement for other devices that scales with level
-            angle += 0.03 + (this.level * 0.015) + (Math.sin(Date.now() * 0.001 + radius) * 0.01); // Much faster variable speed
+            // Moderate complex movement for other devices that scales with level
+            angle += 0.02 + (this.level * 0.008) + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Moderate variable speed
           }
           obstacle.patrolEndY = angle;
           
