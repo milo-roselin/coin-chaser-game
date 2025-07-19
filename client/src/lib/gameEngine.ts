@@ -299,7 +299,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (4 + Math.random() * 3 + this.level * 0.8) * (Math.random() < 0.5 ? -1 : 1), // Slower, smoother movement
+          vx: (2 + Math.random() * 2 + this.level * 0.5) * (Math.random() < 0.5 ? -1 : 1), // Much slower, smoother movement
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -319,7 +319,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (4 + Math.random() * 3 + this.level * 0.8) * (Math.random() < 0.5 ? -1 : 1), // Slower, smoother movement
+          vy: (2 + Math.random() * 2 + this.level * 0.5) * (Math.random() < 0.5 ? -1 : 1), // Much slower, smoother movement
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -857,9 +857,10 @@ export class GameEngine {
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
           
         } else {
-          // Linear movement (existing code) without speed multiplier
-          obstacle.x += obstacle.vx;
-          obstacle.y += obstacle.vy;
+          // Linear movement with speed dampening for smooth animation
+          const speedDamping = 0.5; // Significantly reduce effective speed for smoother movement
+          obstacle.x += obstacle.vx * speedDamping;
+          obstacle.y += obstacle.vy * speedDamping;
           
           // Check boundaries and reverse direction if needed
           if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
@@ -874,17 +875,9 @@ export class GameEngine {
             }
           }
           
-          // iPad-specific: Don't restrict linear TNT to tight patrol bounds on iPad
-          const isIPadForPatrolBounds = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-          
-          // Allow obstacles to move freely within the level bounds
+          // Keep obstacles within reasonable bounds
           obstacle.x = Math.max(0, Math.min(this.levelWidth - obstacle.width, obstacle.x));
           obstacle.y = Math.max(0, Math.min(this.canvasHeight - obstacle.height, obstacle.y));
-          
-          // iPad-specific: Don't constrain linear TNT movement as aggressively
-          const isIPadForLinearObstacles = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-          
-          // Allow linear obstacles to move freely - no control panel constraints
         }
       }
     });
