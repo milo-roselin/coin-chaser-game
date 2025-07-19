@@ -842,11 +842,11 @@ export class GameEngine {
           const isIPadForMovement = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
           
           if (isIPadForMovement) {
-            // Simpler, more stable movement for iPad
-            angle += 0.02; // Consistent speed without variable calculations
+            // Faster, more stable movement for iPad
+            angle += 0.04; // Increased speed from 0.02
           } else {
-            // Original complex movement for other devices
-            angle += 0.015 + (Math.sin(Date.now() * 0.001 + radius) * 0.005); // Smoother variable speed
+            // Faster complex movement for other devices
+            angle += 0.035 + (Math.sin(Date.now() * 0.001 + radius) * 0.01); // Increased from 0.015 and 0.005
           }
           obstacle.patrolEndY = angle;
           
