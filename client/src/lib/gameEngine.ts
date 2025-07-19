@@ -242,8 +242,8 @@ export class GameEngine {
       const x = 200 + Math.random() * (this.levelWidth - 600);
       const y = 150 + Math.random() * (this.canvasHeight - 300);
       
-      // Create slower, more predictable roaming patterns
-      const speed = 3 + Math.random() * 2 + (this.level * 0.5); // Much slower roaming speed
+      // Create ultra-smooth roaming patterns
+      const speed = 2 + Math.random() * 1.5 + (this.level * 0.3); // Ultra-smooth roaming speed
       const direction = Math.random() * Math.PI * 2; // Random direction
       
       this.obstacles.push({
@@ -299,7 +299,7 @@ export class GameEngine {
           height: 35,
           color: '#8B4513',
           type: 'obstacle',
-          vx: (2 + Math.random() * 2 + this.level * 0.5) * (Math.random() < 0.5 ? -1 : 1), // Much slower, smoother movement
+          vx: (1.5 + Math.random() * 1.5 + this.level * 0.3) * (Math.random() < 0.5 ? -1 : 1), // Ultra-smooth movement
           vy: 0,
           patrolStartX,
           patrolEndX,
@@ -319,7 +319,7 @@ export class GameEngine {
           color: '#8B4513',
           type: 'obstacle',
           vx: 0,
-          vy: (2 + Math.random() * 2 + this.level * 0.5) * (Math.random() < 0.5 ? -1 : 1), // Much slower, smoother movement
+          vy: (1.5 + Math.random() * 1.5 + this.level * 0.3) * (Math.random() < 0.5 ? -1 : 1), // Ultra-smooth movement
           patrolStartX: x,
           patrolEndX: x,
           patrolStartY,
@@ -843,9 +843,14 @@ export class GameEngine {
           }
           obstacle.patrolEndY = angle;
           
-          // Calculate new position
-          obstacle.x = centerX + Math.cos(angle) * radius - obstacle.width / 2;
-          obstacle.y = centerY + Math.sin(angle) * radius - obstacle.height / 2;
+          // Calculate new position with smoothing to prevent vibration
+          const targetX = centerX + Math.cos(angle) * radius - obstacle.width / 2;
+          const targetY = centerY + Math.sin(angle) * radius - obstacle.height / 2;
+          
+          // Apply smoothing to prevent micro-movements and vibration
+          const smoothingFactor = 0.8;
+          obstacle.x = obstacle.x * (1 - smoothingFactor) + targetX * smoothingFactor;
+          obstacle.y = obstacle.y * (1 - smoothingFactor) + targetY * smoothingFactor;
           
           // iPad-specific: Don't constrain circular TNT movement as aggressively
           const isIPadForCircular = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -857,10 +862,19 @@ export class GameEngine {
           obstacle.vy = Math.sin(angle + Math.PI / 2) * 2;
           
         } else {
-          // Linear movement with speed dampening for smooth animation
-          const speedDamping = 0.5; // Significantly reduce effective speed for smoother movement
-          obstacle.x += obstacle.vx * speedDamping;
-          obstacle.y += obstacle.vy * speedDamping;
+          // Linear movement with smooth animation and vibration prevention
+          const speedDamping = 0.3; // Further reduce speed for ultra-smooth movement
+          const newX = obstacle.x + obstacle.vx * speedDamping;
+          const newY = obstacle.y + obstacle.vy * speedDamping;
+          
+          // Only update position if movement is significant enough (prevents vibration)
+          const minMovement = 0.5;
+          if (Math.abs(newX - obstacle.x) > minMovement) {
+            obstacle.x = newX;
+          }
+          if (Math.abs(newY - obstacle.y) > minMovement) {
+            obstacle.y = newY;
+          }
           
           // Check boundaries and reverse direction if needed
           if (obstacle.patrolStartX !== undefined && obstacle.patrolEndX !== undefined) {
