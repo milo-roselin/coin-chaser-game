@@ -42,7 +42,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      if (e.key === 's' || e.key === 'S') {
+      if (e.key === 'o' || e.key === 'O') {
         handleAudioSettings();
       }
       
@@ -162,7 +162,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
                 <Settings className="h-4 w-4" />
               </Button>
               <span className="text-xs text-white font-semibold bg-black/50 px-1 rounded">
-                S
+                O
               </span>
             </div>
           </div>
@@ -288,7 +288,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
               <Settings className="h-4 w-4" />
             </Button>
             <span className="text-xs text-white bg-black/70 px-2 py-1 rounded pointer-events-none">
-              S
+              O
             </span>
           </div>
         </div>
