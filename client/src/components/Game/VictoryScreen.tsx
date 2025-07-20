@@ -155,6 +155,12 @@ export default function VictoryScreen() {
             <div className="text-sm text-gray-500">
               Total Coins: <span className="font-semibold text-yellow-600">{totalCoinsCollected}</span>
             </div>
+            <div className="text-sm text-gray-500 border-t pt-2">
+              <div className="flex items-center justify-center gap-1">
+                <Coins className="h-4 w-4 text-yellow-600" />
+                <span>Coin Bank: <span className="font-semibold text-yellow-600">{totalCoins.toLocaleString()}</span></span>
+              </div>
+            </div>
 
           </div>
 

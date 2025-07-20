@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
-import { ArrowLeft, Trophy, Medal, Award, Edit3, Check, X } from "lucide-react";
+import { useCoinBank } from "@/lib/stores/useCoinBank";
+import { ArrowLeft, Trophy, Medal, Award, Edit3, Check, X, Coins } from "lucide-react";
 
 export default function LeaderboardScreen() {
   const { resetGame } = useCoinGame();
   const { scores, removeScore, updateScore, canEditName } = useLeaderboard();
+  const { totalCoins } = useCoinBank();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingName, setEditingName] = useState<string>("");
 
@@ -107,6 +109,16 @@ export default function LeaderboardScreen() {
           <div className="text-5xl mb-4">🏆</div>
           <h1 className="text-3xl font-bold text-blue-600 mb-2">Leaderboard</h1>
           <p className="text-gray-600">Top players and their scores</p>
+          
+          {/* Coin Bank Display */}
+          <div className="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+            <div className="flex items-center justify-center gap-2">
+              <Coins className="h-5 w-5 text-yellow-600" />
+              <span className="text-lg font-semibold text-yellow-800">
+                Bank: {totalCoins.toLocaleString()} coins
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
