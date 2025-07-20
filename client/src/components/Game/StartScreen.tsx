@@ -93,7 +93,7 @@ export default function StartScreen() {
         return;
       }
       
-      if (key === 'a' || code === 'KeyA') {
+      if (key === 's' || code === 'KeyS') {
         e.preventDefault();
         setShowAudioSettings(true);
         return;
@@ -241,10 +241,10 @@ export default function StartScreen() {
               variant="outline"
               size="lg"
               className="px-4 py-4 border-2 border-blue-300 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
-              title="Audio Settings [A]"
+              title="Audio Settings [S]"
             >
               <Settings className="h-5 w-5" />
-              <span className="ml-2 text-sm opacity-75">[A]</span>
+              <span className="ml-2 text-sm opacity-75">[S]</span>
             </Button>
           </div>
 

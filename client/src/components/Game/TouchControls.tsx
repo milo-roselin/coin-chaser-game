@@ -42,7 +42,7 @@ export default function TouchControls({ onPause, onHome }: TouchControlsProps) {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
-      if (e.key === 'a' || e.key === 'A') {
+      if (e.key === 's' || e.key === 'S') {
         handleAudioSettings();
       }
       
