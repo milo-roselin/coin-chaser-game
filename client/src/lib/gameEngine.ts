@@ -1091,87 +1091,110 @@ export class GameEngine {
   }
 
   private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Tom Nook's head (brown tanuki)
-    ctx.fillStyle = '#8B4513'; // Brown fur
+    // Draw Tom Nook's head (tan/brown tanuki like thumbnail)
+    ctx.fillStyle = '#CD853F'; // Sandy brown fur matching thumbnail
     ctx.beginPath();
     ctx.ellipse(centerX, y + 10, 11, 12, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw lighter brown muzzle
+    // Draw dark brown mask around eyes (tanuki characteristic)
+    ctx.fillStyle = '#654321'; // Dark brown mask
+    ctx.beginPath();
+    ctx.ellipse(centerX - 5, y + 8, 4, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 5, y + 8, 4, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Connect the mask across the nose
+    ctx.fillRect(centerX - 2, y + 7, 4, 2);
+    
+    // Draw tan muzzle area
     ctx.fillStyle = '#DEB887';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 6, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 13, 6, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw black nose
+    // Draw small black nose
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 10, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 12, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw ears
-    ctx.fillStyle = '#8B4513';
+    // Draw round ears with brown outer and pink inner
+    ctx.fillStyle = '#CD853F'; // Brown outer ear
     ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 4, 6, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 8, y + 2, 4, 5, -0.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 4, 6, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw inner ears
-    ctx.fillStyle = '#DEB887';
-    ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 2, 3, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 2, 3, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 8, y + 2, 4, 5, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw eyes
-    ctx.fillStyle = '#000000';
+    // Draw pink inner ears like thumbnail
+    ctx.fillStyle = '#FFB6C1'; // Pink inner ears
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 8, 2, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 8, y + 2, 2.5, 3, -0.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 8, 2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw apron/shirt
-    ctx.fillStyle = '#4169E1'; // Blue apron
-    ctx.beginPath();
-    ctx.roundRect(x + 5, y + 22, w - 10, h - 25, 3);
+    ctx.ellipse(centerX + 8, y + 2, 2.5, 3, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw apron straps
-    ctx.fillStyle = '#4169E1';
+    // Draw blue eyes like thumbnail
+    ctx.fillStyle = '#FFFFFF'; // White eye base
     ctx.beginPath();
-    ctx.roundRect(x + 8, y + 18, 3, 8, 1);
+    ctx.ellipse(centerX - 4, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.roundRect(x + w - 11, y + 18, 3, 8, 1);
-    ctx.fill();
-    
-    // Draw arms
-    ctx.fillStyle = '#8B4513';
-    ctx.beginPath();
-    ctx.ellipse(x + 2, y + 30, 4, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w - 2, y + 30, 4, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 4, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw legs
-    ctx.fillStyle = '#8B4513';
+    // Blue pupils
+    ctx.fillStyle = '#4169E1'; // Blue pupils like thumbnail
+    ctx.beginPath();
+    ctx.arc(centerX - 4, y + 8, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + 4, y + 8, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw purple/blue outfit like thumbnail
+    ctx.fillStyle = '#6A5ACD'; // Purple-blue outfit
+    ctx.beginPath();
+    ctx.roundRect(x + 5, y + 20, w - 10, h - 24, 3);
+    ctx.fill();
+    
+    // Draw collar/shirt details
+    ctx.fillStyle = '#FFFFFF'; // White collar
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 21, 6, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw brown tie/accessory
+    ctx.fillStyle = '#8B4513'; // Brown tie
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 24, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw tan arms
+    ctx.fillStyle = '#CD853F';
+    ctx.beginPath();
+    ctx.ellipse(x + 3, y + 28, 3, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w - 3, y + 28, 3, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw tan legs with movement
+    ctx.fillStyle = '#CD853F';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.015) * 3; // Smoother leg movement
-      const forwardOffset = 2.5; // Slightly more pronounced movement
+      const legCycle = Math.sin(Date.now() * 0.015) * 3;
+      const forwardOffset = 2.5;
       
       const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother vertical bounce
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15;
       ctx.fillRect(leftLegX, leftLegY, 4, 8);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother vertical bounce
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15;
       ctx.fillRect(rightLegX, rightLegY, 4, 8);
     } else {
       ctx.fillRect(centerX - 5, y + h - 4, 4, 8);
