@@ -1444,10 +1444,22 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw static arms (never move) - properly attached to body
+    // Draw static arms (never move) - properly attached to body at slight angle
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 5, y + 25, 3, 14); // Left arm starting inside body edge
-    ctx.fillRect(x + w - 8, y + 25, 3, 14); // Right arm starting inside body edge
+    
+    // Left arm at slight outward angle
+    ctx.save();
+    ctx.translate(x + 6.5, y + 25);
+    ctx.rotate(-0.2); // Small outward angle (about 11 degrees)
+    ctx.fillRect(-1.5, 0, 3, 14);
+    ctx.restore();
+    
+    // Right arm at slight outward angle
+    ctx.save();
+    ctx.translate(x + w - 6.5, y + 25);
+    ctx.rotate(0.2); // Small outward angle (about 11 degrees)
+    ctx.fillRect(-1.5, 0, 3, 14);
+    ctx.restore();
     
     // Draw friendly legs (like Mr. MoneyBags movement)
     ctx.fillStyle = '#000000';
