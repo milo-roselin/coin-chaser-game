@@ -1377,33 +1377,51 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw angular, diamond-shaped head that connects to body
+    // Draw triangular grey hair on sides only
+    ctx.fillStyle = '#808080'; // Grey hair
+    ctx.beginPath();
+    // Left side hair triangle
+    ctx.moveTo(centerX - 11, y + 3);
+    ctx.lineTo(centerX - 8, y + 1);
+    ctx.lineTo(centerX - 9, y + 8);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    // Right side hair triangle
+    ctx.moveTo(centerX + 11, y + 3);
+    ctx.lineTo(centerX + 8, y + 1);
+    ctx.lineTo(centerX + 9, y + 8);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw angular, diamond-shaped head (shorter) that connects to body
     ctx.fillStyle = '#F5DEB3'; // Pale skin color
     ctx.beginPath();
-    // Create sharp angular head shape with pointed chin that connects to shoulders
-    ctx.moveTo(centerX, y + 1); // Top point (higher)
-    ctx.lineTo(centerX - 11, y + 8); // Left temple (wider)
-    ctx.lineTo(centerX - 8, y + 18); // Left jaw (longer)
-    ctx.lineTo(centerX - 5, y + 24); // Connect to left shoulder
-    ctx.lineTo(centerX + 5, y + 24); // Connect to right shoulder
-    ctx.lineTo(centerX + 8, y + 18); // Right jaw (longer)
-    ctx.lineTo(centerX + 11, y + 8); // Right temple (wider)
+    // Create shorter angular head shape with pointed chin
+    ctx.moveTo(centerX, y + 4); // Lower top point (shorter head)
+    ctx.lineTo(centerX - 11, y + 8); // Left temple
+    ctx.lineTo(centerX - 8, y + 15); // Left jaw (shorter)
+    ctx.lineTo(centerX - 5, y + 20); // Connect to left shoulder
+    ctx.lineTo(centerX + 5, y + 20); // Connect to right shoulder
+    ctx.lineTo(centerX + 8, y + 15); // Right jaw (shorter)
+    ctx.lineTo(centerX + 11, y + 8); // Right temple
     ctx.closePath();
     ctx.fill();
     
-    // Draw upside-down V unibrow (flipped) in grey
+    // Draw thick upside-down V unibrow in grey (adjusted for shorter head)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 9, y + 5); // Start high on left
-    ctx.lineTo(centerX, y + 8); // Dip down in center
-    ctx.lineTo(centerX + 9, y + 5); // High on right
-    ctx.lineTo(centerX + 7, y + 6.5); // Thicker edge right
-    ctx.lineTo(centerX, y + 7); // Center thickness
-    ctx.lineTo(centerX - 7, y + 6.5); // Thicker edge left
+    ctx.moveTo(centerX - 9, y + 7); // Start high on left
+    ctx.lineTo(centerX, y + 10); // Dip down in center
+    ctx.lineTo(centerX + 9, y + 7); // High on right
+    ctx.lineTo(centerX + 6, y + 9); // Thicker edge right
+    ctx.lineTo(centerX, y + 8.5); // Center thickness (thicker)
+    ctx.lineTo(centerX - 6, y + 9); // Thicker edge left
     ctx.closePath();
     ctx.fill();
     
-    // Draw narrow, menacing eyes like reference (scaled for bigger head)
+    // Draw narrow, menacing eyes (adjusted for shorter head)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.ellipse(centerX - 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
@@ -1412,85 +1430,56 @@ export class GameEngine {
     ctx.ellipse(centerX + 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw thin, angular mustache like reference (scaled for bigger head)
+    // Draw thin, angular mustache (adjusted for shorter head)
     ctx.fillStyle = '#2F1B14';
     ctx.beginPath();
-    ctx.moveTo(centerX - 4, y + 15);
-    ctx.lineTo(centerX, y + 14);
-    ctx.lineTo(centerX + 4, y + 15);
-    ctx.lineTo(centerX + 3, y + 16);
-    ctx.lineTo(centerX - 3, y + 16);
+    ctx.moveTo(centerX - 4, y + 13);
+    ctx.lineTo(centerX, y + 12);
+    ctx.lineTo(centerX + 4, y + 13);
+    ctx.lineTo(centerX + 3, y + 14);
+    ctx.lineTo(centerX - 3, y + 14);
     ctx.closePath();
     ctx.fill();
     
-    // Draw sharp, sinister smile like reference (scaled for bigger head)
-    ctx.strokeStyle = '#2F1B14';
-    ctx.lineWidth = 1.5;
+    // Draw wide evil smile
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 18);
-    ctx.quadraticCurveTo(centerX, y + 17, centerX + 3, y + 18);
+    ctx.moveTo(centerX - 5, y + 16);
+    ctx.quadraticCurveTo(centerX, y + 14, centerX + 5, y + 16);
     ctx.stroke();
     
-    // Draw black tailcoat (thinner, more fitted) - adjusted for bigger head
+    // Draw black tailcoat (adjusted for shorter head)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    // Main coat body - thinner and more fitted, starts lower due to bigger head
-    ctx.moveTo(x + 5, y + 24); // Lower start for bigger head
-    ctx.lineTo(x + w - 5, y + 24); // Lower start for bigger head
-    ctx.lineTo(x + w - 5, y + 31); // Straighter sides
-    ctx.lineTo(x + w - 7, y + 38); // Slightly tapered
-    ctx.lineTo(x + 7, y + 38); // Slightly tapered
-    ctx.lineTo(x + 5, y + 31); // Straighter sides
+    // Main coat body - starts higher due to shorter head
+    ctx.moveTo(x + 5, y + 20); // Higher start for shorter head
+    ctx.lineTo(x + w - 5, y + 20); // Higher start for shorter head
+    ctx.lineTo(x + w - 5, y + 27); // Straighter sides
+    ctx.lineTo(x + w - 7, y + 34); // Slightly tapered
+    ctx.lineTo(x + 7, y + 34); // Slightly tapered
+    ctx.lineTo(x + 5, y + 27); // Straighter sides
     ctx.closePath();
     ctx.fill();
     
-    // Draw coat tails (adjusted for bigger head)
+    // Draw coat tails (adjusted for shorter head)
     ctx.beginPath();
-    ctx.moveTo(x + 7, y + 38);
-    ctx.lineTo(x + 4, y + 45);
-    ctx.lineTo(x + 8, y + 45);
-    ctx.lineTo(x + 10, y + 38);
+    ctx.moveTo(x + 7, y + 34);
+    ctx.lineTo(x + 4, y + 41);
+    ctx.lineTo(x + 8, y + 41);
+    ctx.lineTo(x + 10, y + 34);
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    ctx.moveTo(x + w - 7, y + 38);
-    ctx.lineTo(x + w - 10, y + 38);
-    ctx.lineTo(x + w - 8, y + 45);
-    ctx.lineTo(x + w - 4, y + 45);
+    ctx.moveTo(x + w - 7, y + 34);
+    ctx.lineTo(x + w - 10, y + 34);
+    ctx.lineTo(x + w - 8, y + 41);
+    ctx.lineTo(x + w - 4, y + 41);
     ctx.closePath();
     ctx.fill();
     
-    // Draw static arms (never move) - properly attached to body at slight angle
-    ctx.fillStyle = '#000000';
-    
-    // Left arm curled inward like reference - sinister pose
-    ctx.save();
-    ctx.translate(x + 7, y + 28); // Position at shoulder
-    ctx.rotate(-0.2); // Angle inward toward body
-    ctx.fillRect(-1.5, 0, 3, 12); // Upper arm
-    ctx.restore();
-    
-    // Left forearm curled more inward
-    ctx.save();
-    ctx.translate(x + 6, y + 38); // Lower position for forearm
-    ctx.rotate(-0.8); // Strong inward curl
-    ctx.fillRect(-1.5, 0, 3, 8); // Forearm
-    ctx.restore();
-    
-    // Right arm curled inward like reference - sinister pose
-    ctx.save();
-    ctx.translate(x + w - 7, y + 28); // Position at shoulder
-    ctx.rotate(0.2); // Angle inward toward body
-    ctx.fillRect(-1.5, 0, 3, 12); // Upper arm
-    ctx.restore();
-    
-    // Right forearm curled more inward
-    ctx.save();
-    ctx.translate(x + w - 6, y + 38); // Lower position for forearm
-    ctx.rotate(0.8); // Strong inward curl
-    ctx.fillRect(-1.5, 0, 3, 8); // Forearm
-    ctx.restore();
+    // No arms - removed completely as requested
     
     // Draw friendly legs (like Mr. MoneyBags movement)
     ctx.fillStyle = '#000000';
