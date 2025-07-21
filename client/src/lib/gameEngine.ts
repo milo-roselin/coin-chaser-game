@@ -1377,21 +1377,21 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw triangular grey hair with tips at top meeting at corners
+    // Draw triangular grey hair like thumbnail - sharper and more angular
     ctx.fillStyle = '#808080'; // Grey hair
     ctx.beginPath();
-    // Left side hair triangle - tip at top, meeting at corner
-    ctx.moveTo(centerX - 11, y + 8); // Corner bottom left
-    ctx.lineTo(centerX - 9, y + 1); // Tip at top
-    ctx.lineTo(centerX - 7, y + 8); // Corner bottom right
+    // Left side hair triangle - more like thumbnail with sharp angle
+    ctx.moveTo(centerX - 12, y + 8); // Start at temple edge
+    ctx.lineTo(centerX - 9, y + 2); // Sharp tip pointing up
+    ctx.lineTo(centerX - 6, y + 6); // Inner edge
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    // Right side hair triangle - tip at top, meeting at corner
-    ctx.moveTo(centerX + 7, y + 8); // Corner bottom left
-    ctx.lineTo(centerX + 9, y + 1); // Tip at top
-    ctx.lineTo(centerX + 11, y + 8); // Corner bottom right
+    // Right side hair triangle - more like thumbnail with sharp angle
+    ctx.moveTo(centerX + 6, y + 6); // Inner edge
+    ctx.lineTo(centerX + 9, y + 2); // Sharp tip pointing up
+    ctx.lineTo(centerX + 12, y + 8); // Start at temple edge
     ctx.closePath();
     ctx.fill();
     
@@ -1409,19 +1409,19 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw thick connected unibrow in grey (all three parts connected)
+    // Draw longer thick connected unibrow in grey (extends wider)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 9, y + 7); // Start left
-    ctx.lineTo(centerX - 3, y + 9); // Left part down
+    ctx.moveTo(centerX - 12, y + 7); // Start much further left
+    ctx.lineTo(centerX - 4, y + 9); // Left part down
     ctx.lineTo(centerX, y + 10); // Center dip
-    ctx.lineTo(centerX + 3, y + 9); // Right part down
-    ctx.lineTo(centerX + 9, y + 7); // End right
-    ctx.lineTo(centerX + 6, y + 8); // Thicker edge right
-    ctx.lineTo(centerX + 2, y + 8.5); // Right connection thickness
+    ctx.lineTo(centerX + 4, y + 9); // Right part down
+    ctx.lineTo(centerX + 12, y + 7); // End much further right
+    ctx.lineTo(centerX + 8, y + 8); // Thicker edge right
+    ctx.lineTo(centerX + 3, y + 8.5); // Right connection thickness
     ctx.lineTo(centerX, y + 8.5); // Center thickness
-    ctx.lineTo(centerX - 2, y + 8.5); // Left connection thickness
-    ctx.lineTo(centerX - 6, y + 8); // Thicker edge left
+    ctx.lineTo(centerX - 3, y + 8.5); // Left connection thickness
+    ctx.lineTo(centerX - 8, y + 8); // Thicker edge left
     ctx.closePath();
     ctx.fill();
     
