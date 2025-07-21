@@ -1444,18 +1444,18 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw arms extending from coat
+    // Draw arms extending from coat (always attached to body)
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
-      const armCycle = Math.sin(Date.now() * 0.012) * 1.8;
+      const armCycle = Math.sin(Date.now() * 0.012) * 1.2; // Reduced movement to keep attached
       
-      // Left arm
-      const leftArmX = x - 1 + armCycle;
+      // Left arm - starts from body edge
+      const leftArmX = x + 1 + armCycle; // Start from body edge
       const leftArmY = y + 25;
       ctx.fillRect(leftArmX, leftArmY, 3, 14);
       
-      // Right arm  
-      const rightArmX = x + w - 2 - armCycle;
+      // Right arm - starts from body edge
+      const rightArmX = x + w - 4 - armCycle; // Start from body edge
       const rightArmY = y + 25;
       ctx.fillRect(rightArmX, rightArmY, 3, 14);
       
@@ -1468,17 +1468,17 @@ export class GameEngine {
       ctx.arc(rightArmX + 1.5, rightArmY + 14, 2.2, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      // Static arms
-      ctx.fillRect(x - 1, y + 25, 3, 14); // Left arm
-      ctx.fillRect(x + w - 2, y + 25, 3, 14); // Right arm
+      // Static arms - attached to body
+      ctx.fillRect(x + 1, y + 25, 3, 14); // Left arm attached to body
+      ctx.fillRect(x + w - 4, y + 25, 3, 14); // Right arm attached to body
       
       // Draw static hands
       ctx.fillStyle = '#F5F5DC';
       ctx.beginPath();
-      ctx.arc(x + 0.5, y + 39, 2.2, 0, Math.PI * 2);
+      ctx.arc(x + 2.5, y + 39, 2.2, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(x + w - 0.5, y + 39, 2.2, 0, Math.PI * 2);
+      ctx.arc(x + w - 2.5, y + 39, 2.2, 0, Math.PI * 2);
       ctx.fill();
     }
     
