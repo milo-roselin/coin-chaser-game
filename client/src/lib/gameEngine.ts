@@ -1377,104 +1377,104 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw angular, diamond-shaped head like reference image
+    // Draw angular, diamond-shaped head like reference image (bigger)
     ctx.fillStyle = '#F5DEB3'; // Pale skin color
     ctx.beginPath();
-    // Create sharp angular head shape with pointed chin like reference
-    ctx.moveTo(centerX, y + 3); // Top point
-    ctx.lineTo(centerX - 8, y + 8); // Left temple
-    ctx.lineTo(centerX - 6, y + 16); // Left jaw
-    ctx.lineTo(centerX, y + 19); // Pointed chin
-    ctx.lineTo(centerX + 6, y + 16); // Right jaw
-    ctx.lineTo(centerX + 8, y + 8); // Right temple
+    // Create sharp angular head shape with pointed chin like reference (larger proportions)
+    ctx.moveTo(centerX, y + 1); // Top point (higher)
+    ctx.lineTo(centerX - 11, y + 8); // Left temple (wider)
+    ctx.lineTo(centerX - 8, y + 18); // Left jaw (longer)
+    ctx.lineTo(centerX, y + 22); // Pointed chin (lower)
+    ctx.lineTo(centerX + 8, y + 18); // Right jaw (longer)
+    ctx.lineTo(centerX + 11, y + 8); // Right temple (wider)
     ctx.closePath();
     ctx.fill();
     
-    // Draw dramatic V-shaped unibrow like reference
+    // Draw dramatic V-shaped unibrow like reference (scaled for bigger head)
     ctx.fillStyle = '#2F1B14'; // Dark brown
     ctx.beginPath();
-    ctx.moveTo(centerX - 7, y + 7);
-    ctx.lineTo(centerX, y + 5);
-    ctx.lineTo(centerX + 7, y + 7);
-    ctx.lineTo(centerX + 5, y + 8);
+    ctx.moveTo(centerX - 9, y + 7);
+    ctx.lineTo(centerX, y + 4);
+    ctx.lineTo(centerX + 9, y + 7);
+    ctx.lineTo(centerX + 7, y + 9);
     ctx.lineTo(centerX, y + 6.5);
-    ctx.lineTo(centerX - 5, y + 8);
+    ctx.lineTo(centerX - 7, y + 9);
     ctx.closePath();
     ctx.fill();
     
-    // Draw narrow, menacing eyes like reference
+    // Draw narrow, menacing eyes like reference (scaled for bigger head)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.ellipse(centerX - 3, y + 9, 1.5, 0.8, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 3, y + 9, 1.5, 0.8, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw thin, angular mustache like reference
+    // Draw thin, angular mustache like reference (scaled for bigger head)
     ctx.fillStyle = '#2F1B14';
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 13);
-    ctx.lineTo(centerX, y + 12);
-    ctx.lineTo(centerX + 3, y + 13);
-    ctx.lineTo(centerX + 2, y + 14);
-    ctx.lineTo(centerX - 2, y + 14);
+    ctx.moveTo(centerX - 4, y + 15);
+    ctx.lineTo(centerX, y + 14);
+    ctx.lineTo(centerX + 4, y + 15);
+    ctx.lineTo(centerX + 3, y + 16);
+    ctx.lineTo(centerX - 3, y + 16);
     ctx.closePath();
     ctx.fill();
     
-    // Draw sharp, sinister smile like reference
+    // Draw sharp, sinister smile like reference (scaled for bigger head)
     ctx.strokeStyle = '#2F1B14';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(centerX - 2.5, y + 16);
-    ctx.quadraticCurveTo(centerX, y + 15, centerX + 2.5, y + 16);
+    ctx.moveTo(centerX - 3, y + 18);
+    ctx.quadraticCurveTo(centerX, y + 17, centerX + 3, y + 18);
     ctx.stroke();
     
-    // Draw black tailcoat (thinner, more fitted)
+    // Draw black tailcoat (thinner, more fitted) - adjusted for bigger head
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    // Main coat body - thinner and more fitted
-    ctx.moveTo(x + 5, y + 21); // Narrower shoulders
-    ctx.lineTo(x + w - 5, y + 21); // Narrower shoulders
-    ctx.lineTo(x + w - 5, y + 28); // Straighter sides
-    ctx.lineTo(x + w - 7, y + 35); // Slightly tapered
-    ctx.lineTo(x + 7, y + 35); // Slightly tapered
-    ctx.lineTo(x + 5, y + 28); // Straighter sides
+    // Main coat body - thinner and more fitted, starts lower due to bigger head
+    ctx.moveTo(x + 5, y + 24); // Lower start for bigger head
+    ctx.lineTo(x + w - 5, y + 24); // Lower start for bigger head
+    ctx.lineTo(x + w - 5, y + 31); // Straighter sides
+    ctx.lineTo(x + w - 7, y + 38); // Slightly tapered
+    ctx.lineTo(x + 7, y + 38); // Slightly tapered
+    ctx.lineTo(x + 5, y + 31); // Straighter sides
     ctx.closePath();
     ctx.fill();
     
-    // Draw coat tails
+    // Draw coat tails (adjusted for bigger head)
     ctx.beginPath();
-    ctx.moveTo(x + 6, y + 35);
-    ctx.lineTo(x + 4, y + 42);
-    ctx.lineTo(x + 8, y + 42);
-    ctx.lineTo(x + 10, y + 35);
+    ctx.moveTo(x + 7, y + 38);
+    ctx.lineTo(x + 4, y + 45);
+    ctx.lineTo(x + 8, y + 45);
+    ctx.lineTo(x + 10, y + 38);
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    ctx.moveTo(x + w - 6, y + 35);
-    ctx.lineTo(x + w - 10, y + 35);
-    ctx.lineTo(x + w - 8, y + 42);
-    ctx.lineTo(x + w - 4, y + 42);
+    ctx.moveTo(x + w - 7, y + 38);
+    ctx.lineTo(x + w - 10, y + 38);
+    ctx.lineTo(x + w - 8, y + 45);
+    ctx.lineTo(x + w - 4, y + 45);
     ctx.closePath();
     ctx.fill();
     
     // Draw static arms (never move) - properly attached to body at slight angle
     ctx.fillStyle = '#000000';
     
-    // Left arm at slight outward angle
+    // Left arm positioned like reference (adjusted for bigger head and lower coat)
     ctx.save();
-    ctx.translate(x + 6.5, y + 25);
-    ctx.rotate(0.2); // Small outward angle (about 11 degrees)
-    ctx.fillRect(-1.5, 0, 3, 14);
+    ctx.translate(x + 6.5, y + 28); // Lower position due to bigger head
+    ctx.rotate(0.3); // Slightly more angled like reference
+    ctx.fillRect(-1.5, 0, 3, 16); // Longer arms like reference
     ctx.restore();
     
-    // Right arm at slight outward angle
+    // Right arm positioned like reference (adjusted for bigger head and lower coat)
     ctx.save();
-    ctx.translate(x + w - 6.5, y + 25);
-    ctx.rotate(-0.2); // Small outward angle (about 11 degrees)
-    ctx.fillRect(-1.5, 0, 3, 14);
+    ctx.translate(x + w - 6.5, y + 28); // Lower position due to bigger head
+    ctx.rotate(-0.3); // Slightly more angled like reference
+    ctx.fillRect(-1.5, 0, 3, 16); // Longer arms like reference
     ctx.restore();
     
     // Draw friendly legs (like Mr. MoneyBags movement)
