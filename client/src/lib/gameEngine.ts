@@ -1377,21 +1377,21 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw triangular grey hair on sides only
+    // Draw triangular grey hair with tips at top meeting at corners
     ctx.fillStyle = '#808080'; // Grey hair
     ctx.beginPath();
-    // Left side hair triangle
-    ctx.moveTo(centerX - 11, y + 3);
-    ctx.lineTo(centerX - 8, y + 1);
-    ctx.lineTo(centerX - 9, y + 8);
+    // Left side hair triangle - tip at top, meeting at corner
+    ctx.moveTo(centerX - 11, y + 8); // Corner bottom left
+    ctx.lineTo(centerX - 9, y + 1); // Tip at top
+    ctx.lineTo(centerX - 7, y + 8); // Corner bottom right
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    // Right side hair triangle
-    ctx.moveTo(centerX + 11, y + 3);
-    ctx.lineTo(centerX + 8, y + 1);
-    ctx.lineTo(centerX + 9, y + 8);
+    // Right side hair triangle - tip at top, meeting at corner
+    ctx.moveTo(centerX + 7, y + 8); // Corner bottom left
+    ctx.lineTo(centerX + 9, y + 1); // Tip at top
+    ctx.lineTo(centerX + 11, y + 8); // Corner bottom right
     ctx.closePath();
     ctx.fill();
     
@@ -1409,15 +1409,19 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw thick upside-down V unibrow in grey (adjusted for shorter head)
+    // Draw thick connected unibrow in grey (all three parts connected)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 9, y + 7); // Start high on left
-    ctx.lineTo(centerX, y + 10); // Dip down in center
-    ctx.lineTo(centerX + 9, y + 7); // High on right
-    ctx.lineTo(centerX + 6, y + 9); // Thicker edge right
-    ctx.lineTo(centerX, y + 8.5); // Center thickness (thicker)
-    ctx.lineTo(centerX - 6, y + 9); // Thicker edge left
+    ctx.moveTo(centerX - 9, y + 7); // Start left
+    ctx.lineTo(centerX - 3, y + 9); // Left part down
+    ctx.lineTo(centerX, y + 10); // Center dip
+    ctx.lineTo(centerX + 3, y + 9); // Right part down
+    ctx.lineTo(centerX + 9, y + 7); // End right
+    ctx.lineTo(centerX + 6, y + 8); // Thicker edge right
+    ctx.lineTo(centerX + 2, y + 8.5); // Right connection thickness
+    ctx.lineTo(centerX, y + 8.5); // Center thickness
+    ctx.lineTo(centerX - 2, y + 8.5); // Left connection thickness
+    ctx.lineTo(centerX - 6, y + 8); // Thicker edge left
     ctx.closePath();
     ctx.fill();
     
@@ -1441,12 +1445,12 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw wide evil smile
+    // Draw wide evil smile (turned upside down - now a proper smile)
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(centerX - 5, y + 16);
-    ctx.quadraticCurveTo(centerX, y + 14, centerX + 5, y + 16);
+    ctx.quadraticCurveTo(centerX, y + 18, centerX + 5, y + 16);
     ctx.stroke();
     
     // Draw black tailcoat (adjusted for shorter head)
