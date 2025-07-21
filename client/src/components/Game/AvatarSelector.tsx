@@ -76,29 +76,18 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                         />
                       </div>
                     ) : avatar.id === 'count-olaf' ? (
-                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
-                        {/* Count Olaf complete body */}
-                        <div className="w-8 h-10 bg-yellow-100 rounded-full relative">
-                          {/* Face */}
-                          <div className="w-6 h-6 bg-yellow-100 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
-                            {/* Unibrow */}
-                            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-5 h-0.5 bg-black rounded-full"></div>
-                            {/* Eyes */}
-                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                            {/* Nose */}
-                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-pink-300 rounded-full"></div>
-                            {/* Mouth */}
-                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
-                            {/* Hair */}
-                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-gray-600 rounded-t-full"></div>
-                          </div>
-                          {/* Body - black suit */}
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-black rounded-b-full"></div>
-                          {/* Arms */}
-                          <div className="absolute top-6 left-0 w-1 h-2 bg-yellow-100 rounded-full"></div>
-                          <div className="absolute top-6 right-0 w-1 h-2 bg-yellow-100 rounded-full"></div>
-                        </div>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
+                        <img 
+                          src="/images/count-olaf.png" 
+                          alt="Count Olaf" 
+                          className="w-full h-full object-cover"
+                          style={{ imageRendering: 'pixelated' }}
+                          onError={(e) => {
+                            console.error('Failed to load Count Olaf avatar image');
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onLoad={() => console.log('Count Olaf avatar image loaded successfully')}
+                        />
                       </div>
                     ) : avatar.id === 'tom-nook' ? (
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
