@@ -96,6 +96,15 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 21, 2025 - Wario Avatar Thumbnail Update
+- **Wario PNG Thumbnail**: Successfully implemented user-provided Wario avatar image as thumbnail
+  - Saved custom Wario PNG (yellow square with purple mustache) to `/client/public/wario.png`
+  - Updated AvatarSelector to display PNG thumbnail instead of animated component
+  - Added error handling and success logging for image loading
+  - Maintains consistent styling with other avatar thumbnails (pixelated rendering)
+- **Audio Settings Shortcut**: Changed keyboard shortcut from "A" to "O" to avoid WASD movement key conflicts
+- **Coin Bank Display Enhancement**: Added coin bank totals to both leaderboard and victory screens for better visibility
+
 ## July 19, 2025 - Progressive Difficulty System
 - **Progressive TNT Scaling**: Implemented level-based difficulty scaling with multiple multipliers:
   - Coin clusters increase every 2 levels instead of every level

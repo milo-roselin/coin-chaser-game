@@ -138,15 +138,21 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                     ) : avatar.id === 'wario' ? (
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
                         <img 
-                          src="/wario-avatar.png" 
+                          src="/wario.png" 
                           alt="Wario" 
                           className="w-full h-full object-cover"
                           style={{ imageRendering: 'pixelated' }}
                           onError={(e) => {
-                            console.error('Failed to load Wario avatar image');
+                            console.error('Failed to load Wario avatar image at /wario.png');
+                            // Fallback to yellow background if image fails
                             e.currentTarget.style.display = 'none';
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.style.background = '#FFD700';
+                              parent.innerHTML = '<div style="color: #800080; font-size: 20px; font-weight: bold;">W</div>';
+                            }
                           }}
-                          onLoad={() => console.log('Wario avatar image loaded successfully')}
+                          onLoad={() => console.log('Wario avatar image loaded successfully from /wario.png')}
                         />
                       </div>
                     ) : (
