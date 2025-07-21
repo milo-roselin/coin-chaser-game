@@ -1375,172 +1375,92 @@ export class GameEngine {
   }
 
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw tall black hat (more theatrical)
+    // Draw green leprechaun hat (like Mr. MoneyBags)
+    ctx.fillStyle = '#228B22'; // Forest green
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 2, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw hat buckle
+    ctx.fillStyle = '#FFD700'; // Gold
+    ctx.beginPath();
+    ctx.roundRect(centerX - 3, y + 2, 6, 4, 1);
+    ctx.fill();
+    ctx.fillStyle = '#228B22';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 1.5, y + 3, 3, 2, 0.5);
+    ctx.fill();
+    
+    // Draw round, cheerful head (like Mr. MoneyBags)
+    ctx.fillStyle = '#FFDBAC'; // Peach skin
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 12, 10, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw bushy white eyebrows (friendly, not sinister)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 8, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 8, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw friendly eyes
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.roundRect(x + 3, y - 25, w - 6, 20, 3);
+    ctx.arc(centerX - 4, y + 10, 1.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.roundRect(x + 5, y - 32, w - 10, 8, 2);
+    ctx.arc(centerX + 4, y + 10, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw pale, gaunt head as slightly oval
-    ctx.fillStyle = '#F0F0F0'; // Very pale
+    // Draw white mustache (like Mr. MoneyBags)
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 6, 9, 11, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 4, y + 14, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 14, 3, 1.5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the signature THICK unibrow (more prominent)
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.roundRect(centerX - 8, y + 1, 16, 4, 2);
-    ctx.fill();
-    
-    // Add some texture to the unibrow
-    ctx.fillStyle = '#333333';
-    ctx.beginPath();
-    ctx.roundRect(centerX - 7, y + 2, 14, 2, 1);
-    ctx.fill();
-    
-    // Draw beady, sinister eyes underneath the unibrow
-    ctx.fillStyle = '#FFFFFF'; // White eye base
-    ctx.beginPath();
-    ctx.ellipse(centerX - 3.5, y + 6, 2, 1.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 3.5, y + 6, 2, 1.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw dark pupils
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(centerX - 3.5, y + 6, 1, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(centerX + 3.5, y + 6, 1, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw prominent hooked nose (more angular)
-    ctx.fillStyle = '#F0F0F0';
-    ctx.beginPath();
-    ctx.moveTo(centerX, y + 8);
-    ctx.lineTo(centerX + 2, y + 12);
-    ctx.lineTo(centerX, y + 14);
-    ctx.lineTo(centerX - 1, y + 12);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Draw thin, sinister smile
+    // Draw cheerful smile (like Mr. MoneyBags)
     ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(centerX, y + 15, 4, 0.2, Math.PI - 0.2);
+    ctx.arc(centerX, y + 16, 3, 0, Math.PI);
     ctx.stroke();
     
-    // Draw tall, thin body (dark theatrical coat)
-    ctx.fillStyle = '#0F0F0F'; // Very dark black
+    // Draw green leprechaun-style coat (like Mr. MoneyBags)
+    ctx.fillStyle = '#228B22'; // Forest green
     ctx.beginPath();
-    ctx.roundRect(x + 4, y + 18, w - 8, h - 20, 3);
+    ctx.roundRect(x + 4, y + 21, w - 8, h - 23, 2);
     ctx.fill();
     
-    // Draw white dress shirt front
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.roundRect(x + 7, y + 20, w - 14, h - 26, 1);
-    ctx.fill();
-    
-    // Draw dramatic collar (wide and theatrical)
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.moveTo(x + 6, y + 18);
-    ctx.lineTo(x + w - 6, y + 18);
-    ctx.lineTo(x + w - 4, y + 22);
-    ctx.lineTo(x + 4, y + 22);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Draw dark vest/waistcoat with V-shape
-    ctx.fillStyle = '#2A2A2A';
-    ctx.beginPath();
-    ctx.moveTo(x + 8, y + 22);
-    ctx.lineTo(x + w - 8, y + 22);
-    ctx.lineTo(x + w - 6, y + 32);
-    ctx.lineTo(centerX + 2, y + 38);
-    ctx.lineTo(centerX - 2, y + 38);
-    ctx.lineTo(x + 6, y + 32);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Add ornate buttons down the vest
-    ctx.fillStyle = '#C0C0C0'; // Silver buttons
+    // Draw gold buttons
+    ctx.fillStyle = '#FFD700';
     for (let i = 0; i < 3; i++) {
       ctx.beginPath();
-      ctx.arc(centerX, y + 25 + i * 4, 1, 0, Math.PI * 2);
+      ctx.arc(centerX, y + 25 + i * 4, 1.5, 0, Math.PI * 2);
       ctx.fill();
     }
     
-    // Draw dramatic coat tails
-    ctx.fillStyle = '#0F0F0F';
-    ctx.beginPath();
-    ctx.roundRect(x + 3, y + 35, w - 6, h - 37, 2);
-    ctx.fill();
-    
-    // Draw very thin legs (theatrical and gaunt)
-    ctx.fillStyle = '#0F0F0F';
+    // Draw friendly legs (like Mr. MoneyBags movement)
+    ctx.fillStyle = '#228B22';
     if (this.isMoving) {
-      // Smoother animated legs with theatrical flair
-      const legCycle = Math.sin(Date.now() * 0.018) * 4; // Smoother, faster animation
-      const forwardOffset = 3.5; // More dramatic movement
+      const legCycle = Math.sin(Date.now() * 0.014) * 2; // Gentle movement like Mr. MoneyBags
+      const forwardOffset = 1.5; // Moderate movement
       
-      // Left leg (very thin)
-      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Smoother bounce
-      ctx.fillRect(leftLegX, leftLegY, 2, 10); // Very thin legs
+      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.08;
+      ctx.fillRect(leftLegX, leftLegY, 4, 8);
       
-      // Right leg (very thin)
-      const rightLegX = centerX + 3 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.2; // Smoother bounce
-      ctx.fillRect(rightLegX, rightLegY, 2, 10); // Very thin legs
-      
-      // Draw dramatic pointed shoes (like a villain)
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.ellipse(leftLegX + 1, leftLegY + 10, 5, 2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(rightLegX + 1, rightLegY + 10, 5, 2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add pointed toe extensions
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.ellipse(leftLegX + 4, leftLegY + 10, 2, 1, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(rightLegX + 4, rightLegY + 10, 2, 1, 0, 0, Math.PI * 2);
-      ctx.fill();
+      const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.08;
+      ctx.fillRect(rightLegX, rightLegY, 4, 8);
     } else {
-      // Static legs when not moving
-      ctx.fillRect(centerX - 5, y + h - 4, 2, 10); // Left leg (very thin)
-      ctx.fillRect(centerX + 3, y + h - 4, 2, 10); // Right leg (very thin)
-      
-      // Draw static pointed shoes with dramatic points
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.ellipse(centerX - 4, y + h + 6, 5, 2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(centerX + 4, y + h + 6, 5, 2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add pointed toe extensions
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.ellipse(centerX - 1, y + h + 6, 2, 1, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(centerX + 7, y + h + 6, 2, 1, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(centerX - 6, y + h - 4, 4, 8);
+      ctx.fillRect(centerX + 2, y + h - 4, 4, 8);
     }
   }
 
