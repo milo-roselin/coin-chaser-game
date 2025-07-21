@@ -1410,19 +1410,21 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw extremely thick and very long connected unibrow
+    // Draw evenly thick connected unibrow (shorter but uniform thickness)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 16, y + 4); // Start much further left
+    ctx.moveTo(centerX - 14, y + 4); // Start left (shortened from 16 to 14)
     ctx.lineTo(centerX - 4, y + 8.5); // Left part down
     ctx.lineTo(centerX, y + 10.5); // Center dip (much lower for thickness)
     ctx.lineTo(centerX + 4, y + 8.5); // Right part down
-    ctx.lineTo(centerX + 16, y + 4); // End much further right
-    ctx.lineTo(centerX + 12, y + 6.5); // Much thicker edge right
+    ctx.lineTo(centerX + 14, y + 4); // End right (shortened from 16 to 14)
+    ctx.lineTo(centerX + 14, y + 5.5); // Thicker tip right (added thickness)
+    ctx.lineTo(centerX + 10, y + 6.5); // Thick edge right
     ctx.lineTo(centerX + 3, y + 8); // Right connection thickness 
     ctx.lineTo(centerX, y + 8); // Center thickness (much thicker)
     ctx.lineTo(centerX - 3, y + 8); // Left connection thickness 
-    ctx.lineTo(centerX - 12, y + 6.5); // Much thicker edge left
+    ctx.lineTo(centerX - 10, y + 6.5); // Thick edge left
+    ctx.lineTo(centerX - 14, y + 5.5); // Thicker tip left (added thickness)
     ctx.closePath();
     ctx.fill();
     
@@ -1437,14 +1439,14 @@ export class GameEngine {
     
     // No nose - completely clean middle face
     
-    // Draw grey goatee at bottom of chin
+    // Draw grey goatee extending down over coat
     ctx.fillStyle = '#808080'; // Grey color matching unibrow
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 18); // Left edge of goatee
-    ctx.lineTo(centerX + 3, y + 18); // Right edge of goatee
-    ctx.lineTo(centerX + 2, y + 20); // Right point at chin
-    ctx.lineTo(centerX, y + 21); // Bottom point of goatee
-    ctx.lineTo(centerX - 2, y + 20); // Left point at chin
+    ctx.moveTo(centerX - 3, y + 19); // Left edge of goatee (moved down)
+    ctx.lineTo(centerX + 3, y + 19); // Right edge of goatee (moved down)
+    ctx.lineTo(centerX + 2, y + 21); // Right point at chin (moved down)
+    ctx.lineTo(centerX, y + 23); // Bottom point extending over coat (moved down)
+    ctx.lineTo(centerX - 2, y + 21); // Left point at chin (moved down)
     ctx.closePath();
     ctx.fill();
     
