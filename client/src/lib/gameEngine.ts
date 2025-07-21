@@ -1377,41 +1377,57 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw pale, angular head (more like thumbnail)
-    ctx.fillStyle = '#F5F5DC'; // Pale beige skin like thumbnail
+    // Draw angular, diamond-shaped head like reference image
+    ctx.fillStyle = '#F5DEB3'; // Pale skin color
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 9, 11, 0, 0, Math.PI * 2); // More oval, taller head
+    // Create sharp angular head shape with pointed chin like reference
+    ctx.moveTo(centerX, y + 3); // Top point
+    ctx.lineTo(centerX - 8, y + 8); // Left temple
+    ctx.lineTo(centerX - 6, y + 16); // Left jaw
+    ctx.lineTo(centerX, y + 19); // Pointed chin
+    ctx.lineTo(centerX + 6, y + 16); // Right jaw
+    ctx.lineTo(centerX + 8, y + 8); // Right temple
+    ctx.closePath();
     ctx.fill();
     
-    // Draw thick dark unibrow (like thumbnail)
-    ctx.fillStyle = '#2F2F2F';
+    // Draw dramatic V-shaped unibrow like reference
+    ctx.fillStyle = '#2F1B14'; // Dark brown
     ctx.beginPath();
-    ctx.roundRect(centerX - 7, y + 7, 14, 3, 1);
+    ctx.moveTo(centerX - 7, y + 7);
+    ctx.lineTo(centerX, y + 5);
+    ctx.lineTo(centerX + 7, y + 7);
+    ctx.lineTo(centerX + 5, y + 8);
+    ctx.lineTo(centerX, y + 6.5);
+    ctx.lineTo(centerX - 5, y + 8);
+    ctx.closePath();
     ctx.fill();
     
-    // Draw beady eyes (like thumbnail)
+    // Draw narrow, menacing eyes like reference
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX - 3, y + 11, 1.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 3, y + 9, 1.5, 0.8, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 3, y + 11, 1.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 3, y + 9, 1.5, 0.8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw thin mustache (like thumbnail)
-    ctx.fillStyle = '#2F2F2F';
+    // Draw thin, angular mustache like reference
+    ctx.fillStyle = '#2F1B14';
     ctx.beginPath();
-    ctx.ellipse(centerX - 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
+    ctx.moveTo(centerX - 3, y + 13);
+    ctx.lineTo(centerX, y + 12);
+    ctx.lineTo(centerX + 3, y + 13);
+    ctx.lineTo(centerX + 2, y + 14);
+    ctx.lineTo(centerX - 2, y + 14);
+    ctx.closePath();
     ctx.fill();
     
-    // Draw sinister thin smile (like thumbnail)
-    ctx.strokeStyle = '#000000';
+    // Draw sharp, sinister smile like reference
+    ctx.strokeStyle = '#2F1B14';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(centerX, y + 17, 2.5, 0.3, Math.PI - 0.3);
+    ctx.moveTo(centerX - 2.5, y + 16);
+    ctx.quadraticCurveTo(centerX, y + 15, centerX + 2.5, y + 16);
     ctx.stroke();
     
     // Draw black tailcoat (thinner, more fitted)
