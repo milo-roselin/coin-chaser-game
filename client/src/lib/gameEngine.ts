@@ -1326,11 +1326,25 @@ export class GameEngine {
     ctx.ellipse(centerX + 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw greedy grin
+    // Draw animated smile that changes
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(centerX, y + 17, 4, 0, Math.PI);
+    
+    // Change smile based on time - alternates between greedy grin and satisfied smile
+    const smileTime = Date.now() * 0.003; // Slower smile animation
+    const smileType = Math.floor(smileTime) % 3; // Cycle through 3 smile types
+    
+    if (smileType === 0) {
+      // Wide greedy grin
+      ctx.arc(centerX, y + 17, 4, 0, Math.PI);
+    } else if (smileType === 1) {
+      // Satisfied smirk
+      ctx.arc(centerX, y + 17, 3, 0.2, Math.PI - 0.2);
+    } else {
+      // Mischievous grin
+      ctx.arc(centerX, y + 17, 3.5, 0.1, Math.PI - 0.1);
+    }
     ctx.stroke();
     
     // Draw yellow shirt
@@ -1354,18 +1368,18 @@ export class GameEngine {
     ctx.roundRect(x + w - 10, y + 21, 2, 6, 1);
     ctx.fill();
     
-    // Draw chunky legs
+    // Draw chunky legs with reduced movement range
     ctx.fillStyle = '#800080';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.016) * 3; // Smoother Wario leg movement
-      const forwardOffset = 2.5; // More pronounced chunky movement
+      const legCycle = Math.sin(Date.now() * 0.016) * 1.5; // Reduced from 3 to 1.5
+      const forwardOffset = 1.2; // Reduced from 2.5 to 1.2 - less extreme movement
       
       const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.1; // Reduced bounce from 0.15 to 0.1
       ctx.fillRect(leftLegX, leftLegY, 5, 8);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.1; // Reduced bounce from 0.15 to 0.1
       ctx.fillRect(rightLegX, rightLegY, 5, 8);
     } else {
       ctx.fillRect(centerX - 6, y + h - 4, 5, 8);
