@@ -1450,14 +1450,14 @@ export class GameEngine {
     // Left arm at slight outward angle
     ctx.save();
     ctx.translate(x + 6.5, y + 25);
-    ctx.rotate(-0.2); // Small outward angle (about 11 degrees)
+    ctx.rotate(0.2); // Small outward angle (about 11 degrees)
     ctx.fillRect(-1.5, 0, 3, 14);
     ctx.restore();
     
     // Right arm at slight outward angle
     ctx.save();
     ctx.translate(x + w - 6.5, y + 25);
-    ctx.rotate(0.2); // Small outward angle (about 11 degrees)
+    ctx.rotate(-0.2); // Small outward angle (about 11 degrees)
     ctx.fillRect(-1.5, 0, 3, 14);
     ctx.restore();
     
