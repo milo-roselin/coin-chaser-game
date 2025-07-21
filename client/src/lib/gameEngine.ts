@@ -1410,21 +1410,21 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw evenly thick connected unibrow (shorter but uniform thickness)
+    // Draw shorter unibrow with very thick edges
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 14, y + 4); // Start left (shortened from 16 to 14)
+    ctx.moveTo(centerX - 12, y + 4); // Start left (shortened to 12)
     ctx.lineTo(centerX - 4, y + 8.5); // Left part down
     ctx.lineTo(centerX, y + 10.5); // Center dip (much lower for thickness)
     ctx.lineTo(centerX + 4, y + 8.5); // Right part down
-    ctx.lineTo(centerX + 14, y + 4); // End right (shortened from 16 to 14)
-    ctx.lineTo(centerX + 14, y + 5.5); // Thicker tip right (added thickness)
-    ctx.lineTo(centerX + 10, y + 6.5); // Thick edge right
+    ctx.lineTo(centerX + 12, y + 4); // End right (shortened to 12)
+    ctx.lineTo(centerX + 12, y + 6); // Much thicker tip right (2 units thick)
+    ctx.lineTo(centerX + 8, y + 7); // Very thick edge right
     ctx.lineTo(centerX + 3, y + 8); // Right connection thickness 
     ctx.lineTo(centerX, y + 8); // Center thickness (much thicker)
     ctx.lineTo(centerX - 3, y + 8); // Left connection thickness 
-    ctx.lineTo(centerX - 10, y + 6.5); // Thick edge left
-    ctx.lineTo(centerX - 14, y + 5.5); // Thicker tip left (added thickness)
+    ctx.lineTo(centerX - 8, y + 7); // Very thick edge left
+    ctx.lineTo(centerX - 12, y + 6); // Much thicker tip left (2 units thick)
     ctx.closePath();
     ctx.fill();
     
@@ -1439,16 +1439,7 @@ export class GameEngine {
     
     // No nose - completely clean middle face
     
-    // Draw grey goatee extending down over coat
-    ctx.fillStyle = '#808080'; // Grey color matching unibrow
-    ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 19); // Left edge of goatee (moved down)
-    ctx.lineTo(centerX + 3, y + 19); // Right edge of goatee (moved down)
-    ctx.lineTo(centerX + 2, y + 21); // Right point at chin (moved down)
-    ctx.lineTo(centerX, y + 23); // Bottom point extending over coat (moved down)
-    ctx.lineTo(centerX - 2, y + 21); // Left point at chin (moved down)
-    ctx.closePath();
-    ctx.fill();
+    // Goatee will be drawn after the coat to ensure it's visible
     
     // Draw thinner evil smile above goatee
     ctx.strokeStyle = '#000000';
@@ -1525,6 +1516,17 @@ export class GameEngine {
       ctx.ellipse(centerX + 3.5, y + h + 14, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
     }
+    
+    // Draw grey goatee AFTER coat so it's visible
+    ctx.fillStyle = '#808080'; // Grey color matching unibrow
+    ctx.beginPath();
+    ctx.moveTo(centerX - 3, y + 19); // Left edge of goatee
+    ctx.lineTo(centerX + 3, y + 19); // Right edge of goatee
+    ctx.lineTo(centerX + 2, y + 21); // Right point at chin
+    ctx.lineTo(centerX, y + 23); // Bottom point extending over coat
+    ctx.lineTo(centerX - 2, y + 21); // Left point at chin
+    ctx.closePath();
+    ctx.fill();
   }
 
   private drawLeprechaunAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
