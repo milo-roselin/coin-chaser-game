@@ -109,16 +109,6 @@ export default function LeaderboardScreen() {
           <div className="text-5xl mb-4">🏆</div>
           <h1 className="text-3xl font-bold text-blue-600 mb-2">Leaderboard</h1>
           <p className="text-gray-600">Top players and their scores</p>
-          
-          {/* Coin Bank Display */}
-          <div className="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
-            <div className="flex items-center justify-center gap-2">
-              <Coins className="h-5 w-5 text-yellow-600" />
-              <span className="text-lg font-semibold text-yellow-800">
-                Bank: {totalCoins.toLocaleString()} coins
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -200,6 +190,9 @@ export default function LeaderboardScreen() {
                     </div>
                     <div className="text-sm text-yellow-600 font-semibold">
                       🪙 {score.coins} coins
+                    </div>
+                    <div className="text-xs text-gray-500 font-semibold">
+                      Bank: {totalCoins.toLocaleString()}
                     </div>
                   </div>
                 </div>
