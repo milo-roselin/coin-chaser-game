@@ -20,13 +20,22 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
   const { totalCoins, spendCoins } = useCoinBank();
   const { playCoin } = useAudio();
 
-  const handleAvatarSelect = (avatarId: string) => {
-    // All avatars are now free, so just unlock and select
-    if (!isAvatarUnlocked(avatarId)) {
-      unlockAvatar(avatarId);
+  const handleAvatarSelect = (avatarId: string, unlockCost: number) => {
+    const isUnlocked = isAvatarUnlocked(avatarId);
+    
+    if (isUnlocked) {
+      // Avatar is already unlocked, just select it
+      selectAvatar(avatarId);
+      playCoin();
+    } else if (totalCoins >= unlockCost) {
+      // Player has enough coins to unlock
+      if (spendCoins(unlockCost)) {
+        unlockAvatar(avatarId);
+        selectAvatar(avatarId);
+        playCoin();
+      }
     }
-    selectAvatar(avatarId);
-    playCoin(); // Play selection sound
+    // If not enough coins, do nothing (could add error feedback later)
   };
 
   return (
@@ -51,18 +60,24 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
         <div className="space-y-3">
           {availableAvatars.map(avatar => {
             const isSelected = selectedAvatar === avatar.id;
+            const isUnlocked = isAvatarUnlocked(avatar.id);
+            const canAfford = totalCoins >= avatar.unlockCost;
 
             return (
               <div
                 key={avatar.id}
                 className={`
-                  p-3 rounded-lg border-2 cursor-pointer transition-all
+                  p-3 rounded-lg border-2 transition-all
                   ${isSelected 
                     ? 'border-yellow-400 bg-yellow-900 bg-opacity-30' 
-                    : 'border-gray-600 hover:border-yellow-600'
+                    : isUnlocked 
+                      ? 'border-gray-600 hover:border-yellow-600 cursor-pointer'
+                      : canAfford 
+                        ? 'border-green-600 hover:border-green-400 cursor-pointer'
+                        : 'border-red-600 opacity-60 cursor-not-allowed'
                   }
                 `}
-                onClick={() => handleAvatarSelect(avatar.id)}
+                onClick={() => handleAvatarSelect(avatar.id, avatar.unlockCost)}
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
@@ -140,13 +155,32 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h3 className="font-bold text-white">{avatar.name}</h3>
-                      {isSelected && (
+                      {isSelected ? (
                         <div className="text-yellow-400 text-sm font-semibold">
                           SELECTED
+                        </div>
+                      ) : isUnlocked ? (
+                        <div className="text-green-400 text-sm font-semibold">
+                          OWNED
+                        </div>
+                      ) : (
+                        <div className={`text-sm font-semibold ${canAfford ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {avatar.unlockCost} coins
                         </div>
                       )}
                     </div>
                     <p className="text-gray-300 text-sm">{avatar.description}</p>
+                    {!isUnlocked && avatar.unlockCost > 0 && (
+                      <div className="mt-2 text-xs">
+                        {canAfford ? (
+                          <span className="text-green-400">Click to unlock!</span>
+                        ) : (
+                          <span className="text-red-400">
+                            Need {avatar.unlockCost - totalCoins} more coins
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
