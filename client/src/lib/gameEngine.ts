@@ -1377,53 +1377,145 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Simple round head
-    ctx.fillStyle = '#F5DEB3';
+    // Draw pale, angular head (more like thumbnail)
+    ctx.fillStyle = '#F5F5DC'; // Pale beige skin like thumbnail
     ctx.beginPath();
-    ctx.arc(centerX, y + 10, 8, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 12, 9, 11, 0, 0, Math.PI * 2); // More oval, taller head
     ctx.fill();
     
-    // Simple unibrow - single rectangle
+    // Draw thick dark unibrow (like thumbnail)
+    ctx.fillStyle = '#2F2F2F';
+    ctx.beginPath();
+    ctx.roundRect(centerX - 7, y + 7, 14, 3, 1);
+    ctx.fill();
+    
+    // Draw beady eyes (like thumbnail)
     ctx.fillStyle = '#000000';
-    ctx.fillRect(centerX - 5, y + 6, 10, 2);
-    
-    // Simple dot eyes
     ctx.beginPath();
-    ctx.arc(centerX - 3, y + 9, 1, 0, Math.PI * 2);
+    ctx.arc(centerX - 3, y + 11, 1.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 3, y + 9, 1, 0, Math.PI * 2);
+    ctx.arc(centerX + 3, y + 11, 1.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Simple line mustache
-    ctx.fillRect(centerX - 4, y + 13, 8, 1);
+    // Draw thin mustache (like thumbnail)
+    ctx.fillStyle = '#2F2F2F';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
+    ctx.fill();
     
-    // Simple black rectangle coat
+    // Draw sinister thin smile (like thumbnail)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(centerX, y + 17, 2.5, 0.3, Math.PI - 0.3);
+    ctx.stroke();
+    
+    // Draw black tailcoat (more coat-like shape)
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 4, y + 18, w - 8, h - 20);
+    ctx.beginPath();
+    // Main coat body - wider at top, narrower at bottom
+    ctx.moveTo(x + 3, y + 21);
+    ctx.lineTo(x + w - 3, y + 21);
+    ctx.lineTo(x + w - 4, y + 28);
+    ctx.lineTo(x + w - 6, y + 35);
+    ctx.lineTo(x + 6, y + 35);
+    ctx.lineTo(x + 4, y + 28);
+    ctx.closePath();
+    ctx.fill();
     
-    // Simple arms - just rectangles
+    // Draw coat tails
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y + 35);
+    ctx.lineTo(x + 4, y + 42);
+    ctx.lineTo(x + 8, y + 42);
+    ctx.lineTo(x + 10, y + 35);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(x + w - 6, y + 35);
+    ctx.lineTo(x + w - 10, y + 35);
+    ctx.lineTo(x + w - 8, y + 42);
+    ctx.lineTo(x + w - 4, y + 42);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw arms extending from coat
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
-      const armCycle = Math.sin(Date.now() * 0.012) * 1;
-      ctx.fillRect(x - 2 + armCycle, y + 22, 3, 10); // Left arm
-      ctx.fillRect(x + w - 1 - armCycle, y + 22, 3, 10); // Right arm
+      const armCycle = Math.sin(Date.now() * 0.012) * 1.8;
+      
+      // Left arm
+      const leftArmX = x - 1 + armCycle;
+      const leftArmY = y + 25;
+      ctx.fillRect(leftArmX, leftArmY, 3, 14);
+      
+      // Right arm  
+      const rightArmX = x + w - 2 - armCycle;
+      const rightArmY = y + 25;
+      ctx.fillRect(rightArmX, rightArmY, 3, 14);
+      
+      // Draw hands
+      ctx.fillStyle = '#F5F5DC';
+      ctx.beginPath();
+      ctx.arc(leftArmX + 1.5, leftArmY + 14, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(rightArmX + 1.5, rightArmY + 14, 2.2, 0, Math.PI * 2);
+      ctx.fill();
     } else {
-      ctx.fillRect(x - 2, y + 22, 3, 10); // Left arm
-      ctx.fillRect(x + w - 1, y + 22, 3, 10); // Right arm
+      // Static arms
+      ctx.fillRect(x - 1, y + 25, 3, 14); // Left arm
+      ctx.fillRect(x + w - 2, y + 25, 3, 14); // Right arm
+      
+      // Draw static hands
+      ctx.fillStyle = '#F5F5DC';
+      ctx.beginPath();
+      ctx.arc(x + 0.5, y + 39, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x + w - 0.5, y + 39, 2.2, 0, Math.PI * 2);
+      ctx.fill();
     }
     
-    // Simple legs - just black rectangles
+    // Draw friendly legs (like Mr. MoneyBags movement)
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.014) * 1;
-      const leftLegX = centerX - 4 + (legCycle > 0 ? 1 : -1);
-      const rightLegX = centerX + 1 + (legCycle < 0 ? 1 : -1);
-      ctx.fillRect(leftLegX, y + h - 5, 3, 12);
-      ctx.fillRect(rightLegX, y + h - 5, 3, 12);
+      const legCycle = Math.sin(Date.now() * 0.014) * 2; // Gentle movement like Mr. MoneyBags
+      const forwardOffset = 1.5; // Moderate movement
+      
+      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs
+      ctx.fillRect(leftLegX, leftLegY, 3, 18); // Slightly shorter than before (18 instead of 20)
+      
+      const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs  
+      ctx.fillRect(rightLegX, rightLegY, 3, 18); // Slightly shorter than before (18 instead of 20)
+      
+      // Draw shoes at the bottom of longer legs
+      ctx.fillStyle = '#654321'; // Brown shoes
+      ctx.beginPath();
+      ctx.ellipse(leftLegX + 1.5, leftLegY + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(rightLegX + 1.5, rightLegY + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
     } else {
-      ctx.fillRect(centerX - 4, y + h - 5, 3, 12);
-      ctx.fillRect(centerX + 1, y + h - 5, 3, 12);
+      ctx.fillRect(centerX - 5, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
+      ctx.fillRect(centerX + 2, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
+      
+      // Draw static shoes at the bottom of longer legs
+      ctx.fillStyle = '#654321'; // Brown shoes
+      ctx.beginPath();
+      ctx.ellipse(centerX - 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(centerX + 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
