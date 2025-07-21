@@ -1091,151 +1091,158 @@ export class GameEngine {
   }
 
   private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Tom Nook's round head (tan/brown tanuki like reference image)
-    ctx.fillStyle = '#CD853F'; // Sandy brown fur
+    // Draw Tom Nook's very round, bulbous head matching reference exactly
+    ctx.fillStyle = '#D2B48C'; // Light tan/beige base color from reference
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 10, 11, 12, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 9, 12, 13, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw large dark brown mask around eyes (prominent tanuki feature)
-    ctx.fillStyle = '#4A2C2A'; // Dark brown mask
+    // Draw the massive dark brown mask covering most of the upper face
+    ctx.fillStyle = '#3D2914'; // Very dark brown mask from reference
     ctx.beginPath();
-    ctx.ellipse(centerX - 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // Connect mask across nose bridge
-    ctx.fillRect(centerX - 3, y + 6, 6, 4);
-    
-    // Draw orange/brown eyebrows above eyes
-    ctx.fillStyle = '#B8860B'; // Golden brown eyebrows
-    ctx.beginPath();
-    ctx.ellipse(centerX - 5, y + 5, 3, 1.5, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 5, y + 5, 3, 1.5, 0.3, 0, Math.PI * 2);
+    // Large oval covering most of the upper head
+    ctx.ellipse(centerX, y + 7, 11, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw prominent tan muzzle/snout area
-    ctx.fillStyle = '#DEB887';
+    // Draw the tan/orange areas within the mask (around eyebrows)
+    ctx.fillStyle = '#CD853F'; // Orange-tan patches
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 13, 7, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 5, y + 5, 3, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 5, y + 5, 3, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw small black nose
+    // Draw the prominent tan muzzle area - much larger than before
+    ctx.fillStyle = '#D2B48C';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 15, 8, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw darker tan shadow on muzzle
+    ctx.fillStyle = '#BC9A6A';
+    ctx.beginPath();
+    ctx.ellipse(centerX + 2, y + 16, 3, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw small black nose positioned correctly
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 12, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 14, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw round ears with brown outer edge
-    ctx.fillStyle = '#A0522D'; // Darker brown for ear outline
+    // Draw round ears positioned higher and wider
+    ctx.fillStyle = '#8B4513'; // Brown ear outline
     ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 4.5, 6, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 10, y + 1, 4, 5, -0.3, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 4.5, 6, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw pink inner ears
-    ctx.fillStyle = '#FFB6C1';
-    ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 3, 4, -0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 3, 4, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 10, y + 1, 4, 5, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw large white eyes
+    // Draw pink inner ears - very prominent like reference
+    ctx.fillStyle = '#F8BBD9'; // Bright pink inner ears
+    ctx.beginPath();
+    ctx.ellipse(centerX - 10, y + 1, 2.5, 3.5, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 10, y + 1, 2.5, 3.5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw large white eyes exactly as in reference
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX - 4, y + 8, 3, 2.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 4, y + 9, 4, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 4, y + 8, 3, 2.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 4, y + 9, 4, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw blue pupils
-    ctx.fillStyle = '#4169E1';
+    // Draw blue pupils - positioned like in reference with sleepy look
+    ctx.fillStyle = '#4682B4';
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 8, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX - 4, y + 10, 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 8, 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw purple business suit jacket
-    ctx.fillStyle = '#663399'; // Purple suit
-    ctx.beginPath();
-    ctx.roundRect(x + 4, y + 20, w - 8, h - 24, 3);
+    ctx.arc(centerX + 4, y + 10, 2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw lapels
-    ctx.fillStyle = '#554488';
+    // Draw the purple business suit with exact colors from reference
+    ctx.fillStyle = '#6A4C93'; // Deep purple suit
     ctx.beginPath();
-    ctx.moveTo(x + 6, y + 21);
-    ctx.lineTo(centerX - 2, y + 26);
-    ctx.lineTo(x + 6, y + 32);
-    ctx.closePath();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(x + w - 6, y + 21);
-    ctx.lineTo(centerX + 2, y + 26);
-    ctx.lineTo(x + w - 6, y + 32);
-    ctx.closePath();
+    ctx.roundRect(x + 3, y + 22, w - 6, h - 26, 2);
     ctx.fill();
     
-    // Draw white shirt/collar
+    // Draw suit lapels more prominently
+    ctx.fillStyle = '#5A3D82';
+    ctx.beginPath();
+    ctx.moveTo(x + 5, y + 23);
+    ctx.lineTo(centerX - 1, y + 28);
+    ctx.lineTo(x + 5, y + 35);
+    ctx.lineTo(x + 5, y + 23);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + w - 5, y + 23);
+    ctx.lineTo(centerX + 1, y + 28);
+    ctx.lineTo(x + w - 5, y + 35);
+    ctx.lineTo(x + w - 5, y + 23);
+    ctx.fill();
+    
+    // Draw white shirt front
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 21);
-    ctx.lineTo(centerX + 3, y + 21);
-    ctx.lineTo(centerX + 2, y + 30);
-    ctx.lineTo(centerX - 2, y + 30);
+    ctx.moveTo(centerX - 2, y + 23);
+    ctx.lineTo(centerX + 2, y + 23);
+    ctx.lineTo(centerX + 1, y + 32);
+    ctx.lineTo(centerX - 1, y + 32);
     ctx.closePath();
     ctx.fill();
     
-    // Draw brown tie
+    // Draw brown tie with orange accent
     ctx.fillStyle = '#8B4513';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 24, 1.5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 26, 1.5, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Orange tie accent
+    ctx.fillStyle = '#CD853F';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 26, 1, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw yellow/gold buttons
+    // Draw bright yellow buttons exactly as in reference
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 27, 1, 0, Math.PI * 2);
+    ctx.arc(centerX + 3, y + 29, 1.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 31, 1, 0, Math.PI * 2);
+    ctx.arc(centerX + 3, y + 33, 1.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan arms
-    ctx.fillStyle = '#CD853F';
+    // Draw tan arms - shorter and rounder
+    ctx.fillStyle = '#D2B48C';
     ctx.beginPath();
-    ctx.ellipse(x + 3, y + 28, 3, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 2, y + 30, 2.5, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 3, y + 28, 3, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w - 2, y + 30, 2.5, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan legs with movement
-    ctx.fillStyle = '#CD853F';
+    // Draw tan legs - shorter and stubbier like reference
+    ctx.fillStyle = '#D2B48C';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.015) * 3;
-      const forwardOffset = 2.5;
+      const legCycle = Math.sin(Date.now() * 0.015) * 2;
+      const forwardOffset = 1.5;
       
-      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15;
-      ctx.fillRect(leftLegX, leftLegY, 4, 8);
+      const leftLegX = centerX - 4 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(leftLegX, leftLegY, 3, 6);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15;
-      ctx.fillRect(rightLegX, rightLegY, 4, 8);
+      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.1;
+      ctx.fillRect(rightLegX, rightLegY, 3, 6);
     } else {
-      ctx.fillRect(centerX - 5, y + h - 4, 4, 8);
-      ctx.fillRect(centerX + 1, y + h - 4, 4, 8);
+      ctx.fillRect(centerX - 4, y + h - 2, 3, 6);
+      ctx.fillRect(centerX + 1, y + h - 2, 3, 6);
     }
   }
 
