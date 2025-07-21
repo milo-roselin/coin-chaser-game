@@ -136,34 +136,13 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                         />
                       </div>
                     ) : avatar.id === 'wario' ? (
-                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
-                        {/* Wario complete body */}
-                        <div className="w-8 h-10 bg-yellow-200 rounded-full relative">
-                          {/* Head */}
-                          <div className="w-6 h-6 bg-yellow-200 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
-                            {/* Fat cheeks */}
-                            <div className="absolute top-2 left-0 w-1 h-2 bg-yellow-300 rounded-full"></div>
-                            <div className="absolute top-2 right-0 w-1 h-2 bg-yellow-300 rounded-full"></div>
-                            {/* Eyes */}
-                            <div className="absolute top-2 left-1 w-1 h-1 bg-black rounded-full"></div>
-                            <div className="absolute top-2 right-1 w-1 h-1 bg-black rounded-full"></div>
-                            {/* Big nose */}
-                            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-pink-300 rounded-full"></div>
-                            {/* Mustache */}
-                            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-yellow-800 rounded-full"></div>
-                            {/* Grin */}
-                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-red-500 rounded-full"></div>
-                            {/* Yellow cap with W */}
-                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-5 h-3 bg-yellow-400 rounded-t-full flex items-center justify-center">
-                              <span className="text-purple-800 text-xs font-bold">W</span>
-                            </div>
-                          </div>
-                          {/* Body - purple overalls */}
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-purple-600 rounded-b-full"></div>
-                          {/* Arms */}
-                          <div className="absolute top-6 left-0 w-1 h-2 bg-yellow-200 rounded-full"></div>
-                          <div className="absolute top-6 right-0 w-1 h-2 bg-yellow-200 rounded-full"></div>
-                        </div>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
+                        <img 
+                          src="/images/wario.png" 
+                          alt="Wario" 
+                          className="w-full h-full object-cover"
+                          style={{ imageRendering: 'pixelated' }}
+                        />
                       </div>
                     ) : (
                       <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
