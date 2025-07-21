@@ -1377,28 +1377,29 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw angular, diamond-shaped head like reference image (bigger)
+    // Draw angular, diamond-shaped head that connects to body
     ctx.fillStyle = '#F5DEB3'; // Pale skin color
     ctx.beginPath();
-    // Create sharp angular head shape with pointed chin like reference (larger proportions)
+    // Create sharp angular head shape with pointed chin that connects to shoulders
     ctx.moveTo(centerX, y + 1); // Top point (higher)
     ctx.lineTo(centerX - 11, y + 8); // Left temple (wider)
     ctx.lineTo(centerX - 8, y + 18); // Left jaw (longer)
-    ctx.lineTo(centerX, y + 22); // Pointed chin (lower)
+    ctx.lineTo(centerX - 5, y + 24); // Connect to left shoulder
+    ctx.lineTo(centerX + 5, y + 24); // Connect to right shoulder
     ctx.lineTo(centerX + 8, y + 18); // Right jaw (longer)
     ctx.lineTo(centerX + 11, y + 8); // Right temple (wider)
     ctx.closePath();
     ctx.fill();
     
-    // Draw dramatic V-shaped unibrow like reference (scaled for bigger head)
-    ctx.fillStyle = '#2F1B14'; // Dark brown
+    // Draw upside-down V unibrow (flipped) in grey
+    ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 9, y + 7);
-    ctx.lineTo(centerX, y + 4);
-    ctx.lineTo(centerX + 9, y + 7);
-    ctx.lineTo(centerX + 7, y + 9);
-    ctx.lineTo(centerX, y + 6.5);
-    ctx.lineTo(centerX - 7, y + 9);
+    ctx.moveTo(centerX - 9, y + 5); // Start high on left
+    ctx.lineTo(centerX, y + 8); // Dip down in center
+    ctx.lineTo(centerX + 9, y + 5); // High on right
+    ctx.lineTo(centerX + 7, y + 6.5); // Thicker edge right
+    ctx.lineTo(centerX, y + 7); // Center thickness
+    ctx.lineTo(centerX - 7, y + 6.5); // Thicker edge left
     ctx.closePath();
     ctx.fill();
     
@@ -1463,18 +1464,32 @@ export class GameEngine {
     // Draw static arms (never move) - properly attached to body at slight angle
     ctx.fillStyle = '#000000';
     
-    // Left arm positioned like reference (adjusted for bigger head and lower coat)
+    // Left arm curled inward like reference - sinister pose
     ctx.save();
-    ctx.translate(x + 6.5, y + 28); // Lower position due to bigger head
-    ctx.rotate(0.3); // Slightly more angled like reference
-    ctx.fillRect(-1.5, 0, 3, 16); // Longer arms like reference
+    ctx.translate(x + 7, y + 28); // Position at shoulder
+    ctx.rotate(-0.2); // Angle inward toward body
+    ctx.fillRect(-1.5, 0, 3, 12); // Upper arm
     ctx.restore();
     
-    // Right arm positioned like reference (adjusted for bigger head and lower coat)
+    // Left forearm curled more inward
     ctx.save();
-    ctx.translate(x + w - 6.5, y + 28); // Lower position due to bigger head
-    ctx.rotate(-0.3); // Slightly more angled like reference
-    ctx.fillRect(-1.5, 0, 3, 16); // Longer arms like reference
+    ctx.translate(x + 6, y + 38); // Lower position for forearm
+    ctx.rotate(-0.8); // Strong inward curl
+    ctx.fillRect(-1.5, 0, 3, 8); // Forearm
+    ctx.restore();
+    
+    // Right arm curled inward like reference - sinister pose
+    ctx.save();
+    ctx.translate(x + w - 7, y + 28); // Position at shoulder
+    ctx.rotate(0.2); // Angle inward toward body
+    ctx.fillRect(-1.5, 0, 3, 12); // Upper arm
+    ctx.restore();
+    
+    // Right forearm curled more inward
+    ctx.save();
+    ctx.translate(x + w - 6, y + 38); // Lower position for forearm
+    ctx.rotate(0.8); // Strong inward curl
+    ctx.fillRect(-1.5, 0, 3, 8); // Forearm
     ctx.restore();
     
     // Draw friendly legs (like Mr. MoneyBags movement)
