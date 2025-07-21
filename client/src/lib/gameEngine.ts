@@ -1410,21 +1410,21 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw shorter unibrow with very thick edges
+    // Draw one continuous thick unibrow
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 12, y + 4); // Start left (shortened to 12)
-    ctx.lineTo(centerX - 4, y + 8.5); // Left part down
-    ctx.lineTo(centerX, y + 10.5); // Center dip (much lower for thickness)
-    ctx.lineTo(centerX + 4, y + 8.5); // Right part down
-    ctx.lineTo(centerX + 12, y + 4); // End right (shortened to 12)
-    ctx.lineTo(centerX + 12, y + 6); // Much thicker tip right (2 units thick)
-    ctx.lineTo(centerX + 8, y + 7); // Very thick edge right
-    ctx.lineTo(centerX + 3, y + 8); // Right connection thickness 
-    ctx.lineTo(centerX, y + 8); // Center thickness (much thicker)
-    ctx.lineTo(centerX - 3, y + 8); // Left connection thickness 
-    ctx.lineTo(centerX - 8, y + 7); // Very thick edge left
-    ctx.lineTo(centerX - 12, y + 6); // Much thicker tip left (2 units thick)
+    // Top edge of unibrow (left to right)
+    ctx.moveTo(centerX - 12, y + 5); // Left tip top
+    ctx.lineTo(centerX - 4, y + 7); // Left slope down
+    ctx.lineTo(centerX, y + 8); // Center top
+    ctx.lineTo(centerX + 4, y + 7); // Right slope down
+    ctx.lineTo(centerX + 12, y + 5); // Right tip top
+    // Bottom edge of unibrow (right to left for continuous path)
+    ctx.lineTo(centerX + 12, y + 7.5); // Right tip bottom (thick)
+    ctx.lineTo(centerX + 4, y + 9.5); // Right slope bottom
+    ctx.lineTo(centerX, y + 10.5); // Center bottom (deep dip)
+    ctx.lineTo(centerX - 4, y + 9.5); // Left slope bottom
+    ctx.lineTo(centerX - 12, y + 7.5); // Left tip bottom (thick)
     ctx.closePath();
     ctx.fill();
     
