@@ -1377,19 +1377,19 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw triangular grey hair like thumbnail - sharper and more angular
+    // Draw triangular grey hair touching head corners precisely
     ctx.fillStyle = '#808080'; // Grey hair
     ctx.beginPath();
-    // Left side hair triangle - more like thumbnail with sharp angle
+    // Left side hair triangle - right edge touches head corner
     ctx.moveTo(centerX - 12, y + 8); // Start at temple edge
     ctx.lineTo(centerX - 9, y + 2); // Sharp tip pointing up
-    ctx.lineTo(centerX - 6, y + 6); // Inner edge
+    ctx.lineTo(centerX, y + 4); // Right edge touches top corner of head
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    // Right side hair triangle - more like thumbnail with sharp angle
-    ctx.moveTo(centerX + 6, y + 6); // Inner edge
+    // Right side hair triangle - left edge touches head corner
+    ctx.moveTo(centerX, y + 4); // Left edge touches top corner of head
     ctx.lineTo(centerX + 9, y + 2); // Sharp tip pointing up
     ctx.lineTo(centerX + 12, y + 8); // Start at temple edge
     ctx.closePath();
@@ -1493,31 +1493,31 @@ export class GameEngine {
       
       const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
       const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs
-      ctx.fillRect(leftLegX, leftLegY, 3, 18); // Slightly shorter than before (18 instead of 20)
+      ctx.fillRect(leftLegX, leftLegY, 3, 16); // Shortened legs slightly more (16 instead of 18)
       
       const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs  
-      ctx.fillRect(rightLegX, rightLegY, 3, 18); // Slightly shorter than before (18 instead of 20)
+      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Legs 
+      ctx.fillRect(rightLegX, rightLegY, 3, 16); // Shortened legs slightly more (16 instead of 18)
       
-      // Draw black shoes at the bottom of longer legs
-      ctx.fillStyle = '#000000'; // Black shoes instead of brown
+      // Draw black shoes at the bottom of legs
+      ctx.fillStyle = '#000000'; // Black shoes
       ctx.beginPath();
-      ctx.ellipse(leftLegX + 1.5, leftLegY + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(leftLegX + 1.5, leftLegY + 16, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(rightLegX + 1.5, rightLegY + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(rightLegX + 1.5, rightLegY + 16, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      ctx.fillRect(centerX - 5, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
-      ctx.fillRect(centerX + 2, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
+      ctx.fillRect(centerX - 5, y + h - 2, 3, 16); // Shortened legs slightly more (16 instead of 18)
+      ctx.fillRect(centerX + 2, y + h - 2, 3, 16); // Shortened legs slightly more (16 instead of 18)
       
-      // Draw static black shoes at the bottom of longer legs
-      ctx.fillStyle = '#000000'; // Black shoes instead of brown
+      // Draw static black shoes at the bottom of legs
+      ctx.fillStyle = '#000000'; // Black shoes
       ctx.beginPath();
-      ctx.ellipse(centerX - 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX - 3.5, y + h + 14, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(centerX + 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX + 3.5, y + h + 14, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
     }
   }
