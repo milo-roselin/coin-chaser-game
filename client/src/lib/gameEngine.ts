@@ -1284,88 +1284,92 @@ export class GameEngine {
   }
 
   private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Wario's yellow cap (based on your design - rectangle with smaller rectangle on top)
-    ctx.fillStyle = '#FFD700'; // Bright yellow
-    ctx.fillRect(centerX - 12, y - 5, 25, 5); // Hat brim (wide rectangle)
-    ctx.fillRect(centerX - 6, y - 15, 12, 10); // Hat top (smaller rectangle)
+    // Draw Wario's cap
+    ctx.fillStyle = '#FFD700'; // Gold/yellow cap
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 2, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
     
     // Draw W emblem on cap
     ctx.fillStyle = '#800080'; // Purple W
     ctx.font = 'bold 8px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('W', centerX, y - 8);
+    ctx.fillText('W', centerX, y + 5);
     
-    // Draw head (circular, chubby face)
-    ctx.fillStyle = '#F5D6C6'; // Peach skin color from your design
+    // Draw face (round and chubby)
+    ctx.fillStyle = '#FFDBAC'; // Peach skin
     ctx.beginPath();
-    ctx.arc(centerX, y + 8, 12, 0, Math.PI * 2); // Larger, rounder head
+    ctx.ellipse(centerX, y + 12, 10, 9, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw eyes (small black dots)
+    // Draw large nose
+    ctx.fillStyle = '#FFB6C1'; // Light pink
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 12, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw eyes
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 5, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX - 4, y + 9, 1.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 5, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX + 4, y + 9, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw iconic handlebar mustache (rectangular shape)
+    // Draw handlebar mustache
     ctx.fillStyle = '#000000';
-    ctx.fillRect(centerX - 8, y + 12, 16, 2); // Wide mustache bar
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
     
     // Draw greedy grin
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(centerX, y + 16, 4, 0.2, Math.PI - 0.2);
+    ctx.arc(centerX, y + 17, 4, 0, Math.PI);
     ctx.stroke();
     
-    // Draw purple overalls body (based on your design)
-    ctx.fillStyle = '#800080'; // Purple overalls
-    ctx.fillRect(x + 6, y + 20, w - 12, h - 25); // Main body rectangle
+    // Draw yellow shirt
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.roundRect(x + 4, y + 21, w - 8, h - 23, 2);
+    ctx.fill();
+    
+    // Draw purple overalls
+    ctx.fillStyle = '#800080';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 25, w - 12, h - 27, 2);
+    ctx.fill();
     
     // Draw overalls straps
     ctx.fillStyle = '#800080';
-    ctx.fillRect(x + 8, y + 18, 3, 8); // Left strap
-    ctx.fillRect(x + w - 11, y + 18, 3, 8); // Right strap
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 21, 2, 6, 1);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + w - 10, y + 21, 2, 6, 1);
+    ctx.fill();
     
-    // Draw yellow shirt showing at arms
-    ctx.fillStyle = '#FFD700';
-    ctx.fillRect(x + 2, y + 20, 4, 15); // Left arm/sleeve
-    ctx.fillRect(x + w - 6, y + 20, 4, 15); // Right arm/sleeve
-    
-    // Enhanced animated legs based on your Python design concept
-    ctx.fillStyle = '#808080'; // Grey legs
-    
+    // Draw chunky legs
+    ctx.fillStyle = '#800080';
     if (this.isMoving) {
-      // Implement the sine wave animation from your Python code
-      const time = Date.now() * 0.01; // Time factor for animation
-      const legOffset = Math.sin(time) * 4; // Sine wave movement like your Python animation
+      const legCycle = Math.sin(Date.now() * 0.016) * 3; // Smoother Wario leg movement
+      const forwardOffset = 2.5; // More pronounced chunky movement
       
-      // Left leg with sine wave animation
-      const leftLegX = centerX - 5 + legOffset;
-      const leftLegY = y + h - 8;
-      ctx.fillRect(leftLegX, leftLegY, 4, 8); // Leg
+      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
+      ctx.fillRect(leftLegX, leftLegY, 5, 8);
       
-      // Right leg with opposite phase sine wave
-      const rightLegX = centerX + 1 - legOffset;
-      const rightLegY = y + h - 8;
-      ctx.fillRect(rightLegX, rightLegY, 4, 8); // Leg
-      
-      // Animated black shoes following the leg animation
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(leftLegX - 2, leftLegY + 7, 8, 3); // Left shoe
-      ctx.fillRect(rightLegX - 2, rightLegY + 7, 8, 3); // Right shoe
+      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.15; // Smoother bounce
+      ctx.fillRect(rightLegX, rightLegY, 5, 8);
     } else {
-      // Static legs when not moving
-      ctx.fillRect(centerX - 5, y + h - 8, 4, 8); // Left leg
-      ctx.fillRect(centerX + 1, y + h - 8, 4, 8); // Right leg
-      
-      // Static black shoes
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(centerX - 7, y + h - 1, 8, 3); // Left shoe
-      ctx.fillRect(centerX - 1, y + h - 1, 8, 3); // Right shoe
+      ctx.fillRect(centerX - 6, y + h - 4, 5, 8);
+      ctx.fillRect(centerX + 1, y + h - 4, 5, 8);
     }
   }
 
