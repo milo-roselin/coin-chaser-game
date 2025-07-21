@@ -1444,19 +1444,10 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw static arms (never move) - always attached to body
+    // Draw static arms (never move) - properly attached to body
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 1, y + 25, 3, 14); // Left arm attached to body
-    ctx.fillRect(x + w - 4, y + 25, 3, 14); // Right arm attached to body
-    
-    // Draw static hands
-    ctx.fillStyle = '#F5F5DC';
-    ctx.beginPath();
-    ctx.arc(x + 2.5, y + 39, 2.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(x + w - 2.5, y + 39, 2.2, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillRect(x + 5, y + 25, 3, 14); // Left arm starting inside body edge
+    ctx.fillRect(x + w - 8, y + 25, 3, 14); // Right arm starting inside body edge
     
     // Draw friendly legs (like Mr. MoneyBags movement)
     ctx.fillStyle = '#000000';
