@@ -1409,19 +1409,19 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw longer thick connected unibrow in grey (extends wider)
+    // Draw very thick connected unibrow in grey (much thicker)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 12, y + 7); // Start much further left
-    ctx.lineTo(centerX - 4, y + 9); // Left part down
-    ctx.lineTo(centerX, y + 10); // Center dip
-    ctx.lineTo(centerX + 4, y + 9); // Right part down
-    ctx.lineTo(centerX + 12, y + 7); // End much further right
-    ctx.lineTo(centerX + 8, y + 8); // Thicker edge right
-    ctx.lineTo(centerX + 3, y + 8.5); // Right connection thickness
-    ctx.lineTo(centerX, y + 8.5); // Center thickness
-    ctx.lineTo(centerX - 3, y + 8.5); // Left connection thickness
-    ctx.lineTo(centerX - 8, y + 8); // Thicker edge left
+    ctx.moveTo(centerX - 12, y + 6.5); // Start much further left and higher
+    ctx.lineTo(centerX - 4, y + 9.5); // Left part down
+    ctx.lineTo(centerX, y + 11); // Center dip (lower)
+    ctx.lineTo(centerX + 4, y + 9.5); // Right part down
+    ctx.lineTo(centerX + 12, y + 6.5); // End much further right and higher
+    ctx.lineTo(centerX + 8, y + 8.5); // Much thicker edge right
+    ctx.lineTo(centerX + 3, y + 9); // Right connection thickness (thicker)
+    ctx.lineTo(centerX, y + 9); // Center thickness (thicker)
+    ctx.lineTo(centerX - 3, y + 9); // Left connection thickness (thicker)
+    ctx.lineTo(centerX - 8, y + 8.5); // Much thicker edge left
     ctx.closePath();
     ctx.fill();
     
