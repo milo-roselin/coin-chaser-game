@@ -1354,10 +1354,11 @@ export class GameEngine {
     ctx.roundRect(x + w - 10, y + 21, 2, 6, 1);
     ctx.fill();
     
-    // Draw chunky legs with reduced movement range
+    // Draw chunky legs with reduced movement range that syncs with game speed
     ctx.fillStyle = '#800080';
     if (this.isMoving) {
-      const legCycle = Math.sin(Date.now() * 0.016) * 1.5; // Reduced from 3 to 1.5
+      const speedMultiplier = this.gameSpeed || 1; // Use current game speed
+      const legCycle = Math.sin(Date.now() * 0.016 * speedMultiplier) * 1.5; // Animation speed matches game speed
       const forwardOffset = 1.2; // Reduced from 2.5 to 1.2 - less extreme movement
       
       const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
