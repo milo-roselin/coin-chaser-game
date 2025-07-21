@@ -1377,50 +1377,71 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw round, cheerful head (like Mr. MoneyBags)
-    ctx.fillStyle = '#FFDBAC'; // Peach skin
+    // Draw pale, angular head (more like thumbnail)
+    ctx.fillStyle = '#F5F5DC'; // Pale beige skin like thumbnail
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 10, 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 12, 9, 11, 0, 0, Math.PI * 2); // More oval, taller head
     ctx.fill();
     
-    // Draw bushy white eyebrows (friendly, not sinister)
-    ctx.fillStyle = '#FFFFFF';
+    // Draw thick dark unibrow (like thumbnail)
+    ctx.fillStyle = '#2F2F2F';
     ctx.beginPath();
-    ctx.ellipse(centerX - 4, y + 8, 3, 1.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 4, y + 8, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.roundRect(centerX - 7, y + 7, 14, 3, 1);
     ctx.fill();
     
-    // Draw friendly eyes
+    // Draw beady eyes (like thumbnail)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX - 4, y + 10, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX - 3, y + 11, 1.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 10, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX + 3, y + 11, 1.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw white mustache (like Mr. MoneyBags)
-    ctx.fillStyle = '#FFFFFF';
+    // Draw thin mustache (like thumbnail)
+    ctx.fillStyle = '#2F2F2F';
     ctx.beginPath();
-    ctx.ellipse(centerX - 4, y + 14, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 4, y + 14, 3, 1.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 3, y + 15, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw cheerful smile (like Mr. MoneyBags)
+    // Draw sinister thin smile (like thumbnail)
     ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(centerX, y + 16, 3, 0, Math.PI);
+    ctx.arc(centerX, y + 17, 2.5, 0.3, Math.PI - 0.3);
     ctx.stroke();
     
-    // Draw black coat with longer torso
-    ctx.fillStyle = '#000000'; // Black instead of green
+    // Draw black tailcoat (more coat-like shape)
+    ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.roundRect(x + 4, y + 21, w - 8, h - 18, 2); // Made torso longer (h - 18 instead of h - 23)
+    // Main coat body - wider at top, narrower at bottom
+    ctx.moveTo(x + 3, y + 21);
+    ctx.lineTo(x + w - 3, y + 21);
+    ctx.lineTo(x + w - 4, y + 28);
+    ctx.lineTo(x + w - 6, y + 35);
+    ctx.lineTo(x + 6, y + 35);
+    ctx.lineTo(x + 4, y + 28);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw coat tails
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y + 35);
+    ctx.lineTo(x + 4, y + 42);
+    ctx.lineTo(x + 8, y + 42);
+    ctx.lineTo(x + 10, y + 35);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(x + w - 6, y + 35);
+    ctx.lineTo(x + w - 10, y + 35);
+    ctx.lineTo(x + w - 8, y + 42);
+    ctx.lineTo(x + w - 4, y + 42);
+    ctx.closePath();
     ctx.fill();
     
     // Draw friendly legs (like Mr. MoneyBags movement)
@@ -1429,33 +1450,33 @@ export class GameEngine {
       const legCycle = Math.sin(Date.now() * 0.014) * 2; // Gentle movement like Mr. MoneyBags
       const forwardOffset = 1.5; // Moderate movement
       
-      const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 7 + Math.abs(legCycle) * 0.08; // Adjusted for longer torso
-      ctx.fillRect(leftLegX, leftLegY, 4, 12); // Made legs longer (12 instead of 8)
+      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs
+      ctx.fillRect(leftLegX, leftLegY, 3, 20); // Much longer legs (20 instead of 12)
       
       const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 7 + Math.abs(legCycle) * 0.08; // Adjusted for longer torso
-      ctx.fillRect(rightLegX, rightLegY, 4, 12); // Made legs longer (12 instead of 8)
+      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs  
+      ctx.fillRect(rightLegX, rightLegY, 3, 20); // Much longer legs (20 instead of 12)
       
-      // Draw shoes at the bottom of longer legs
+      // Draw shoes at the bottom of much longer legs
       ctx.fillStyle = '#654321'; // Brown shoes
       ctx.beginPath();
-      ctx.ellipse(leftLegX + 2, leftLegY + 12, 3, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(leftLegX + 1.5, leftLegY + 20, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(rightLegX + 2, rightLegY + 12, 3, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(rightLegX + 1.5, rightLegY + 20, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      ctx.fillRect(centerX - 6, y + h - 7, 4, 12); // Made legs longer (12 instead of 8)
-      ctx.fillRect(centerX + 2, y + h - 7, 4, 12); // Made legs longer (12 instead of 8)
+      ctx.fillRect(centerX - 5, y + h - 2, 3, 20); // Much longer legs (20 instead of 12)
+      ctx.fillRect(centerX + 2, y + h - 2, 3, 20); // Much longer legs (20 instead of 12)
       
-      // Draw static shoes at the bottom of longer legs
+      // Draw static shoes at the bottom of much longer legs
       ctx.fillStyle = '#654321'; // Brown shoes
       ctx.beginPath();
-      ctx.ellipse(centerX - 4, y + h + 5, 3, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX - 3.5, y + h + 18, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(centerX + 4, y + h + 5, 3, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX + 3.5, y + h + 18, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
     }
   }
