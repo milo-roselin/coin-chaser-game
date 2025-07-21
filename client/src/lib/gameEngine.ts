@@ -1431,36 +1431,46 @@ export class GameEngine {
     ctx.arc(centerX, y + 16, 3, 0, Math.PI);
     ctx.stroke();
     
-    // Draw green leprechaun-style coat (like Mr. MoneyBags)
-    ctx.fillStyle = '#228B22'; // Forest green
+    // Draw black coat with longer torso
+    ctx.fillStyle = '#000000'; // Black instead of green
     ctx.beginPath();
-    ctx.roundRect(x + 4, y + 21, w - 8, h - 23, 2);
+    ctx.roundRect(x + 4, y + 21, w - 8, h - 18, 2); // Made torso longer (h - 18 instead of h - 23)
     ctx.fill();
     
-    // Draw gold buttons
-    ctx.fillStyle = '#FFD700';
-    for (let i = 0; i < 3; i++) {
-      ctx.beginPath();
-      ctx.arc(centerX, y + 25 + i * 4, 1.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    
     // Draw friendly legs (like Mr. MoneyBags movement)
-    ctx.fillStyle = '#228B22';
+    ctx.fillStyle = '#000000';
     if (this.isMoving) {
       const legCycle = Math.sin(Date.now() * 0.014) * 2; // Gentle movement like Mr. MoneyBags
       const forwardOffset = 1.5; // Moderate movement
       
       const leftLegX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 4 + Math.abs(legCycle) * 0.08;
+      const leftLegY = y + h - 7 + Math.abs(legCycle) * 0.08; // Adjusted for longer torso
       ctx.fillRect(leftLegX, leftLegY, 4, 8);
       
       const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 4 + Math.abs(legCycle) * 0.08;
+      const rightLegY = y + h - 7 + Math.abs(legCycle) * 0.08; // Adjusted for longer torso
       ctx.fillRect(rightLegX, rightLegY, 4, 8);
+      
+      // Draw shoes
+      ctx.fillStyle = '#654321'; // Brown shoes
+      ctx.beginPath();
+      ctx.ellipse(leftLegX + 2, leftLegY + 8, 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(rightLegX + 2, rightLegY + 8, 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
     } else {
-      ctx.fillRect(centerX - 6, y + h - 4, 4, 8);
-      ctx.fillRect(centerX + 2, y + h - 4, 4, 8);
+      ctx.fillRect(centerX - 6, y + h - 7, 4, 8); // Adjusted for longer torso
+      ctx.fillRect(centerX + 2, y + h - 7, 4, 8); // Adjusted for longer torso
+      
+      // Draw static shoes
+      ctx.fillStyle = '#654321'; // Brown shoes
+      ctx.beginPath();
+      ctx.ellipse(centerX - 4, y + h + 1, 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(centerX + 4, y + h + 1, 3, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
