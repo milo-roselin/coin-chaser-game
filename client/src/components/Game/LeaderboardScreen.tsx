@@ -188,9 +188,6 @@ export default function LeaderboardScreen() {
                     <div className="font-bold text-blue-600">
                       {score.score.toLocaleString()} pts
                     </div>
-                    <div className="text-sm text-yellow-600 font-semibold">
-                      🪙 {score.coins} coins
-                    </div>
                     <div className="text-xs text-gray-500 font-semibold">
                       Bank: {totalCoins.toLocaleString()}
                     </div>
