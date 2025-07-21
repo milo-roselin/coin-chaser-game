@@ -90,30 +90,18 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                         />
                       </div>
                     ) : avatar.id === 'tom-nook' ? (
-                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative">
-                        {/* Tom Nook complete body */}
-                        <div className="w-8 h-10 bg-amber-600 rounded-full relative">
-                          {/* Head */}
-                          <div className="w-6 h-6 bg-amber-600 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2">
-                            {/* Ears */}
-                            <div className="absolute -top-1 left-0 w-2 h-2 bg-amber-600 rounded-full"></div>
-                            <div className="absolute -top-1 right-0 w-2 h-2 bg-amber-600 rounded-full"></div>
-                            {/* Dark mask around eyes */}
-                            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-5 h-2 bg-gray-800 rounded-full"></div>
-                            {/* Eyes */}
-                            <div className="absolute top-1.5 left-1 w-1 h-1 bg-white rounded-full"></div>
-                            <div className="absolute top-1.5 right-1 w-1 h-1 bg-white rounded-full"></div>
-                            {/* Nose */}
-                            <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-black rounded-full"></div>
-                            {/* Snout */}
-                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-1 bg-yellow-200 rounded-full"></div>
-                          </div>
-                          {/* Body - blue apron */}
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-4 bg-blue-500 rounded-b-full"></div>
-                          {/* Arms */}
-                          <div className="absolute top-6 left-0 w-1 h-2 bg-amber-600 rounded-full"></div>
-                          <div className="absolute top-6 right-0 w-1 h-2 bg-amber-600 rounded-full"></div>
-                        </div>
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
+                        <img 
+                          src="/images/tom-nook.png" 
+                          alt="Tom Nook" 
+                          className="w-full h-full object-cover"
+                          style={{ imageRendering: 'pixelated' }}
+                          onError={(e) => {
+                            console.error('Failed to load Tom Nook avatar image');
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onLoad={() => console.log('Tom Nook avatar image loaded successfully')}
+                        />
                       </div>
                     ) : avatar.id === 'ebenezer-scrooge' ? (
                       <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center relative overflow-hidden">
