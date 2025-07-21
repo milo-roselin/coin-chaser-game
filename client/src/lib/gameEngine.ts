@@ -1410,21 +1410,21 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw one continuous thick unibrow
+    // Draw one continuous thick unibrow (shortened)
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
     // Top edge of unibrow (left to right)
-    ctx.moveTo(centerX - 12, y + 5); // Left tip top
+    ctx.moveTo(centerX - 10, y + 5); // Left tip top (shortened from 12 to 10)
     ctx.lineTo(centerX - 4, y + 7); // Left slope down
     ctx.lineTo(centerX, y + 8); // Center top
     ctx.lineTo(centerX + 4, y + 7); // Right slope down
-    ctx.lineTo(centerX + 12, y + 5); // Right tip top
+    ctx.lineTo(centerX + 10, y + 5); // Right tip top (shortened from 12 to 10)
     // Bottom edge of unibrow (right to left for continuous path)
-    ctx.lineTo(centerX + 12, y + 7.5); // Right tip bottom (thick)
+    ctx.lineTo(centerX + 10, y + 7.5); // Right tip bottom (thick)
     ctx.lineTo(centerX + 4, y + 9.5); // Right slope bottom
     ctx.lineTo(centerX, y + 10.5); // Center bottom (deep dip)
     ctx.lineTo(centerX - 4, y + 9.5); // Left slope bottom
-    ctx.lineTo(centerX - 12, y + 7.5); // Left tip bottom (thick)
+    ctx.lineTo(centerX - 10, y + 7.5); // Left tip bottom (thick)
     ctx.closePath();
     ctx.fill();
     
