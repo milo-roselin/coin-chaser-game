@@ -1395,33 +1395,34 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw angular, diamond-shaped head (shorter) that connects to body
+    // Draw angular head with flat top that connects to body
     ctx.fillStyle = '#F5DEB3'; // Pale skin color
     ctx.beginPath();
-    // Create shorter angular head shape with pointed chin
-    ctx.moveTo(centerX, y + 4); // Lower top point (shorter head)
-    ctx.lineTo(centerX - 11, y + 8); // Left temple
-    ctx.lineTo(centerX - 8, y + 15); // Left jaw (shorter)
-    ctx.lineTo(centerX - 5, y + 20); // Connect to left shoulder
-    ctx.lineTo(centerX + 5, y + 20); // Connect to right shoulder
-    ctx.lineTo(centerX + 8, y + 15); // Right jaw (shorter)
+    // Create head shape with flat top
+    ctx.moveTo(centerX - 8, y + 4); // Flat top left
+    ctx.lineTo(centerX + 8, y + 4); // Flat top right
     ctx.lineTo(centerX + 11, y + 8); // Right temple
+    ctx.lineTo(centerX + 8, y + 15); // Right jaw (shorter)
+    ctx.lineTo(centerX + 5, y + 20); // Connect to right shoulder
+    ctx.lineTo(centerX - 5, y + 20); // Connect to left shoulder
+    ctx.lineTo(centerX - 8, y + 15); // Left jaw (shorter)
+    ctx.lineTo(centerX - 11, y + 8); // Left temple
     ctx.closePath();
     ctx.fill();
     
-    // Draw extremely thick connected unibrow higher up and longer
+    // Draw extremely thick and very long connected unibrow
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 14, y + 4); // Start even further left and higher
+    ctx.moveTo(centerX - 16, y + 4); // Start much further left
     ctx.lineTo(centerX - 4, y + 8.5); // Left part down
     ctx.lineTo(centerX, y + 10.5); // Center dip (much lower for thickness)
     ctx.lineTo(centerX + 4, y + 8.5); // Right part down
-    ctx.lineTo(centerX + 14, y + 4); // End even further right and higher
-    ctx.lineTo(centerX + 10, y + 6.5); // Much thicker edge right
+    ctx.lineTo(centerX + 16, y + 4); // End much further right
+    ctx.lineTo(centerX + 12, y + 6.5); // Much thicker edge right
     ctx.lineTo(centerX + 3, y + 8); // Right connection thickness 
     ctx.lineTo(centerX, y + 8); // Center thickness (much thicker)
     ctx.lineTo(centerX - 3, y + 8); // Left connection thickness 
-    ctx.lineTo(centerX - 10, y + 6.5); // Much thicker edge left
+    ctx.lineTo(centerX - 12, y + 6.5); // Much thicker edge left
     ctx.closePath();
     ctx.fill();
     
@@ -1434,9 +1435,20 @@ export class GameEngine {
     ctx.ellipse(centerX + 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // No nose and no mustache - completely clean face
+    // No nose - completely clean middle face
     
-    // Draw thinner evil smile 
+    // Draw grey goatee at bottom of chin
+    ctx.fillStyle = '#808080'; // Grey color matching unibrow
+    ctx.beginPath();
+    ctx.moveTo(centerX - 3, y + 18); // Left edge of goatee
+    ctx.lineTo(centerX + 3, y + 18); // Right edge of goatee
+    ctx.lineTo(centerX + 2, y + 20); // Right point at chin
+    ctx.lineTo(centerX, y + 21); // Bottom point of goatee
+    ctx.lineTo(centerX - 2, y + 20); // Left point at chin
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw thinner evil smile above goatee
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 1; // Reduced from 2 to 1 for thinner smile
     ctx.beginPath();
