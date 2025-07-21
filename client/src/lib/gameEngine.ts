@@ -1326,25 +1326,11 @@ export class GameEngine {
     ctx.ellipse(centerX + 4, y + 15, 3, 1.5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw animated smile that changes
+    // Draw static satisfied smirk (smallest smile form)
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    
-    // Change smile based on time - alternates between greedy grin and satisfied smile
-    const smileTime = Date.now() * 0.003; // Slower smile animation
-    const smileType = Math.floor(smileTime) % 3; // Cycle through 3 smile types
-    
-    if (smileType === 0) {
-      // Wide greedy grin
-      ctx.arc(centerX, y + 17, 4, 0, Math.PI);
-    } else if (smileType === 1) {
-      // Satisfied smirk
-      ctx.arc(centerX, y + 17, 3, 0.2, Math.PI - 0.2);
-    } else {
-      // Mischievous grin
-      ctx.arc(centerX, y + 17, 3.5, 0.1, Math.PI - 0.1);
-    }
+    ctx.arc(centerX, y + 17, 3, 0.2, Math.PI - 0.2);
     ctx.stroke();
     
     // Draw yellow shirt
