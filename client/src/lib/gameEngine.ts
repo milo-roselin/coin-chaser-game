@@ -1091,27 +1091,36 @@ export class GameEngine {
   }
 
   private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Tom Nook's head (tan/brown tanuki like thumbnail)
-    ctx.fillStyle = '#CD853F'; // Sandy brown fur matching thumbnail
+    // Draw Tom Nook's round head (tan/brown tanuki like reference image)
+    ctx.fillStyle = '#CD853F'; // Sandy brown fur
     ctx.beginPath();
     ctx.ellipse(centerX, y + 10, 11, 12, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw dark brown mask around eyes (tanuki characteristic)
-    ctx.fillStyle = '#654321'; // Dark brown mask
+    // Draw large dark brown mask around eyes (prominent tanuki feature)
+    ctx.fillStyle = '#4A2C2A'; // Dark brown mask
     ctx.beginPath();
-    ctx.ellipse(centerX - 5, y + 8, 4, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 5, y + 8, 4, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Connect the mask across the nose
-    ctx.fillRect(centerX - 2, y + 7, 4, 2);
+    // Connect mask across nose bridge
+    ctx.fillRect(centerX - 3, y + 6, 6, 4);
     
-    // Draw tan muzzle area
+    // Draw orange/brown eyebrows above eyes
+    ctx.fillStyle = '#B8860B'; // Golden brown eyebrows
+    ctx.beginPath();
+    ctx.ellipse(centerX - 5, y + 5, 3, 1.5, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 5, y + 5, 3, 1.5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw prominent tan muzzle/snout area
     ctx.fillStyle = '#DEB887';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 13, 6, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 13, 7, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw small black nose
@@ -1120,35 +1129,35 @@ export class GameEngine {
     ctx.arc(centerX, y + 12, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw round ears with brown outer and pink inner
-    ctx.fillStyle = '#CD853F'; // Brown outer ear
+    // Draw round ears with brown outer edge
+    ctx.fillStyle = '#A0522D'; // Darker brown for ear outline
     ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 4, 5, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 8, y + 2, 4.5, 6, -0.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 4, 5, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Draw pink inner ears like thumbnail
-    ctx.fillStyle = '#FFB6C1'; // Pink inner ears
-    ctx.beginPath();
-    ctx.ellipse(centerX - 8, y + 2, 2.5, 3, -0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 2, 2.5, 3, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 8, y + 2, 4.5, 6, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw blue eyes like thumbnail
-    ctx.fillStyle = '#FFFFFF'; // White eye base
+    // Draw pink inner ears
+    ctx.fillStyle = '#FFB6C1';
     ctx.beginPath();
-    ctx.ellipse(centerX - 4, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 8, y + 2, 3, 4, -0.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 4, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 8, y + 2, 3, 4, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
-    // Blue pupils
-    ctx.fillStyle = '#4169E1'; // Blue pupils like thumbnail
+    // Draw large white eyes
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 4, y + 8, 3, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 4, y + 8, 3, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw blue pupils
+    ctx.fillStyle = '#4169E1';
     ctx.beginPath();
     ctx.arc(centerX - 4, y + 8, 1.5, 0, Math.PI * 2);
     ctx.fill();
@@ -1156,22 +1165,50 @@ export class GameEngine {
     ctx.arc(centerX + 4, y + 8, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw purple/blue outfit like thumbnail
-    ctx.fillStyle = '#6A5ACD'; // Purple-blue outfit
+    // Draw purple business suit jacket
+    ctx.fillStyle = '#663399'; // Purple suit
     ctx.beginPath();
-    ctx.roundRect(x + 5, y + 20, w - 10, h - 24, 3);
+    ctx.roundRect(x + 4, y + 20, w - 8, h - 24, 3);
     ctx.fill();
     
-    // Draw collar/shirt details
-    ctx.fillStyle = '#FFFFFF'; // White collar
+    // Draw lapels
+    ctx.fillStyle = '#554488';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 21, 6, 2, 0, 0, Math.PI * 2);
+    ctx.moveTo(x + 6, y + 21);
+    ctx.lineTo(centerX - 2, y + 26);
+    ctx.lineTo(x + 6, y + 32);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + w - 6, y + 21);
+    ctx.lineTo(centerX + 2, y + 26);
+    ctx.lineTo(x + w - 6, y + 32);
+    ctx.closePath();
     ctx.fill();
     
-    // Draw brown tie/accessory
-    ctx.fillStyle = '#8B4513'; // Brown tie
+    // Draw white shirt/collar
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 24, 2, 3, 0, 0, Math.PI * 2);
+    ctx.moveTo(centerX - 3, y + 21);
+    ctx.lineTo(centerX + 3, y + 21);
+    ctx.lineTo(centerX + 2, y + 30);
+    ctx.lineTo(centerX - 2, y + 30);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw brown tie
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 24, 1.5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw yellow/gold buttons
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(centerX - 4, y + 27, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX - 4, y + 31, 1, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw tan arms
