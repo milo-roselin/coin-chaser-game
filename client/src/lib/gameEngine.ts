@@ -1414,16 +1414,16 @@ export class GameEngine {
     ctx.arc(centerX, y + 17, 2.5, 0.3, Math.PI - 0.3);
     ctx.stroke();
     
-    // Draw black tailcoat (more coat-like shape)
+    // Draw black tailcoat (thinner, more fitted)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    // Main coat body - wider at top, narrower at bottom
-    ctx.moveTo(x + 3, y + 21);
-    ctx.lineTo(x + w - 3, y + 21);
-    ctx.lineTo(x + w - 4, y + 28);
-    ctx.lineTo(x + w - 6, y + 35);
-    ctx.lineTo(x + 6, y + 35);
-    ctx.lineTo(x + 4, y + 28);
+    // Main coat body - thinner and more fitted
+    ctx.moveTo(x + 5, y + 21); // Narrower shoulders
+    ctx.lineTo(x + w - 5, y + 21); // Narrower shoulders
+    ctx.lineTo(x + w - 5, y + 28); // Straighter sides
+    ctx.lineTo(x + w - 7, y + 35); // Slightly tapered
+    ctx.lineTo(x + 7, y + 35); // Slightly tapered
+    ctx.lineTo(x + 5, y + 28); // Straighter sides
     ctx.closePath();
     ctx.fill();
     
@@ -1444,43 +1444,19 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw arms extending from coat (always attached to body)
+    // Draw static arms (never move) - always attached to body
     ctx.fillStyle = '#000000';
-    if (this.isMoving) {
-      const armCycle = Math.sin(Date.now() * 0.012) * 1.2; // Reduced movement to keep attached
-      
-      // Left arm - starts from body edge
-      const leftArmX = x + 1 + armCycle; // Start from body edge
-      const leftArmY = y + 25;
-      ctx.fillRect(leftArmX, leftArmY, 3, 14);
-      
-      // Right arm - starts from body edge
-      const rightArmX = x + w - 4 - armCycle; // Start from body edge
-      const rightArmY = y + 25;
-      ctx.fillRect(rightArmX, rightArmY, 3, 14);
-      
-      // Draw hands
-      ctx.fillStyle = '#F5F5DC';
-      ctx.beginPath();
-      ctx.arc(leftArmX + 1.5, leftArmY + 14, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(rightArmX + 1.5, rightArmY + 14, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      // Static arms - attached to body
-      ctx.fillRect(x + 1, y + 25, 3, 14); // Left arm attached to body
-      ctx.fillRect(x + w - 4, y + 25, 3, 14); // Right arm attached to body
-      
-      // Draw static hands
-      ctx.fillStyle = '#F5F5DC';
-      ctx.beginPath();
-      ctx.arc(x + 2.5, y + 39, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(x + w - 2.5, y + 39, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.fillRect(x + 1, y + 25, 3, 14); // Left arm attached to body
+    ctx.fillRect(x + w - 4, y + 25, 3, 14); // Right arm attached to body
+    
+    // Draw static hands
+    ctx.fillStyle = '#F5F5DC';
+    ctx.beginPath();
+    ctx.arc(x + 2.5, y + 39, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w - 2.5, y + 39, 2.2, 0, Math.PI * 2);
+    ctx.fill();
     
     // Draw friendly legs (like Mr. MoneyBags movement)
     ctx.fillStyle = '#000000';
@@ -1496,8 +1472,8 @@ export class GameEngine {
       const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs  
       ctx.fillRect(rightLegX, rightLegY, 3, 18); // Slightly shorter than before (18 instead of 20)
       
-      // Draw shoes at the bottom of longer legs
-      ctx.fillStyle = '#654321'; // Brown shoes
+      // Draw black shoes at the bottom of longer legs
+      ctx.fillStyle = '#000000'; // Black shoes instead of brown
       ctx.beginPath();
       ctx.ellipse(leftLegX + 1.5, leftLegY + 18, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -1508,8 +1484,8 @@ export class GameEngine {
       ctx.fillRect(centerX - 5, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
       ctx.fillRect(centerX + 2, y + h - 2, 3, 18); // Slightly shorter than before (18 instead of 20)
       
-      // Draw static shoes at the bottom of longer legs
-      ctx.fillStyle = '#654321'; // Brown shoes
+      // Draw static black shoes at the bottom of longer legs
+      ctx.fillStyle = '#000000'; // Black shoes instead of brown
       ctx.beginPath();
       ctx.ellipse(centerX - 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2);
       ctx.fill();
