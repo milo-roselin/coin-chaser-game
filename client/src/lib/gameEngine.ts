@@ -1409,23 +1409,23 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw very thick connected unibrow in grey (much thicker)
+    // Draw very thick connected unibrow higher up and longer
     ctx.fillStyle = '#808080'; // Grey color
     ctx.beginPath();
-    ctx.moveTo(centerX - 12, y + 6.5); // Start much further left and higher
-    ctx.lineTo(centerX - 4, y + 9.5); // Left part down
-    ctx.lineTo(centerX, y + 11); // Center dip (lower)
-    ctx.lineTo(centerX + 4, y + 9.5); // Right part down
-    ctx.lineTo(centerX + 12, y + 6.5); // End much further right and higher
-    ctx.lineTo(centerX + 8, y + 8.5); // Much thicker edge right
-    ctx.lineTo(centerX + 3, y + 9); // Right connection thickness (thicker)
-    ctx.lineTo(centerX, y + 9); // Center thickness (thicker)
-    ctx.lineTo(centerX - 3, y + 9); // Left connection thickness (thicker)
-    ctx.lineTo(centerX - 8, y + 8.5); // Much thicker edge left
+    ctx.moveTo(centerX - 14, y + 5); // Start even further left and much higher
+    ctx.lineTo(centerX - 4, y + 8); // Left part down
+    ctx.lineTo(centerX, y + 9.5); // Center dip (higher up)
+    ctx.lineTo(centerX + 4, y + 8); // Right part down
+    ctx.lineTo(centerX + 14, y + 5); // End even further right and much higher
+    ctx.lineTo(centerX + 10, y + 7.5); // Much thicker edge right
+    ctx.lineTo(centerX + 3, y + 8.5); // Right connection thickness (thicker)
+    ctx.lineTo(centerX, y + 8.5); // Center thickness (thicker)
+    ctx.lineTo(centerX - 3, y + 8.5); // Left connection thickness (thicker)
+    ctx.lineTo(centerX - 10, y + 7.5); // Much thicker edge left
     ctx.closePath();
     ctx.fill();
     
-    // Draw narrow, menacing eyes (adjusted for shorter head)
+    // Draw narrow, menacing eyes (adjusted for higher unibrow)
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.ellipse(centerX - 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
@@ -1434,7 +1434,9 @@ export class GameEngine {
     ctx.ellipse(centerX + 4, y + 11, 2, 1, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw thin, angular mustache (adjusted for shorter head)
+    // No nose - removed completely as requested
+    
+    // Draw thin, angular mustache (adjusted for no nose)
     ctx.fillStyle = '#2F1B14';
     ctx.beginPath();
     ctx.moveTo(centerX - 4, y + 13);
@@ -1445,9 +1447,9 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw wide evil smile (turned upside down - now a proper smile)
+    // Draw thinner evil smile 
     ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1; // Reduced from 2 to 1 for thinner smile
     ctx.beginPath();
     ctx.moveTo(centerX - 5, y + 16);
     ctx.quadraticCurveTo(centerX, y + 18, centerX + 5, y + 16);
