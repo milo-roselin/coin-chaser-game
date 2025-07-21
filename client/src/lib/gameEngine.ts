@@ -1383,6 +1383,18 @@ export class GameEngine {
     ctx.ellipse(centerX, y + 12, 9, 11, 0, 0, Math.PI * 2); // More oval, taller head
     ctx.fill();
     
+    // Draw hair on back of head (like thumbnail)
+    ctx.fillStyle = '#2F2F2F'; // Dark hair color
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 5, 8, 6, 0, Math.PI, Math.PI * 2); // Hair arc on top/back
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX - 7, y + 10, 3, 4, 0, 0, Math.PI * 2); // Left side hair
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 7, y + 10, 3, 4, 0, 0, Math.PI * 2); // Right side hair
+    ctx.fill();
+    
     // Draw thick dark unibrow (like thumbnail)
     ctx.fillStyle = '#2F2F2F';
     ctx.beginPath();
@@ -1444,39 +1456,57 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // Draw friendly legs (like Mr. MoneyBags movement)
+    // Draw evil pressed-together arms
+    ctx.fillStyle = '#F5F5DC'; // Same skin color as head
+    ctx.beginPath();
+    ctx.ellipse(centerX - 8, y + 26, 3, 8, -0.3, 0, Math.PI * 2); // Left arm angled inward
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 26, 3, 8, 0.3, 0, Math.PI * 2); // Right arm angled inward
+    ctx.fill();
+    
+    // Draw pressed-together hands (evil gesture)
+    ctx.fillStyle = '#F5F5DC';
+    ctx.beginPath();
+    ctx.ellipse(centerX - 2, y + 32, 2, 3, 0, 0, Math.PI * 2); // Left hand
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 2, y + 32, 2, 3, 0, 0, Math.PI * 2); // Right hand
+    ctx.fill();
+    
+    // Draw legs (slightly shorter than before)
     ctx.fillStyle = '#000000';
     if (this.isMoving) {
       const legCycle = Math.sin(Date.now() * 0.014) * 2; // Gentle movement like Mr. MoneyBags
       const forwardOffset = 1.5; // Moderate movement
       
       const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs
-      ctx.fillRect(leftLegX, leftLegY, 3, 20); // Much longer legs (20 instead of 12)
+      const leftLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Long legs
+      ctx.fillRect(leftLegX, leftLegY, 3, 18); // Slightly shorter legs (18 instead of 20)
       
       const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Significantly longer legs  
-      ctx.fillRect(rightLegX, rightLegY, 3, 20); // Much longer legs (20 instead of 12)
+      const rightLegY = y + h - 2 + Math.abs(legCycle) * 0.08; // Long legs  
+      ctx.fillRect(rightLegX, rightLegY, 3, 18); // Slightly shorter legs (18 instead of 20)
       
-      // Draw shoes at the bottom of much longer legs
-      ctx.fillStyle = '#654321'; // Brown shoes
+      // Draw black shoes at the bottom of legs
+      ctx.fillStyle = '#000000'; // Black shoes instead of brown
       ctx.beginPath();
-      ctx.ellipse(leftLegX + 1.5, leftLegY + 20, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(leftLegX + 1.5, leftLegY + 18, 4, 2, 0, 0, Math.PI * 2); // Adjusted for shorter legs
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(rightLegX + 1.5, rightLegY + 20, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(rightLegX + 1.5, rightLegY + 18, 4, 2, 0, 0, Math.PI * 2); // Adjusted for shorter legs
       ctx.fill();
     } else {
-      ctx.fillRect(centerX - 5, y + h - 2, 3, 20); // Much longer legs (20 instead of 12)
-      ctx.fillRect(centerX + 2, y + h - 2, 3, 20); // Much longer legs (20 instead of 12)
+      ctx.fillRect(centerX - 5, y + h - 2, 3, 18); // Slightly shorter legs (18 instead of 20)
+      ctx.fillRect(centerX + 2, y + h - 2, 3, 18); // Slightly shorter legs (18 instead of 20)
       
-      // Draw static shoes at the bottom of much longer legs
-      ctx.fillStyle = '#654321'; // Brown shoes
+      // Draw static black shoes at the bottom of legs
+      ctx.fillStyle = '#000000'; // Black shoes instead of brown
       ctx.beginPath();
-      ctx.ellipse(centerX - 3.5, y + h + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX - 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2); // Adjusted for shorter legs
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(centerX + 3.5, y + h + 18, 4, 2, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX + 3.5, y + h + 16, 4, 2, 0, 0, Math.PI * 2); // Adjusted for shorter legs
       ctx.fill();
     }
   }
