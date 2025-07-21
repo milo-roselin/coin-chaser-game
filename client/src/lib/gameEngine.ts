@@ -1377,21 +1377,21 @@ export class GameEngine {
   private drawCountOlafAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // No hat - removed completely
     
-    // Draw triangular grey hair touching head corners precisely
+    // Draw triangular grey hair with obtuse bottom corners
     ctx.fillStyle = '#808080'; // Grey hair
     ctx.beginPath();
-    // Left side hair triangle - right edge touches head corner
-    ctx.moveTo(centerX - 12, y + 8); // Start at temple edge
-    ctx.lineTo(centerX - 9, y + 2); // Sharp tip pointing up
+    // Left side hair triangle - tip moved left to create obtuse bottom left corner
+    ctx.moveTo(centerX - 12, y + 8); // Start at temple edge (obtuse angle here)
+    ctx.lineTo(centerX - 11, y + 2); // Tip moved further left
     ctx.lineTo(centerX, y + 4); // Right edge touches top corner of head
     ctx.closePath();
     ctx.fill();
     
     ctx.beginPath();
-    // Right side hair triangle - left edge touches head corner
+    // Right side hair triangle - tip moved right to create obtuse bottom right corner
     ctx.moveTo(centerX, y + 4); // Left edge touches top corner of head
-    ctx.lineTo(centerX + 9, y + 2); // Sharp tip pointing up
-    ctx.lineTo(centerX + 12, y + 8); // Start at temple edge
+    ctx.lineTo(centerX + 11, y + 2); // Tip moved further right
+    ctx.lineTo(centerX + 12, y + 8); // Start at temple edge (obtuse angle here)
     ctx.closePath();
     ctx.fill();
     
