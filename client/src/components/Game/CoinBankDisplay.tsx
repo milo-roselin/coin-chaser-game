@@ -109,7 +109,7 @@ export default function CoinBankDisplay({ className = "", showSessionCoins = fal
                   textShadow: '3px 3px 0px #000000, -2px -2px 0px #000000, 2px -2px 0px #000000, -2px 2px 0px #000000',
                   filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.9))'
                 }}>
-            {totalCoins > 999 ? `${Math.floor(totalCoins / 1000)}k` : totalCoins}
+{totalCoins.toLocaleString()}
           </span>
         </div>
       </div>
