@@ -1248,90 +1248,94 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Scrooge EXACTLY matching the reference image - flat geometric style
+    // Draw Scrooge EXACTLY matching scrooge-avatar.png - flat geometric design
     
-    // 1. BLACK TOP HAT - tall rectangular hat with flat brim
+    // 1. BLACK TOP HAT - tall flat rectangle with horizontal brim
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 4, y - 20, w - 8, 15); // Main hat body
-    ctx.fillRect(x + 2, y - 6, w - 4, 3); // Hat brim
+    ctx.fillRect(x + 3, y - 18, w - 6, 14); // Main hat body - taller and thinner
+    ctx.fillRect(x, y - 5, w, 2); // Wide flat brim across full width
     
-    // 2. WHITE HAIR - curved sections on sides only
+    // 2. WHITE SIDE HAIR - curved oval sections on left and right
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(x + 3, y + 2, 3, 5, 0, 0, Math.PI * 2); // Left side hair
+    ctx.ellipse(x + 2, y + 1, 2.5, 6, 0, 0, Math.PI * 2); // Left hair
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 3, y + 2, 3, 5, 0, 0, Math.PI * 2); // Right side hair
+    ctx.ellipse(x + w - 2, y + 1, 2.5, 6, 0, 0, Math.PI * 2); // Right hair  
     ctx.fill();
     
-    // 3. TAN FACE - perfectly flat rectangular
+    // 3. TAN FACE - clean rectangular shape
     ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(x + 6, y, w - 12, 12);
+    ctx.fillRect(x + 5, y - 1, w - 10, 14); // Face rectangle
     
-    // 4. GRAY EYEBROWS - small rectangles above eyes
+    // 4. GRAY EYEBROWS - thick rectangular bars above eyes
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 7, y + 2, 3, 1.5); // Left eyebrow
-    ctx.fillRect(x + w - 10, y + 2, 3, 1.5); // Right eyebrow
+    ctx.fillRect(x + 7, y + 2, 3, 2); // Left eyebrow - thicker
+    ctx.fillRect(x + w - 10, y + 2, 3, 2); // Right eyebrow - thicker
     
-    // 5. BLACK EYES - small perfect circles
+    // 5. BLACK EYES - perfect small circles
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(x + 8, y + 5, 1.2, 0, Math.PI * 2);
+    ctx.arc(x + 8.5, y + 6, 1.5, 0, Math.PI * 2); // Left eye
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + w - 8, y + 5, 1.2, 0, Math.PI * 2);
+    ctx.arc(x + w - 8.5, y + 6, 1.5, 0, Math.PI * 2); // Right eye
     ctx.fill();
     
-    // 6. NOSE - thin vertical line
-    ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(centerX - 0.3, y + 6, 0.6, 3);
+    // 6. LONG THIN NOSE - vertical line extending down
+    ctx.fillStyle = '#C8A882'; // Slightly darker tan for nose
+    ctx.fillRect(centerX - 0.5, y + 7, 1, 4); // Thin vertical nose
     
-    // 7. WHITE MUSTACHE/BEARD - large oval covering lower face
+    // 7. WHITE MUSTACHE/BEARD - large teardrop shape covering lower face
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 14, 6, 5, 0, 0, Math.PI * 2); // Large white beard
     ctx.fill();
     
-    // 8. DARK NAVY COAT - rectangular body
-    ctx.fillStyle = '#1B2951'; // Dark navy blue matching reference
-    ctx.fillRect(x + 1, y + 16, w - 2, h - 18);
+    // Add small mouth line in beard
+    ctx.fillStyle = '#E0E0E0';
+    ctx.fillRect(centerX - 1, y + 13, 2, 0.5);
     
-    // 9. WHITE SHIRT COLLAR - V-shaped triangle
+    // 8. DARK NAVY COAT - rectangular body with proper proportions
+    ctx.fillStyle = '#1E3A5F'; // Navy blue matching reference
+    ctx.fillRect(x + 1, y + 18, w - 2, 16); // Coat body
+    
+    // 9. WHITE SHIRT COLLAR - clean V-shaped triangle
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 16);
-    ctx.lineTo(centerX + 3, y + 16);
-    ctx.lineTo(centerX, y + 22);
+    ctx.moveTo(centerX - 4, y + 18);
+    ctx.lineTo(centerX + 4, y + 18);
+    ctx.lineTo(centerX, y + 25);
     ctx.closePath();
     ctx.fill();
     
-    // 10. TWO BLACK BUTTONS on coat
+    // 10. BLACK BUTTONS - two perfect circles on coat
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 24, 1, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 26, 1.2, 0, Math.PI * 2); // Upper button
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX, y + 28, 1, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 30, 1.2, 0, Math.PI * 2); // Lower button
     ctx.fill();
     
-    // 11. SMALL ARMS/HANDS - tan circles on sides
+    // 11. TAN HANDS - small oval shapes on coat sides (no animation)
     ctx.fillStyle = '#D2B48C';
     ctx.beginPath();
-    ctx.ellipse(x + 1, y + 24, 2, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(x - 1, y + 26, 2, 2.5, 0, 0, Math.PI * 2); // Left hand
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 1, y + 24, 2, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w + 1, y + 26, 2, 2.5, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. GRAY PANTS/LEGS - extending below coat
+    // 12. GRAY PANTS - static rectangular legs (NO ANIMATION)
     ctx.fillStyle = '#696969';
-    ctx.fillRect(x + 6, y + h - 2, 4, 8); // Left leg
-    ctx.fillRect(x + w - 10, y + h - 2, 4, 8); // Right leg
+    ctx.fillRect(x + 4, y + 34, 4, 10); // Left leg - static
+    ctx.fillRect(x + w - 8, y + 34, 4, 10); // Right leg - static
     
-    // 13. BLACK SHOES - small rectangles at bottom
+    // 13. BLACK SHOES - rectangular blocks at bottom (NO ANIMATION)
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 5, y + h + 5, 5, 2); // Left shoe
-    ctx.fillRect(x + w - 10, y + h + 5, 5, 2); // Right shoe
+    ctx.fillRect(x + 3, y + 43, 6, 3); // Left shoe - static
+    ctx.fillRect(x + w - 9, y + 43, 6, 3); // Right shoe - static
     ctx.beginPath();
     ctx.moveTo(x + 4, y + 18); // Top left
     ctx.lineTo(x + w - 4, y + 18); // Top right
