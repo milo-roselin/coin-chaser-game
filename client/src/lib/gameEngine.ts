@@ -1213,15 +1213,15 @@ export class GameEngine {
     ctx.ellipse(centerX, y + 29, 1, 2.2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add arms back - simple arm shapes
+    // Add longer arms - extended arm shapes
     ctx.fillStyle = '#C4965A';
-    // Left arm
+    // Left arm - longer
     ctx.beginPath();
-    ctx.ellipse(x + 1, y + 28, 2.5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 1, y + 30, 2.5, 6, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Right arm
+    // Right arm - longer
     ctx.beginPath();
-    ctx.ellipse(x + w - 1, y + 28, 2.5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w - 1, y + 30, 2.5, 6, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Bigger legs positioned farther apart BELOW the suit
