@@ -1251,94 +1251,128 @@ export class GameEngine {
     // Enable antialiasing for smoother rendering
     ctx.imageSmoothingEnabled = true;
     
-    // Draw medium-sized Scrooge to match other avatars
+    // Shrink width - use narrower avatar
+    const narrowW = w * 0.6; // Reduce width by 40%
+    const narrowX = x + (w - narrowW) / 2; // Center the narrower avatar
+    const narrowCenterX = narrowX + narrowW / 2;
     
-    // 1. BLACK TOP HAT - narrower width
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 6, y - 12, w - 12, 10); // Narrower hat body
-    ctx.fillRect(x + 3, y - 3, w - 6, 2); // Narrower hat brim
-    
-    // 2. WHITE SIDE HAIR - positioned closer to center
+    // 1. WHITE SIDE HAIR - draw first
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(x + 5, y + 1, 1.5, 4, 0, 0, Math.PI * 2); // Narrower left hair, closer to center
+    ctx.ellipse(narrowX + 2.5, y + 1, 1.5, 3.5, 0, 0, Math.PI * 2); // Narrower left hair
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 5, y + 1, 1.5, 4, 0, 0, Math.PI * 2); // Narrower right hair, closer to center
+    ctx.ellipse(narrowX + narrowW - 2.5, y + 1, 1.5, 3.5, 0, 0, Math.PI * 2); // Narrower right hair
     ctx.fill();
     
-    // 3. TAN FACE - narrower width
+    // 2. BLACK TOP HAT - draw after hair
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(narrowX + 2, y - 10, narrowW - 4, 8); // Narrower hat body
+    ctx.fillRect(narrowX, y - 3, narrowW, 2); // Narrower hat brim
+    
+    // 3. TAN FACE - narrower proportions
     ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x + 7, y, w - 14, 11); // Narrower face
+    ctx.fillRect(narrowX + 3, y, narrowW - 6, 10); // Narrower face
     
-    // 4. GRAY EYEBROWS - positioned closer to center
+    // 4. GRAY EYEBROWS - narrower
     ctx.fillStyle = '#A0A0A0';
-    ctx.fillRect(x + 8, y + 2, 2.5, 1.5); // Narrower left eyebrow, closer to center
-    ctx.fillRect(x + w - 10.5, y + 2, 2.5, 1.5); // Narrower right eyebrow, closer to center
+    ctx.fillRect(narrowX + 4, y + 2, 2.5, 1.2); // Narrower left eyebrow
+    ctx.fillRect(narrowX + narrowW - 6.5, y + 2, 2.5, 1.2); // Narrower right eyebrow
     
-    // 5. BLACK EYES - positioned closer to center
+    // 5. BLACK EYES - narrower spacing
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(x + 9, y + 5, 1.2, 0, Math.PI * 2); // Left eye closer to center
+    ctx.arc(narrowX + 5, y + 4, 1, 0, Math.PI * 2); // Narrower left eye
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + w - 9, y + 5, 1.2, 0, Math.PI * 2); // Right eye closer to center
+    ctx.arc(narrowX + narrowW - 5, y + 4, 1, 0, Math.PI * 2); // Narrower right eye
     ctx.fill();
     
-    // 6. NOSE - medium length
+    // 6. NOSE - centered on narrow face
     ctx.fillStyle = '#C8A882';
-    ctx.fillRect(centerX - 0.5, y + 6, 1, 3); // Medium nose
+    ctx.fillRect(narrowCenterX - 0.4, y + 5, 0.8, 2.5); // Narrower nose
     
-    // 7. WHITE BEARD - narrower width
+    // 7. WHITE BEARD - narrower
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 3.5, 3.5, 0, 0, Math.PI * 2); // Narrower beard
+    ctx.ellipse(narrowCenterX, y + 10, 3.2, 2.8, 0, 0, Math.PI * 2); // Narrower beard
     ctx.fill();
     
-    // 8. DARK NAVY COAT - narrower width
+    // 8. DARK NAVY COAT - narrower
     ctx.fillStyle = '#1B2951';
-    ctx.fillRect(x + 4, y + 15, w - 8, 14); // Narrower coat
+    ctx.fillRect(narrowX + 1.5, y + 13, narrowW - 3, 12); // Narrower coat
     
-    // 9. WHITE COLLAR - smaller triangle
+    // 9. WHITE COLLAR - narrower triangle
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 2, y + 15);
-    ctx.lineTo(centerX + 2, y + 15);
-    ctx.lineTo(centerX, y + 19);
+    ctx.moveTo(narrowCenterX - 1.8, y + 13);
+    ctx.lineTo(narrowCenterX + 1.8, y + 13);
+    ctx.lineTo(narrowCenterX, y + 17);
     ctx.closePath();
     ctx.fill();
     
-    // 10. BLACK BUTTONS - medium size
+    // 10. BLACK BUTTONS - centered on narrow coat
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 22, 1, 0, Math.PI * 2); // Medium upper button
+    ctx.arc(narrowCenterX, y + 19, 0.8, 0, Math.PI * 2); // Narrower upper button
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX, y + 25, 1, 0, Math.PI * 2); // Medium lower button
+    ctx.arc(narrowCenterX, y + 22, 0.8, 0, Math.PI * 2); // Narrower lower button
     ctx.fill();
     
-    // 11. PROPER ARMS - positioned closer to body
+    // 11. PROPER ARMS - narrower rectangular arms
     ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x + 2, y + 18, 2.5, 8); // Left arm closer to body
-    ctx.fillRect(x + w - 4.5, y + 18, 2.5, 8); // Right arm closer to body
+    ctx.fillRect(narrowX + 0.5, y + 16, 2.2, 6); // Narrower left arm
+    ctx.fillRect(narrowX + narrowW - 2.7, y + 16, 2.2, 6); // Narrower right arm
     
     // Add small hands at end of arms
     ctx.beginPath();
-    ctx.ellipse(x + 3.2, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Left hand
+    ctx.ellipse(narrowX + 1.6, y + 22, 1.1, 1.1, 0, 0, Math.PI * 2); // Narrower left hand
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 3.2, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
+    ctx.ellipse(narrowX + narrowW - 1.6, y + 22, 1.1, 1.1, 0, 0, Math.PI * 2); // Narrower right hand
     ctx.fill();
     
-    // 12. GRAY PANTS - narrower legs positioned closer to center
+    // 12. ANIMATED GRAY PANTS - like other avatars with legs closer to center
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 6, y + 29, 2.5, 8); // Narrower left leg, closer to center
-    ctx.fillRect(x + w - 8.5, y + 29, 2.5, 8); // Narrower right leg, closer to center
     
-    // 13. BLACK SHOES - narrower and closer to center
+    // Get animation cycle for leg movement like other avatars
+    const time = Date.now() * 0.003; // Same animation speed as other avatars
+    const legCycle = Math.sin(time) * 0.8; // Leg animation amplitude
+    const forwardOffset = 0.6; // How much legs move forward/back
+    
+    if (this.player.isMoving) {
+      // Animated legs when moving - closer to center
+      const leftLegX = narrowCenterX - 2.5 + (legCycle > 0 ? -forwardOffset : forwardOffset);
+      const leftLegY = y + 25 + Math.abs(legCycle) * 0.06; // Slight vertical bob
+      ctx.fillRect(leftLegX, leftLegY, 2.2, 6); // Narrower left leg, closer to center
+      
+      const rightLegX = narrowCenterX + 0.3 + (legCycle < 0 ? -forwardOffset : forwardOffset);
+      const rightLegY = y + 25 + Math.abs(legCycle) * 0.06; // Slight vertical bob
+      ctx.fillRect(rightLegX, rightLegY, 2.2, 6); // Narrower right leg, closer to center
+    } else {
+      // Static legs when not moving - closer to center
+      ctx.fillRect(narrowCenterX - 2.5, y + 25, 2.2, 6); // Static narrower left leg, closer to center
+      ctx.fillRect(narrowCenterX + 0.3, y + 25, 2.2, 6); // Static narrower right leg, closer to center
+    }
+    
+    // 13. ANIMATED BLACK SHOES - matching leg animation
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 5.5, y + 36, 4, 3); // Narrower left shoe, closer to center
-    ctx.fillRect(x + w - 9.5, y + 36, 4, 3); // Narrower right shoe, closer to center
+    
+    if (this.player.isMoving) {
+      // Animated shoes following legs
+      const leftShoeX = narrowCenterX - 2.5 + (legCycle > 0 ? -forwardOffset : forwardOffset);
+      const leftShoeY = y + 31 + Math.abs(legCycle) * 0.06;
+      ctx.fillRect(leftShoeX - 0.3, leftShoeY, 2.8, 2.5); // Narrower left shoe
+      
+      const rightShoeX = narrowCenterX + 0.3 + (legCycle < 0 ? -forwardOffset : forwardOffset);
+      const rightShoeY = y + 31 + Math.abs(legCycle) * 0.06;
+      ctx.fillRect(rightShoeX - 0.3, rightShoeY, 2.8, 2.5); // Narrower right shoe
+    } else {
+      // Static shoes when not moving
+      ctx.fillRect(narrowCenterX - 2.8, y + 31, 2.8, 2.5); // Static narrower left shoe
+      ctx.fillRect(narrowCenterX, y + 31, 2.8, 2.5); // Static narrower right shoe
+    }
   }
 
   private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
