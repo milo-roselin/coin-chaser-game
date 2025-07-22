@@ -1337,31 +1337,31 @@ export class GameEngine {
     ctx.ellipse(rightEdge - 1.25, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. GRAY LEGS - matching Tom Nook's pattern exactly
+    // 12. GRAY LEGS - wider spacing than Tom Nook for better proportions
     ctx.fillStyle = '#808080';
     if (this.isMoving) {
-      // Animated legs during movement - same pattern as Tom Nook
-      const leftLegX = centerX - 4 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      // Animated legs during movement - wider apart
+      const leftLegX = centerX - 5 + (legCycle > 0 ? forwardOffset : -forwardOffset);
       const leftLegY = y + 29 + Math.abs(legCycle) * 0.05; 
-      ctx.fillRect(leftLegX, leftLegY, 3, 8); // Left leg matches Tom Nook size
+      ctx.fillRect(leftLegX, leftLegY, 3, 8); // Left leg farther left
       
-      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegX = centerX + 2 + (legCycle < 0 ? forwardOffset : -forwardOffset);
       const rightLegY = y + 29 + Math.abs(legCycle) * 0.05; 
-      ctx.fillRect(rightLegX, rightLegY, 3, 8); // Right leg matches Tom Nook size
+      ctx.fillRect(rightLegX, rightLegY, 3, 8); // Right leg farther right
       
       // 13. BLACK SHOES - matching animated legs
       ctx.fillStyle = '#000000';
       ctx.fillRect(leftLegX - 0.5, leftLegY + 8, 4, 3); // Left shoe follows leg
       ctx.fillRect(rightLegX - 0.5, rightLegY + 8, 4, 3); // Right shoe follows leg
     } else {
-      // Static legs when not moving - same spacing as Tom Nook
-      ctx.fillRect(centerX - 4, y + 29, 3, 8); // Static left leg
-      ctx.fillRect(centerX + 1, y + 29, 3, 8); // Static right leg
+      // Static legs when not moving - wider spacing for better stance
+      ctx.fillRect(centerX - 5, y + 29, 3, 8); // Static left leg farther left
+      ctx.fillRect(centerX + 2, y + 29, 3, 8); // Static right leg farther right
       
-      // 13. BLACK SHOES - static positioning
+      // 13. BLACK SHOES - static positioning with wider spacing
       ctx.fillStyle = '#000000';  
-      ctx.fillRect(centerX - 4.5, y + 37, 4, 3); // Static left shoe
-      ctx.fillRect(centerX + 0.5, y + 37, 4, 3); // Static right shoe
+      ctx.fillRect(centerX - 5.5, y + 37, 4, 3); // Static left shoe farther left
+      ctx.fillRect(centerX + 1.5, y + 37, 4, 3); // Static right shoe farther right
     }
   }
 
