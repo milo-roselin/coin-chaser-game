@@ -134,7 +134,7 @@ export class GameEngine {
     const clusterPositions: Array<{x: number, y: number}> = [];
     
     for (let cluster = 0; cluster < numClusters; cluster++) {
-      let clusterX, clusterY;
+      let clusterX: number, clusterY: number;
       let attempts = 0;
       
       // Find a position that's not too close to existing clusters and respects control panel
@@ -274,7 +274,7 @@ export class GameEngine {
     // Add some linear patrolling TNT bombs between clusters (reduced to prevent overcrowding)
     const linearTnt = Math.min(2, this.level); // Cap linear TNT to prevent overcrowding
     for (let i = 0; i < linearTnt; i++) {
-      let x, y;
+      let x: number, y: number;
       let attempts = 0;
       
       // Find positions that are away from coin clusters and control panel
@@ -541,7 +541,7 @@ export class GameEngine {
             const patrolStartX = Math.min(obs.patrolStartX, obs.patrolEndX);
             const patrolEndX = Math.max(obs.patrolStartX, obs.patrolEndX);
             
-            return coin.y > patrolY - 40 && coin.y < patrolY + 40 &&
+            return coin.y > (patrolY || 0) - 40 && coin.y < (patrolY || 0) + 40 &&
                    coin.x > patrolStartX - 40 && coin.x < patrolEndX + 40;
           }
           // For vertical patrol
