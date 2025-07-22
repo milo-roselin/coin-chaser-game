@@ -1256,10 +1256,9 @@ export class GameEngine {
     const leftEdge = centerX - avatarWidth / 2;
     const rightEdge = centerX + avatarWidth / 2;
     
-    // Animation for legs like other avatars
-    const isMoving = this.player && (this.player.vx !== 0 || this.player.vy !== 0);
-    const time = Date.now() / 1000;
-    const legCycle = Math.sin(time * 8) * 0.15;
+    // Animation for legs like other avatars - use this.isMoving like Tom Nook
+    const legCycle = Math.sin(Date.now() * 0.015) * 1.5;
+    const forwardOffset = 1;
     
     // 1. WHITE SIDE HAIR - draw FIRST (before hat)
     ctx.fillStyle = '#FFFFFF';
@@ -1338,28 +1337,31 @@ export class GameEngine {
     ctx.ellipse(rightEdge - 1.25, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. ANIMATED GRAY PANTS - like other avatars with wider foot spacing
+    // 12. GRAY LEGS - matching Tom Nook's pattern exactly
     ctx.fillStyle = '#808080';
-    if (isMoving) {
-      // Animated legs during movement - wider apart
-      const leftLegX = centerX - 4 + (legCycle > 0 ? legCycle * 2 : 0);
-      const rightLegX = centerX + 2 + (legCycle < 0 ? legCycle * 2 : 0);
-      ctx.fillRect(leftLegX, y + 29, 2, 8); // Animated left leg
-      ctx.fillRect(rightLegX, y + 29, 2, 8); // Animated right leg
+    if (this.isMoving) {
+      // Animated legs during movement - same pattern as Tom Nook
+      const leftLegX = centerX - 4 + (legCycle > 0 ? forwardOffset : -forwardOffset);
+      const leftLegY = y + 29 + Math.abs(legCycle) * 0.05; 
+      ctx.fillRect(leftLegX, leftLegY, 3, 8); // Left leg matches Tom Nook size
       
-      // 13. ANIMATED BLACK SHOES - wider apart
+      const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
+      const rightLegY = y + 29 + Math.abs(legCycle) * 0.05; 
+      ctx.fillRect(rightLegX, rightLegY, 3, 8); // Right leg matches Tom Nook size
+      
+      // 13. BLACK SHOES - matching animated legs
       ctx.fillStyle = '#000000';
-      ctx.fillRect(leftLegX - 0.5, y + 36, 3, 3); // Left shoe follows leg
-      ctx.fillRect(rightLegX - 0.5, y + 36, 3, 3); // Right shoe follows leg
+      ctx.fillRect(leftLegX - 0.5, leftLegY + 8, 4, 3); // Left shoe follows leg
+      ctx.fillRect(rightLegX - 0.5, rightLegY + 8, 4, 3); // Right shoe follows leg
     } else {
-      // Static legs when not moving - wider apart
-      ctx.fillRect(centerX - 4, y + 29, 2, 8); // Static left leg - farther left
-      ctx.fillRect(centerX + 2, y + 29, 2, 8); // Static right leg - farther right
+      // Static legs when not moving - same spacing as Tom Nook
+      ctx.fillRect(centerX - 4, y + 29, 3, 8); // Static left leg
+      ctx.fillRect(centerX + 1, y + 29, 3, 8); // Static right leg
       
-      // 13. STATIC BLACK SHOES - wider apart
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(centerX - 4.5, y + 36, 3, 3); // Static left shoe - farther left
-      ctx.fillRect(centerX + 1.5, y + 36, 3, 3); // Static right shoe - farther right
+      // 13. BLACK SHOES - static positioning
+      ctx.fillStyle = '#000000';  
+      ctx.fillRect(centerX - 4.5, y + 37, 4, 3); // Static left shoe
+      ctx.fillRect(centerX + 0.5, y + 37, 4, 3); // Static right shoe
     }
   }
 
