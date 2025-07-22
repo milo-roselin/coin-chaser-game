@@ -1111,61 +1111,61 @@ export class GameEngine {
     ctx.ellipse(centerX + 9, y + 3, 2.8, 4.2, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the medium-sized tan/brown base head - proportionate to body
+    // Draw the medium-sized tan/brown base head - moved down to connect with body
     ctx.fillStyle = '#C4965A'; // Tan-brown color from reference
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 10, 11, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 18, 10, 9, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw dark brown mask to match thumbnail - medium sized for proportionate head
+    // Draw dark brown mask to match thumbnail - moved down
     ctx.fillStyle = '#2D1B14'; // Dark brown mask like thumbnail
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 9, 8, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 15, 8, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan patches around eyes like thumbnail - proportioned for medium head
+    // Draw tan patches around eyes like thumbnail - moved down
     ctx.fillStyle = '#D2B48C'; // Tan patches matching thumbnail
     ctx.beginPath();
-    ctx.ellipse(centerX - 3.5, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 3.5, y + 14, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 3.5, y + 8, 2.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 3.5, y + 14, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw lower face/muzzle matching thumbnail - proportioned for medium head
+    // Draw lower face/muzzle - moved down to connect with body
     ctx.fillStyle = '#C4965A';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 16, 6, 4.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 21, 6, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add subtle muzzle shading like thumbnail - proportioned
+    // Add subtle muzzle shading - moved down
     ctx.fillStyle = '#BC9A6A';
     ctx.beginPath();
-    ctx.ellipse(centerX + 1.5, y + 16.5, 2.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 1.5, y + 21, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw small round black nose like thumbnail - proportioned
+    // Draw small round black nose - moved down
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 16, 0.8, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 21, 0.8, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw medium-sized white eyes - proportioned for medium head
+    // Draw medium-sized white eyes - moved down with head
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX - 3, y + 10, 2.8, 2.3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 3, y + 16, 2.8, 2.3, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 3, y + 10, 2.8, 2.3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 3, y + 16, 2.8, 2.3, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw blue pupils - proportioned for medium eyes
+    // Draw blue pupils - moved down with eyes
     ctx.fillStyle = '#4169E1'; // Blue from reference
     ctx.beginPath();
-    ctx.arc(centerX - 3, y + 10.3, 1.3, 0, Math.PI * 2);
+    ctx.arc(centerX - 3, y + 16.3, 1.3, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 3, y + 10.3, 1.3, 0, Math.PI * 2);
+    ctx.arc(centerX + 3, y + 16.3, 1.3, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw the medium-sized purple business suit
