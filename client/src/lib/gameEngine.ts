@@ -1253,58 +1253,58 @@ export class GameEngine {
     
     // Draw medium-sized Scrooge to match other avatars
     
-    // 1. BLACK TOP HAT - medium size
+    // 1. BLACK TOP HAT - narrower width
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 4, y - 12, w - 8, 10); // Medium hat body
-    ctx.fillRect(x + 1, y - 3, w - 2, 2); // Medium hat brim
+    ctx.fillRect(x + 6, y - 12, w - 12, 10); // Narrower hat body
+    ctx.fillRect(x + 3, y - 3, w - 6, 2); // Narrower hat brim
     
-    // 2. WHITE SIDE HAIR - medium size
+    // 2. WHITE SIDE HAIR - positioned closer to center
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(x + 3, y + 1, 2, 4, 0, 0, Math.PI * 2); // Medium left hair
+    ctx.ellipse(x + 5, y + 1, 1.5, 4, 0, 0, Math.PI * 2); // Narrower left hair, closer to center
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 3, y + 1, 2, 4, 0, 0, Math.PI * 2); // Medium right hair
+    ctx.ellipse(x + w - 5, y + 1, 1.5, 4, 0, 0, Math.PI * 2); // Narrower right hair, closer to center
     ctx.fill();
     
-    // 3. TAN FACE - medium proportioned
+    // 3. TAN FACE - narrower width
     ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x + 5, y, w - 10, 11); // Medium face
+    ctx.fillRect(x + 7, y, w - 14, 11); // Narrower face
     
-    // 4. GRAY EYEBROWS - medium size
+    // 4. GRAY EYEBROWS - positioned closer to center
     ctx.fillStyle = '#A0A0A0';
-    ctx.fillRect(x + 6, y + 2, 3, 1.5); // Medium left eyebrow
-    ctx.fillRect(x + w - 9, y + 2, 3, 1.5); // Medium right eyebrow
+    ctx.fillRect(x + 8, y + 2, 2.5, 1.5); // Narrower left eyebrow, closer to center
+    ctx.fillRect(x + w - 10.5, y + 2, 2.5, 1.5); // Narrower right eyebrow, closer to center
     
-    // 5. BLACK EYES - medium size
+    // 5. BLACK EYES - positioned closer to center
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(x + 7, y + 5, 1.2, 0, Math.PI * 2); // Medium left eye
+    ctx.arc(x + 9, y + 5, 1.2, 0, Math.PI * 2); // Left eye closer to center
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + w - 7, y + 5, 1.2, 0, Math.PI * 2); // Medium right eye
+    ctx.arc(x + w - 9, y + 5, 1.2, 0, Math.PI * 2); // Right eye closer to center
     ctx.fill();
     
     // 6. NOSE - medium length
     ctx.fillStyle = '#C8A882';
     ctx.fillRect(centerX - 0.5, y + 6, 1, 3); // Medium nose
     
-    // 7. WHITE BEARD - medium size
+    // 7. WHITE BEARD - narrower width
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 12, 4.5, 3.5, 0, 0, Math.PI * 2); // Medium beard
+    ctx.ellipse(centerX, y + 12, 3.5, 3.5, 0, 0, Math.PI * 2); // Narrower beard
     ctx.fill();
     
-    // 8. DARK NAVY COAT - medium size
+    // 8. DARK NAVY COAT - narrower width
     ctx.fillStyle = '#1B2951';
-    ctx.fillRect(x + 2, y + 15, w - 4, 14); // Medium coat
+    ctx.fillRect(x + 4, y + 15, w - 8, 14); // Narrower coat
     
-    // 9. WHITE COLLAR - medium triangle
+    // 9. WHITE COLLAR - smaller triangle
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 2.5, y + 15);
-    ctx.lineTo(centerX + 2.5, y + 15);
-    ctx.lineTo(centerX, y + 20);
+    ctx.moveTo(centerX - 2, y + 15);
+    ctx.lineTo(centerX + 2, y + 15);
+    ctx.lineTo(centerX, y + 19);
     ctx.closePath();
     ctx.fill();
     
@@ -1317,28 +1317,28 @@ export class GameEngine {
     ctx.arc(centerX, y + 25, 1, 0, Math.PI * 2); // Medium lower button
     ctx.fill();
     
-    // 11. PROPER ARMS - rectangular arm shapes like other avatars
+    // 11. PROPER ARMS - positioned closer to body
     ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x - 1, y + 18, 3, 8); // Left arm - rectangular like other avatars
-    ctx.fillRect(x + w - 2, y + 18, 3, 8); // Right arm - rectangular like other avatars
+    ctx.fillRect(x + 2, y + 18, 2.5, 8); // Left arm closer to body
+    ctx.fillRect(x + w - 4.5, y + 18, 2.5, 8); // Right arm closer to body
     
     // Add small hands at end of arms
     ctx.beginPath();
-    ctx.ellipse(x, y + 26, 1.5, 1.5, 0, 0, Math.PI * 2); // Left hand
+    ctx.ellipse(x + 3.2, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Left hand
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 1, y + 26, 1.5, 1.5, 0, 0, Math.PI * 2); // Right hand
+    ctx.ellipse(x + w - 3.2, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. GRAY PANTS - medium legs to match other avatars
+    // 12. GRAY PANTS - narrower legs positioned closer to center
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 5, y + 29, 3, 8); // Medium left leg
-    ctx.fillRect(x + w - 8, y + 29, 3, 8); // Medium right leg
+    ctx.fillRect(x + 6, y + 29, 2.5, 8); // Narrower left leg, closer to center
+    ctx.fillRect(x + w - 8.5, y + 29, 2.5, 8); // Narrower right leg, closer to center
     
-    // 13. BLACK SHOES - medium size to match other avatars
+    // 13. BLACK SHOES - narrower and closer to center
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 4, y + 36, 5, 3); // Medium left shoe
-    ctx.fillRect(x + w - 9, y + 36, 5, 3); // Medium right shoe
+    ctx.fillRect(x + 5.5, y + 36, 4, 3); // Narrower left shoe, closer to center
+    ctx.fillRect(x + w - 9.5, y + 36, 4, 3); // Narrower right shoe, closer to center
   }
 
   private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
