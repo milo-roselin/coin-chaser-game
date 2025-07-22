@@ -1093,23 +1093,7 @@ export class GameEngine {
   private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
     // Draw Tom Nook EXACTLY as shown in reference image - round tanuki character
     
-    // Draw ears FIRST with brown rim and bright pink interior
-    ctx.fillStyle = '#8B5A3C'; // Brown outer ears
-    ctx.beginPath();
-    ctx.ellipse(centerX - 9, y + 3, 4, 6, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 9, y + 3, 4, 6, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Bright pink inner ears
-    ctx.fillStyle = '#F5A6C8'; // Pink from reference
-    ctx.beginPath();
-    ctx.ellipse(centerX - 9, y + 3, 2.8, 4.2, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 9, y + 3, 2.8, 4.2, 0.3, 0, Math.PI * 2);
-    ctx.fill();
+
     
     // Draw the medium-sized tan/brown base head - moved down to connect with body
     ctx.fillStyle = '#C4965A'; // Tan-brown color from reference
@@ -1173,6 +1157,24 @@ export class GameEngine {
     ctx.beginPath();
     // Create medium-sized suit shape
     ctx.roundRect(x + 3, y + 25, w - 6, 14, 5);
+    ctx.fill();
+    
+    // Now draw head AFTER body - ears FIRST with brown rim and bright pink interior
+    ctx.fillStyle = '#8B5A3C'; // Brown outer ears
+    ctx.beginPath();
+    ctx.ellipse(centerX - 9, y + 10, 4, 6, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 9, y + 10, 4, 6, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bright pink inner ears
+    ctx.fillStyle = '#F5A6C8'; // Pink from reference
+    ctx.beginPath();
+    ctx.ellipse(centerX - 9, y + 10, 2.8, 4.2, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 9, y + 10, 2.8, 4.2, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw suit lapels exactly as in reference - prominent triangular shapes
