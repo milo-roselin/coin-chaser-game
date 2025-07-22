@@ -99,6 +99,12 @@ export default function StartScreen() {
         return;
       }
       
+      if (key === 'a' || code === 'KeyA') {
+        e.preventDefault();
+        setShowAvatarSelector(true);
+        return;
+      }
+      
       if ((key === 'r' || code === 'KeyR') && highestLevelUnlocked > 1) {
         e.preventDefault();
         handleResetProgress();
@@ -222,6 +228,7 @@ export default function StartScreen() {
             <User className="mr-2 h-5 w-5" />
             Choose Avatar
             <span className="ml-2 text-sm text-yellow-500">({totalCoins} coins)</span>
+            <span className="ml-auto text-sm opacity-75">[A]</span>
           </Button>
 
           <div className="flex gap-2">
