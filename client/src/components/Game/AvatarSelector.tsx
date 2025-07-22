@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { usePlayerAvatar } from '../../lib/stores/usePlayerAvatar';
 import { useCoinBank } from '../../lib/stores/useCoinBank';
 import { useAudio } from '../../lib/stores/useAudio';
@@ -38,6 +38,38 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
     // If not enough coins, do nothing (could add error feedback later)
   };
 
+  // Keyboard shortcuts for avatar selection
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      
+      // Map keyboard shortcuts to avatar IDs
+      const keyToAvatar: { [key: string]: string } = {
+        '1': 'leprechaun',       // Mr. MoneyBags
+        '2': 'count-olaf',       // Count Olaf
+        '3': 'tom-nook',         // Tom Nook  
+        '4': 'ebenezer-scrooge', // Ebenezer Scrooge
+        '5': 'wario'             // Wario
+      };
+
+      if (keyToAvatar[key]) {
+        const avatarId = keyToAvatar[key];
+        const avatar = availableAvatars.find(a => a.id === avatarId);
+        if (avatar) {
+          handleAvatarSelect(avatarId, avatar.unlockCost);
+        }
+      }
+
+      // ESC to close
+      if (key === 'escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [availableAvatars, onClose]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-yellow-400">
@@ -50,6 +82,10 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
             ×
           </button>
         </div>
+        
+        <div className="mb-4 text-center text-sm text-gray-400">
+          Use keys 1-5 to select avatars, ESC to close
+        </div>
 
         <div className="mb-4 text-center">
           <div className="text-yellow-400 font-semibold">
@@ -58,16 +94,17 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
         </div>
 
         <div className="space-y-3">
-          {availableAvatars.map(avatar => {
+          {availableAvatars.map((avatar, index) => {
             const isSelected = selectedAvatar === avatar.id;
             const isUnlocked = isAvatarUnlocked(avatar.id);
             const canAfford = totalCoins >= avatar.unlockCost;
+            const keyNumber = index + 1;
 
             return (
               <div
                 key={avatar.id}
                 className={`
-                  p-3 rounded-lg border-2 transition-all
+                  p-3 rounded-lg border-2 transition-all relative
                   ${isSelected 
                     ? 'border-yellow-400 bg-yellow-900 bg-opacity-30' 
                     : isUnlocked 
@@ -79,6 +116,10 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                 `}
                 onClick={() => handleAvatarSelect(avatar.id, avatar.unlockCost)}
               >
+                {/* Keyboard shortcut indicator */}
+                <div className="absolute top-2 right-2 w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center text-xs text-yellow-400 font-bold">
+                  {keyNumber}
+                </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                     {avatar.id === 'leprechaun' ? (
