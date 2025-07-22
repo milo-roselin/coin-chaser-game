@@ -1248,140 +1248,90 @@ export class GameEngine {
   }
 
   private drawEbenezerScroogeAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
-    // Draw Scrooge EXACTLY matching scrooge-avatar.png - flat geometric design
+    // Draw Scrooge exactly like scrooge-avatar.png - completely static flat design
     
-    // 1. BLACK TOP HAT - tall flat rectangle with horizontal brim
+    // 1. BLACK TOP HAT
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 3, y - 18, w - 6, 14); // Main hat body - taller and thinner
-    ctx.fillRect(x, y - 5, w, 2); // Wide flat brim across full width
+    ctx.fillRect(x + 2, y - 15, w - 4, 12); // Hat main body
+    ctx.fillRect(x - 1, y - 4, w + 2, 2); // Hat brim
     
-    // 2. WHITE SIDE HAIR - curved oval sections on left and right
+    // 2. WHITE SIDE HAIR
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(x + 2, y + 1, 2.5, 6, 0, 0, Math.PI * 2); // Left hair
+    ctx.ellipse(x + 1, y + 1, 2, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 2, y + 1, 2.5, 6, 0, 0, Math.PI * 2); // Right hair  
+    ctx.ellipse(x + w - 1, y + 1, 2, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // 3. TAN FACE - clean rectangular shape
-    ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(x + 5, y - 1, w - 10, 14); // Face rectangle
+    // 3. TAN FACE
+    ctx.fillStyle = '#DEB887';
+    ctx.fillRect(x + 3, y - 2, w - 6, 13);
     
-    // 4. GRAY EYEBROWS - thick rectangular bars above eyes
+    // 4. GRAY EYEBROWS
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 7, y + 2, 3, 2); // Left eyebrow - thicker
-    ctx.fillRect(x + w - 10, y + 2, 3, 2); // Right eyebrow - thicker
+    ctx.fillRect(x + 5, y + 1, 3, 2);
+    ctx.fillRect(x + w - 8, y + 1, 3, 2);
     
-    // 5. BLACK EYES - perfect small circles
+    // 5. BLACK EYES
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(x + 8.5, y + 6, 1.5, 0, Math.PI * 2); // Left eye
+    ctx.arc(x + 6, y + 5, 1.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + w - 8.5, y + 6, 1.5, 0, Math.PI * 2); // Right eye
+    ctx.arc(x + w - 6, y + 5, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // 6. LONG THIN NOSE - vertical line extending down
-    ctx.fillStyle = '#C8A882'; // Slightly darker tan for nose
-    ctx.fillRect(centerX - 0.5, y + 7, 1, 4); // Thin vertical nose
+    // 6. NOSE
+    ctx.fillStyle = '#DEB887';
+    ctx.fillRect(centerX - 0.5, y + 6, 1, 3);
     
-    // 7. WHITE MUSTACHE/BEARD - large teardrop shape covering lower face
+    // 7. WHITE BEARD
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 14, 6, 5, 0, 0, Math.PI * 2); // Large white beard
+    ctx.ellipse(centerX, y + 12, 5, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add small mouth line in beard
-    ctx.fillStyle = '#E0E0E0';
-    ctx.fillRect(centerX - 1, y + 13, 2, 0.5);
+    // 8. DARK NAVY COAT
+    ctx.fillStyle = '#1E3A5F';
+    ctx.fillRect(x, y + 15, w, 18);
     
-    // 8. DARK NAVY COAT - rectangular body with proper proportions
-    ctx.fillStyle = '#1E3A5F'; // Navy blue matching reference
-    ctx.fillRect(x + 1, y + 18, w - 2, 16); // Coat body
-    
-    // 9. WHITE SHIRT COLLAR - clean V-shaped triangle
+    // 9. WHITE COLLAR
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 4, y + 18);
-    ctx.lineTo(centerX + 4, y + 18);
-    ctx.lineTo(centerX, y + 25);
+    ctx.moveTo(centerX - 3, y + 15);
+    ctx.lineTo(centerX + 3, y + 15);
+    ctx.lineTo(centerX, y + 22);
     ctx.closePath();
     ctx.fill();
     
-    // 10. BLACK BUTTONS - two perfect circles on coat
+    // 10. BLACK BUTTONS
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 26, 1.2, 0, Math.PI * 2); // Upper button
+    ctx.arc(centerX, y + 24, 1, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX, y + 30, 1.2, 0, Math.PI * 2); // Lower button
+    ctx.arc(centerX, y + 28, 1, 0, Math.PI * 2);
     ctx.fill();
     
-    // 11. TAN HANDS - small oval shapes on coat sides (no animation)
-    ctx.fillStyle = '#D2B48C';
+    // 11. TAN HANDS - STATIC
+    ctx.fillStyle = '#DEB887';
     ctx.beginPath();
-    ctx.ellipse(x - 1, y + 26, 2, 2.5, 0, 0, Math.PI * 2); // Left hand
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w + 1, y + 26, 2, 2.5, 0, 0, Math.PI * 2); // Right hand
-    ctx.fill();
-    
-    // 12. GRAY PANTS - static rectangular legs (NO ANIMATION)
-    ctx.fillStyle = '#696969';
-    ctx.fillRect(x + 4, y + 34, 4, 10); // Left leg - static
-    ctx.fillRect(x + w - 8, y + 34, 4, 10); // Right leg - static
-    
-    // 13. BLACK SHOES - rectangular blocks at bottom (NO ANIMATION)
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 3, y + 43, 6, 3); // Left shoe - static
-    ctx.fillRect(x + w - 9, y + 43, 6, 3); // Right shoe - static
-    ctx.beginPath();
-    ctx.moveTo(x + 4, y + 18); // Top left
-    ctx.lineTo(x + w - 4, y + 18); // Top right
-    ctx.lineTo(x + w - 6, y + 24); // Right point
-    ctx.lineTo(centerX + 2, y + 28); // Bottom right of V
-    ctx.lineTo(centerX - 2, y + 28); // Bottom left of V
-    ctx.lineTo(x + 6, y + 24); // Left point
-    ctx.closePath();
-    ctx.fill();
-    
-    // Draw two black buttons - perfectly circular
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(centerX, y + 32, 1.5, 0, Math.PI * 2);
+    ctx.ellipse(x - 1, y + 25, 1.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX, y + 38, 1.5, 0, Math.PI * 2);
+    ctx.ellipse(x + w + 1, y + 25, 1.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tan hands/arms - perfect rectangles
-    ctx.fillStyle = '#D2B48C';
-    ctx.fillRect(x - 1, y + 24, 3, 8); // Left arm - completely flat
-    ctx.fillRect(x + w - 2, y + 24, 3, 8); // Right arm - completely flat
-    
-    // Draw gray rectangular pants - perfectly flat like thumbnail
+    // 12. GRAY PANTS - COMPLETELY STATIC
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 6, y + 42, w - 12, h - 44); // Perfectly flat pants
+    ctx.fillRect(x + 3, y + 33, 4, 8);
+    ctx.fillRect(x + w - 7, y + 33, 4, 8);
     
-    // Draw black rectangular shoes - completely flat
+    // 13. BLACK SHOES - COMPLETELY STATIC
     ctx.fillStyle = '#000000';
-    if (this.isMoving) {
-      // Smoother movement for Scrooge
-      const legCycle = Math.sin(Date.now() * 0.012) * 2; // Slightly faster but still dignified
-      const forwardOffset = 2; // More noticeable movement
-      
-      const leftShoeX = centerX - 6 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftShoeY = y + h - 3 + Math.abs(legCycle) * 0.08; // Smoother vertical movement
-      ctx.fillRect(leftShoeX, leftShoeY, 6, 4); // Completely flat shoe
-      
-      const rightShoeX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightShoeY = y + h - 3 + Math.abs(legCycle) * 0.08; // Smoother vertical movement
-      ctx.fillRect(rightShoeX, rightShoeY, 6, 4); // Completely flat shoe
-    } else {
-      ctx.fillRect(centerX - 6, y + h - 3, 6, 4); // Completely flat shoe
-      ctx.fillRect(centerX + 1, y + h - 3, 6, 4); // Completely flat shoe
-    }
+    ctx.fillRect(x + 2, y + 41, 6, 3);
+    ctx.fillRect(x + w - 8, y + 41, 6, 3);
   }
 
   private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
