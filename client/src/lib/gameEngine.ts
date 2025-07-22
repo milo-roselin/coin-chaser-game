@@ -1251,8 +1251,8 @@ export class GameEngine {
     // Enable antialiasing for smoother rendering
     ctx.imageSmoothingEnabled = true;
     
-    // Reduce width to make avatar more proportionate - 40% narrower
-    const avatarWidth = w * 0.6;
+    // Adjust width to make avatar better proportioned
+    const avatarWidth = w * 0.8;
     const leftEdge = centerX - avatarWidth / 2;
     const rightEdge = centerX + avatarWidth / 2;
     
