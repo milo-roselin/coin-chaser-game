@@ -1174,67 +1174,49 @@ export class GameEngine {
     ctx.ellipse(centerX + 10, y + 32, 4, 2.5, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the slightly bigger, semi-square purple business suit
+    // Draw the medium-sized purple business suit
     ctx.fillStyle = '#6B5B95'; // Purple from reference
     ctx.beginPath();
-    // Create slightly bigger, more square-rounded suit shape
-    ctx.roundRect(x + 2, y + 24, w - 4, 16, 6);
+    // Create medium-sized suit shape
+    ctx.roundRect(x + 3, y + 25, w - 6, 14, 5);
     ctx.fill();
     
     // Draw suit lapels exactly as in reference - prominent triangular shapes
     ctx.fillStyle = '#5A4A85'; // Darker purple for lapels
     // Left lapel
     ctx.beginPath();
-    ctx.moveTo(x + 4, y + 25);
-    ctx.lineTo(centerX - 3, y + 29);
-    ctx.lineTo(x + 4, y + 35);
-    ctx.lineTo(x + 4, y + 25);
+    ctx.moveTo(x + 5, y + 26);
+    ctx.lineTo(centerX - 2, y + 30);
+    ctx.lineTo(x + 5, y + 34);
+    ctx.lineTo(x + 5, y + 26);
     ctx.fill();
     // Right lapel
     ctx.beginPath();
-    ctx.moveTo(x + w - 4, y + 25);
-    ctx.lineTo(centerX + 3, y + 29);
-    ctx.lineTo(x + w - 4, y + 35);
-    ctx.lineTo(x + w - 4, y + 25);
+    ctx.moveTo(x + w - 5, y + 26);
+    ctx.lineTo(centerX + 2, y + 30);
+    ctx.lineTo(x + w - 5, y + 34);
+    ctx.lineTo(x + w - 5, y + 26);
     ctx.fill();
     
     // White shirt collar exactly as shown in reference
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 3, y + 25);
-    ctx.lineTo(centerX + 3, y + 25);
-    ctx.lineTo(centerX + 2, y + 35);
-    ctx.lineTo(centerX - 2, y + 35);
+    ctx.moveTo(centerX - 2, y + 26);
+    ctx.lineTo(centerX + 2, y + 26);
+    ctx.lineTo(centerX + 1.5, y + 34);
+    ctx.lineTo(centerX - 1.5, y + 34);
     ctx.closePath();
     ctx.fill();
     
     // Brown tie with orange center exactly matching reference
     ctx.fillStyle = '#8B4513'; // Brown tie base
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 29, 1.8, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 29, 1.5, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     // Orange tie center/pattern
     ctx.fillStyle = '#CD853F';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 29, 1.3, 3.2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Proper arm shapes with hands on hips
-    ctx.fillStyle = '#C4965A';
-    // Left arm - realistic arm shape
-    ctx.beginPath();
-    ctx.ellipse(x - 1, y + 28, 2.5, 3, -0.3, 0, Math.PI * 2); // Upper arm
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x - 3, y + 32, 2, 2.5, -0.5, 0, Math.PI * 2); // Forearm/hand on hip
-    ctx.fill();
-    
-    // Right arm - realistic arm shape
-    ctx.beginPath();
-    ctx.ellipse(x + w + 1, y + 28, 2.5, 3, 0.3, 0, Math.PI * 2); // Upper arm
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w + 3, y + 32, 2, 2.5, 0.5, 0, Math.PI * 2); // Forearm/hand on hip
+    ctx.ellipse(centerX, y + 29, 1, 2.2, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Bigger legs positioned farther apart BELOW the suit
