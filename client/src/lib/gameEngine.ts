@@ -1168,27 +1168,34 @@ export class GameEngine {
     ctx.arc(centerX + 5, y + 9, 2.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the purple business suit exactly as shown in reference
+    // Draw tail behind body first - positioned exactly like reference
+    ctx.fillStyle = '#8B5A3C'; // Dark brown tail
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 32, 4, 2.5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw the purple business suit with rounded bottom - not flat
     ctx.fillStyle = '#6B5B95'; // Purple from reference
     ctx.beginPath();
-    ctx.roundRect(x + 2, y + 23, w - 4, h - 27, 2);
+    // Create rounded suit shape
+    ctx.ellipse(centerX, y + 30, 10, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw suit lapels exactly as in reference - prominent triangular shapes
     ctx.fillStyle = '#5A4A85'; // Darker purple for lapels
     // Left lapel
     ctx.beginPath();
-    ctx.moveTo(x + 3, y + 24);
+    ctx.moveTo(x + 4, y + 24);
     ctx.lineTo(centerX - 3, y + 28);
-    ctx.lineTo(x + 3, y + 36);
-    ctx.lineTo(x + 3, y + 24);
+    ctx.lineTo(x + 4, y + 34);
+    ctx.lineTo(x + 4, y + 24);
     ctx.fill();
     // Right lapel
     ctx.beginPath();
-    ctx.moveTo(x + w - 3, y + 24);
+    ctx.moveTo(x + w - 4, y + 24);
     ctx.lineTo(centerX + 3, y + 28);
-    ctx.lineTo(x + w - 3, y + 36);
-    ctx.lineTo(x + w - 3, y + 24);
+    ctx.lineTo(x + w - 4, y + 34);
+    ctx.lineTo(x + w - 4, y + 24);
     ctx.fill();
     
     // White shirt collar exactly as shown in reference
@@ -1196,56 +1203,56 @@ export class GameEngine {
     ctx.beginPath();
     ctx.moveTo(centerX - 3, y + 24);
     ctx.lineTo(centerX + 3, y + 24);
-    ctx.lineTo(centerX + 2, y + 34);
-    ctx.lineTo(centerX - 2, y + 34);
+    ctx.lineTo(centerX + 2, y + 32);
+    ctx.lineTo(centerX - 2, y + 32);
     ctx.closePath();
     ctx.fill();
     
     // Brown tie with orange center exactly matching reference
     ctx.fillStyle = '#8B4513'; // Brown tie base
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 28, 2, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 27, 1.8, 3.5, 0, 0, Math.PI * 2);
     ctx.fill();
     // Orange tie center/pattern
     ctx.fillStyle = '#CD853F';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 28, 1.5, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 27, 1.3, 2.8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Yellow buttons positioned exactly as in reference
+    // Yellow buttons ON the suit positioned exactly as in reference
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 31, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX + 4, y + 29, 1.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 4, y + 35, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX + 4, y + 32, 1.5, 0, Math.PI * 2);
     ctx.fill();
     
     // Tan stubby arms exactly matching reference proportions
     ctx.fillStyle = '#C4965A';
     ctx.beginPath();
-    ctx.ellipse(x, y + 31, 3, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 1, y + 29, 3, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w, y + 31, 3, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w - 1, y + 29, 3, 5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Short stubby legs exactly like reference
+    // Short stubby legs BELOW the suit exactly like reference
     ctx.fillStyle = '#C4965A';
     if (this.isMoving) {
       const legCycle = Math.sin(Date.now() * 0.015) * 1.5;
       const forwardOffset = 1;
       
       const leftLegX = centerX - 3 + (legCycle > 0 ? forwardOffset : -forwardOffset);
-      const leftLegY = y + h - 1 + Math.abs(legCycle) * 0.05;
-      ctx.fillRect(leftLegX, leftLegY, 4, 4);
+      const leftLegY = y + 38 + Math.abs(legCycle) * 0.05; // Below suit
+      ctx.fillRect(leftLegX, leftLegY, 4, 6);
       
       const rightLegX = centerX + 1 + (legCycle < 0 ? forwardOffset : -forwardOffset);
-      const rightLegY = y + h - 1 + Math.abs(legCycle) * 0.05;
-      ctx.fillRect(rightLegX, rightLegY, 4, 4);
+      const rightLegY = y + 38 + Math.abs(legCycle) * 0.05; // Below suit
+      ctx.fillRect(rightLegX, rightLegY, 4, 6);
     } else {
-      ctx.fillRect(centerX - 3, y + h - 1, 4, 4);
-      ctx.fillRect(centerX + 1, y + h - 1, 4, 4);
+      ctx.fillRect(centerX - 3, y + 38, 4, 6); // Below suit
+      ctx.fillRect(centerX + 1, y + 38, 4, 6); // Below suit
     }
   }
 
