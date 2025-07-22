@@ -1251,55 +1251,13 @@ export class GameEngine {
     // Enable antialiasing for smoother rendering
     ctx.imageSmoothingEnabled = true;
     
-    // Draw medium-sized Scrooge to match other avatars
+    // Draw medium-sized Scrooge to match other avatars - body first, then head
     
-    // 1. WHITE SIDE HAIR FIRST - lowered closer to body
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(x + 5, y + 5, 1.5, 4, 0, 0, Math.PI * 2); // Lowered left hair
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(x + w - 5, y + 5, 1.5, 4, 0, 0, Math.PI * 2); // Lowered right hair
-    ctx.fill();
-    
-    // 2. BLACK TOP HAT AFTER HAIR - lowered closer to body
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 6, y - 8, w - 12, 10); // Lowered hat body
-    ctx.fillRect(x + 3, y + 1, w - 6, 2); // Lowered hat brim
-    
-    // 3. TAN FACE - lowered closer to body
-    ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x + 7, y + 4, w - 14, 11); // Lowered face
-    
-    // 4. GRAY EYEBROWS - lowered with face
-    ctx.fillStyle = '#A0A0A0';
-    ctx.fillRect(x + 8, y + 6, 2.5, 1.5); // Lowered left eyebrow
-    ctx.fillRect(x + w - 10.5, y + 6, 2.5, 1.5); // Lowered right eyebrow
-    
-    // 5. BLACK EYES - lowered with face
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(x + 9, y + 9, 1.2, 0, Math.PI * 2); // Lowered left eye
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(x + w - 9, y + 9, 1.2, 0, Math.PI * 2); // Lowered right eye
-    ctx.fill();
-    
-    // 6. NOSE - lowered with face
-    ctx.fillStyle = '#C8A882';
-    ctx.fillRect(centerX - 0.5, y + 10, 1, 3); // Lowered nose
-    
-    // 7. WHITE BEARD - lowered with face
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.ellipse(centerX, y + 16, 3.5, 3.5, 0, 0, Math.PI * 2); // Lowered beard
-    ctx.fill();
-    
-    // 8. DARK NAVY COAT - narrower width
+    // 1. DARK NAVY COAT FIRST - body portion
     ctx.fillStyle = '#1B2951';
     ctx.fillRect(x + 4, y + 15, w - 8, 14); // Narrower coat
     
-    // 9. WHITE COLLAR - smaller triangle
+    // 2. WHITE COLLAR - on coat
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.moveTo(centerX - 2, y + 15);
@@ -1308,7 +1266,7 @@ export class GameEngine {
     ctx.closePath();
     ctx.fill();
     
-    // 10. BLACK BUTTONS - medium size
+    // 3. BLACK BUTTONS - on coat
     ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.arc(centerX, y + 22, 1, 0, Math.PI * 2); // Medium upper button
@@ -1317,7 +1275,7 @@ export class GameEngine {
     ctx.arc(centerX, y + 25, 1, 0, Math.PI * 2); // Medium lower button
     ctx.fill();
     
-    // 11. PROPER ARMS - positioned closer to body
+    // 4. PROPER ARMS - positioned closer to body
     ctx.fillStyle = '#DEB887';
     ctx.fillRect(x + 2, y + 18, 2.5, 8); // Left arm closer to body
     ctx.fillRect(x + w - 4.5, y + 18, 2.5, 8); // Right arm closer to body
@@ -1328,6 +1286,48 @@ export class GameEngine {
     ctx.fill();
     ctx.beginPath();
     ctx.ellipse(x + w - 3.2, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
+    ctx.fill();
+    
+    // 5. WHITE SIDE HAIR FIRST - lowered closer to body
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(x + 5, y + 5, 1.5, 4, 0, 0, Math.PI * 2); // Lowered left hair
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w - 5, y + 5, 1.5, 4, 0, 0, Math.PI * 2); // Lowered right hair
+    ctx.fill();
+    
+    // 6. BLACK TOP HAT AFTER HAIR - lowered closer to body
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(x + 6, y - 8, w - 12, 10); // Lowered hat body
+    ctx.fillRect(x + 3, y + 1, w - 6, 2); // Lowered hat brim
+    
+    // 7. TAN FACE - lowered closer to body
+    ctx.fillStyle = '#DEB887';
+    ctx.fillRect(x + 7, y + 4, w - 14, 11); // Lowered face
+    
+    // 8. GRAY EYEBROWS - lowered with face
+    ctx.fillStyle = '#A0A0A0';
+    ctx.fillRect(x + 8, y + 6, 2.5, 1.5); // Lowered left eyebrow
+    ctx.fillRect(x + w - 10.5, y + 6, 2.5, 1.5); // Lowered right eyebrow
+    
+    // 9. BLACK EYES - lowered with face
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(x + 9, y + 9, 1.2, 0, Math.PI * 2); // Lowered left eye
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + w - 9, y + 9, 1.2, 0, Math.PI * 2); // Lowered right eye
+    ctx.fill();
+    
+    // 10. NOSE - lowered with face
+    ctx.fillStyle = '#C8A882';
+    ctx.fillRect(centerX - 0.5, y + 10, 1, 3); // Lowered nose
+    
+    // 11. WHITE BEARD - lowered with face, drawn over body
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(centerX, y + 16, 3.5, 3.5, 0, 0, Math.PI * 2); // Lowered beard
     ctx.fill();
     
     // 12. GRAY PANTS - legs positioned closer to body center
