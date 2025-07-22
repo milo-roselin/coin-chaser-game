@@ -1168,21 +1168,6 @@ export class GameEngine {
     ctx.arc(centerX + 5, y + 9, 2.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw bigger tail positioned lower behind body - always stays on the same side
-    ctx.fillStyle = '#8B5A3C'; // Dark brown tail
-    ctx.beginPath();
-    ctx.ellipse(centerX + 9, y + 34, 7, 5, 0.2, 0, Math.PI * 2); // Bigger tail, moved down
-    ctx.fill();
-    
-    // Add tail stripes for more visibility - positioned lower
-    ctx.fillStyle = '#6B4226';
-    ctx.beginPath();
-    ctx.ellipse(centerX + 9, y + 33, 5.5, 1.8, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(centerX + 9, y + 36, 5.5, 1.8, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    
     // Draw the medium-sized purple business suit
     ctx.fillStyle = '#6B5B95'; // Purple from reference
     ctx.beginPath();
@@ -1226,6 +1211,17 @@ export class GameEngine {
     ctx.fillStyle = '#CD853F';
     ctx.beginPath();
     ctx.ellipse(centerX, y + 29, 1, 2.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add arms back - simple arm shapes
+    ctx.fillStyle = '#C4965A';
+    // Left arm
+    ctx.beginPath();
+    ctx.ellipse(x + 1, y + 28, 2.5, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Right arm
+    ctx.beginPath();
+    ctx.ellipse(x + w - 1, y + 28, 2.5, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Bigger legs positioned farther apart BELOW the suit
