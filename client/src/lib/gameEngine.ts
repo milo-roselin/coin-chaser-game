@@ -1168,10 +1168,19 @@ export class GameEngine {
     ctx.arc(centerX + 5, y + 9, 2.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw tail behind body first - positioned exactly like reference
+    // Draw bigger, more visible tail behind body first - always on the same side
     ctx.fillStyle = '#8B5A3C'; // Dark brown tail
     ctx.beginPath();
-    ctx.ellipse(centerX + 10, y + 32, 4, 2.5, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 8, y + 30, 6, 4, 0.2, 0, Math.PI * 2); // Bigger tail
+    ctx.fill();
+    
+    // Add tail stripes for more visibility
+    ctx.fillStyle = '#6B4226';
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 29, 4.5, 1.5, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(centerX + 8, y + 32, 4.5, 1.5, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw the medium-sized purple business suit
