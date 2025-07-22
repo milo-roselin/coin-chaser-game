@@ -1168,19 +1168,19 @@ export class GameEngine {
     ctx.arc(centerX + 5, y + 9, 2.5, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw bigger, more visible tail behind body first - always on the same side
+    // Draw bigger tail positioned lower behind body - always stays on the same side
     ctx.fillStyle = '#8B5A3C'; // Dark brown tail
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 30, 6, 4, 0.2, 0, Math.PI * 2); // Bigger tail
+    ctx.ellipse(centerX + 9, y + 34, 7, 5, 0.2, 0, Math.PI * 2); // Bigger tail, moved down
     ctx.fill();
     
-    // Add tail stripes for more visibility
+    // Add tail stripes for more visibility - positioned lower
     ctx.fillStyle = '#6B4226';
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 29, 4.5, 1.5, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 9, y + 33, 5.5, 1.8, 0.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 8, y + 32, 4.5, 1.5, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 9, y + 36, 5.5, 1.8, 0.2, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw the medium-sized purple business suit
