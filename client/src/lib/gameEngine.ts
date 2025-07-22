@@ -1150,22 +1150,22 @@ export class GameEngine {
     ctx.ellipse(centerX + 11, y - 1, 3.5, 5, 0.4, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw large white eyes exactly positioned like reference
+    // Draw medium-sized white eyes
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX - 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 4, y + 8, 3.5, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 5, y + 8, 5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 4, y + 8, 3.5, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw blue pupils positioned exactly as in reference with sleepy/droopy look
+    // Draw blue pupils - medium sized to match eyes
     ctx.fillStyle = '#4169E1'; // Blue from reference
     ctx.beginPath();
-    ctx.arc(centerX - 5, y + 9, 2.5, 0, Math.PI * 2);
+    ctx.arc(centerX - 4, y + 8.5, 1.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX + 5, y + 9, 2.5, 0, Math.PI * 2);
+    ctx.arc(centerX + 4, y + 8.5, 1.8, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw the medium-sized purple business suit
