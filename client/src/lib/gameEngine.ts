@@ -1099,37 +1099,37 @@ export class GameEngine {
     ctx.ellipse(centerX, y + 9, 13, 14, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the massive dark brown mask covering most of head - exactly like reference
-    ctx.fillStyle = '#3D2817'; // Very dark brown mask
+    // Draw dark brown mask to match thumbnail - covers eye area
+    ctx.fillStyle = '#2D1B14'; // Dark brown mask like thumbnail
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 5, 12, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 6, 11, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the tan/orange patches around eyes within the mask - exact positioning from reference
-    ctx.fillStyle = '#D4A574'; // Light tan patches
+    // Draw tan patches around eyes like thumbnail
+    ctx.fillStyle = '#D2B48C'; // Tan patches matching thumbnail
     ctx.beginPath();
-    ctx.ellipse(centerX - 6, y + 4, 4, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX - 5, y + 5, 3.5, 2.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(centerX + 6, y + 4, 4, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 5, y + 5, 3.5, 2.5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the lower face/muzzle area exactly as shown
+    // Draw lower face/muzzle matching thumbnail
     ctx.fillStyle = '#C4965A';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 16, 9, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 15, 8, 6, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add darker shading on right side of muzzle exactly like reference
-    ctx.fillStyle = '#A67C48';
+    // Add subtle muzzle shading like thumbnail
+    ctx.fillStyle = '#BC9A6A';
     ctx.beginPath();
-    ctx.ellipse(centerX + 3, y + 17, 5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX + 2, y + 16, 3, 2.5, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw small black nose positioned exactly as in reference
+    // Draw small round black nose like thumbnail
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 15, 1.5, 0, Math.PI * 2);
+    ctx.arc(centerX, y + 16.5, 1, 0, Math.PI * 2);
     ctx.fill();
     
     // Draw ears with brown rim and bright pink interior - exact reference positioning
@@ -1213,15 +1213,15 @@ export class GameEngine {
     ctx.ellipse(centerX, y + 29, 1, 2.2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Add longer arms - extended arm shapes
+    // Add longer arms moved downward - extended arm shapes
     ctx.fillStyle = '#C4965A';
-    // Left arm - longer
+    // Left arm - longer and moved down
     ctx.beginPath();
-    ctx.ellipse(x + 1, y + 30, 2.5, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 1, y + 33, 2.5, 6, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Right arm - longer
+    // Right arm - longer and moved down
     ctx.beginPath();
-    ctx.ellipse(x + w - 1, y + 30, 2.5, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w - 1, y + 33, 2.5, 6, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Bigger legs positioned farther apart BELOW the suit
