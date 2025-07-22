@@ -1338,28 +1338,28 @@ export class GameEngine {
     ctx.ellipse(rightEdge - 1.25, y + 26, 1.2, 1.2, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. ANIMATED GRAY PANTS - like other avatars
+    // 12. ANIMATED GRAY PANTS - like other avatars with wider foot spacing
     ctx.fillStyle = '#808080';
     if (isMoving) {
-      // Animated legs during movement
-      const leftLegX = centerX - 2.5 + (legCycle > 0 ? legCycle * 2 : 0);
-      const rightLegX = centerX + 0.5 + (legCycle < 0 ? legCycle * 2 : 0);
+      // Animated legs during movement - wider apart
+      const leftLegX = centerX - 4 + (legCycle > 0 ? legCycle * 2 : 0);
+      const rightLegX = centerX + 2 + (legCycle < 0 ? legCycle * 2 : 0);
       ctx.fillRect(leftLegX, y + 29, 2, 8); // Animated left leg
       ctx.fillRect(rightLegX, y + 29, 2, 8); // Animated right leg
       
-      // 13. ANIMATED BLACK SHOES
+      // 13. ANIMATED BLACK SHOES - wider apart
       ctx.fillStyle = '#000000';
       ctx.fillRect(leftLegX - 0.5, y + 36, 3, 3); // Left shoe follows leg
       ctx.fillRect(rightLegX - 0.5, y + 36, 3, 3); // Right shoe follows leg
     } else {
-      // Static legs when not moving
-      ctx.fillRect(centerX - 2.5, y + 29, 2, 8); // Static left leg
-      ctx.fillRect(centerX + 0.5, y + 29, 2, 8); // Static right leg
+      // Static legs when not moving - wider apart
+      ctx.fillRect(centerX - 4, y + 29, 2, 8); // Static left leg - farther left
+      ctx.fillRect(centerX + 2, y + 29, 2, 8); // Static right leg - farther right
       
-      // 13. STATIC BLACK SHOES
+      // 13. STATIC BLACK SHOES - wider apart
       ctx.fillStyle = '#000000';
-      ctx.fillRect(centerX - 3, y + 36, 3, 3); // Static left shoe
-      ctx.fillRect(centerX, y + 36, 3, 3); // Static right shoe
+      ctx.fillRect(centerX - 4.5, y + 36, 3, 3); // Static left shoe - farther left
+      ctx.fillRect(centerX + 1.5, y + 36, 3, 3); // Static right shoe - farther right
     }
   }
 
