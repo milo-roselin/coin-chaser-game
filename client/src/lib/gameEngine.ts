@@ -1251,94 +1251,94 @@ export class GameEngine {
     // Enable antialiasing for smoother rendering
     ctx.imageSmoothingEnabled = true;
     
-    // Draw Scrooge with better proportions matching scrooge-avatar.png
+    // Draw medium-sized Scrooge to match other avatars
     
-    // 1. BLACK TOP HAT - taller and more proportionate
+    // 1. BLACK TOP HAT - medium size
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 3, y - 18, w - 6, 15); // Taller hat body
-    ctx.fillRect(x - 2, y - 4, w + 4, 3); // Wider hat brim
+    ctx.fillRect(x + 4, y - 12, w - 8, 10); // Medium hat body
+    ctx.fillRect(x + 1, y - 3, w - 2, 2); // Medium hat brim
     
-    // 2. WHITE SIDE HAIR - larger and more visible
+    // 2. WHITE SIDE HAIR - medium size
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(x + 2, y + 2, 3, 6, 0, 0, Math.PI * 2); // Larger left hair
+    ctx.ellipse(x + 3, y + 1, 2, 4, 0, 0, Math.PI * 2); // Medium left hair
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w - 2, y + 2, 3, 6, 0, 0, Math.PI * 2); // Larger right hair
+    ctx.ellipse(x + w - 3, y + 1, 2, 4, 0, 0, Math.PI * 2); // Medium right hair
     ctx.fill();
     
-    // 3. TAN FACE - better proportioned rectangle
+    // 3. TAN FACE - medium proportioned
     ctx.fillStyle = '#DEB887';
-    ctx.fillRect(x + 5, y - 1, w - 10, 15); // Taller face
+    ctx.fillRect(x + 5, y, w - 10, 11); // Medium face
     
-    // 4. GRAY EYEBROWS - thicker and more prominent
+    // 4. GRAY EYEBROWS - medium size
     ctx.fillStyle = '#A0A0A0';
-    ctx.fillRect(x + 7, y + 2, 4, 2.5); // Thicker left eyebrow
-    ctx.fillRect(x + w - 11, y + 2, 4, 2.5); // Thicker right eyebrow
+    ctx.fillRect(x + 6, y + 2, 3, 1.5); // Medium left eyebrow
+    ctx.fillRect(x + w - 9, y + 2, 3, 1.5); // Medium right eyebrow
     
-    // 5. BLACK EYES - larger and better positioned
+    // 5. BLACK EYES - medium size
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(x + 8, y + 6, 2, 0, Math.PI * 2); // Larger left eye
+    ctx.arc(x + 7, y + 5, 1.2, 0, Math.PI * 2); // Medium left eye
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + w - 8, y + 6, 2, 0, Math.PI * 2); // Larger right eye
+    ctx.arc(x + w - 7, y + 5, 1.2, 0, Math.PI * 2); // Medium right eye
     ctx.fill();
     
-    // 6. NOSE - longer and more prominent
-    ctx.fillStyle = '#C8A882'; // Slightly darker for definition
-    ctx.fillRect(centerX - 0.8, y + 8, 1.6, 5); // Longer, slightly wider nose
+    // 6. NOSE - medium length
+    ctx.fillStyle = '#C8A882';
+    ctx.fillRect(centerX - 0.5, y + 6, 1, 3); // Medium nose
     
-    // 7. WHITE BEARD - larger and more prominent
+    // 7. WHITE BEARD - medium size
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 16, 7, 5.5, 0, 0, Math.PI * 2); // Larger beard
+    ctx.ellipse(centerX, y + 12, 4.5, 3.5, 0, 0, Math.PI * 2); // Medium beard
     ctx.fill();
     
-    // Add subtle mouth line in beard
-    ctx.fillStyle = '#F0F0F0';
-    ctx.fillRect(centerX - 1.5, y + 15, 3, 1);
-    
-    // 8. DARK NAVY COAT - better proportioned
+    // 8. DARK NAVY COAT - medium size
     ctx.fillStyle = '#1B2951';
-    ctx.fillRect(x + 1, y + 20, w - 2, 20); // Taller coat
+    ctx.fillRect(x + 2, y + 15, w - 4, 14); // Medium coat
     
-    // 9. WHITE COLLAR - larger triangle
+    // 9. WHITE COLLAR - medium triangle
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.moveTo(centerX - 4, y + 20);
-    ctx.lineTo(centerX + 4, y + 20);
-    ctx.lineTo(centerX, y + 28);
+    ctx.moveTo(centerX - 2.5, y + 15);
+    ctx.lineTo(centerX + 2.5, y + 15);
+    ctx.lineTo(centerX, y + 20);
     ctx.closePath();
     ctx.fill();
     
-    // 10. BLACK BUTTONS - larger and better spaced
+    // 10. BLACK BUTTONS - medium size
     ctx.fillStyle = '#000000';
     ctx.beginPath();
-    ctx.arc(centerX, y + 30, 1.5, 0, Math.PI * 2); // Larger upper button
+    ctx.arc(centerX, y + 22, 1, 0, Math.PI * 2); // Medium upper button
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(centerX, y + 35, 1.5, 0, Math.PI * 2); // Larger lower button
+    ctx.arc(centerX, y + 25, 1, 0, Math.PI * 2); // Medium lower button
     ctx.fill();
     
-    // 11. TAN HANDS - larger and more visible
+    // 11. PROPER ARMS - rectangular arm shapes like other avatars
     ctx.fillStyle = '#DEB887';
+    ctx.fillRect(x - 1, y + 18, 3, 8); // Left arm - rectangular like other avatars
+    ctx.fillRect(x + w - 2, y + 18, 3, 8); // Right arm - rectangular like other avatars
+    
+    // Add small hands at end of arms
     ctx.beginPath();
-    ctx.ellipse(x - 1, y + 28, 2.5, 3, 0, 0, Math.PI * 2); // Larger left hand
+    ctx.ellipse(x, y + 26, 1.5, 1.5, 0, 0, Math.PI * 2); // Left hand
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(x + w + 1, y + 28, 2.5, 3, 0, 0, Math.PI * 2); // Larger right hand
+    ctx.ellipse(x + w - 1, y + 26, 1.5, 1.5, 0, 0, Math.PI * 2); // Right hand
     ctx.fill();
     
-    // 12. GRAY PANTS - better proportioned legs
+    // 12. GRAY PANTS - medium legs to match other avatars
     ctx.fillStyle = '#808080';
-    ctx.fillRect(x + 4, y + 40, 5, 10); // Wider left leg
-    ctx.fillRect(x + w - 9, y + 40, 5, 10); // Wider right leg
+    ctx.fillRect(x + 5, y + 29, 3, 8); // Medium left leg
+    ctx.fillRect(x + w - 8, y + 29, 3, 8); // Medium right leg
     
-    // 13. BLACK SHOES - larger and more prominent
+    // 13. BLACK SHOES - medium size to match other avatars
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x + 3, y + 49, 7, 4); // Larger left shoe
-    ctx.fillRect(x + w - 10, y + 49, 7, 4); // Larger right shoe
+    ctx.fillRect(x + 4, y + 36, 5, 3); // Medium left shoe
+    ctx.fillRect(x + w - 9, y + 36, 5, 3); // Medium right shoe
   }
 
   private drawWarioAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
