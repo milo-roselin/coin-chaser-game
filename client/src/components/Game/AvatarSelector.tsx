@@ -117,7 +117,7 @@ export function AvatarSelector({ onClose }: AvatarSelectorProps) {
                 onClick={() => handleAvatarSelect(avatar.id, avatar.unlockCost)}
               >
                 {/* Keyboard shortcut indicator */}
-                <div className="absolute top-2 right-2 w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center text-xs text-yellow-400 font-bold">
+                <div className="absolute top-2 left-2 w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center text-xs text-yellow-400 font-bold">
                   {keyNumber}
                 </div>
                 <div className="flex items-center space-x-3">
