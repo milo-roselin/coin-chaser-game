@@ -1174,11 +1174,11 @@ export class GameEngine {
     ctx.ellipse(centerX + 10, y + 32, 4, 2.5, 0.3, 0, Math.PI * 2);
     ctx.fill();
     
-    // Draw the smaller, rounder purple business suit
+    // Draw the slightly bigger, semi-square purple business suit
     ctx.fillStyle = '#6B5B95'; // Purple from reference
     ctx.beginPath();
-    // Create smaller, rounder suit shape
-    ctx.ellipse(centerX, y + 31, 9, 7, 0, 0, Math.PI * 2);
+    // Create slightly bigger, more square-rounded suit shape
+    ctx.roundRect(x + 2, y + 24, w - 4, 16, 6);
     ctx.fill();
     
     // Draw suit lapels exactly as in reference - prominent triangular shapes
@@ -1203,47 +1203,38 @@ export class GameEngine {
     ctx.beginPath();
     ctx.moveTo(centerX - 3, y + 25);
     ctx.lineTo(centerX + 3, y + 25);
-    ctx.lineTo(centerX + 2, y + 33);
-    ctx.lineTo(centerX - 2, y + 33);
+    ctx.lineTo(centerX + 2, y + 35);
+    ctx.lineTo(centerX - 2, y + 35);
     ctx.closePath();
     ctx.fill();
     
     // Brown tie with orange center exactly matching reference
     ctx.fillStyle = '#8B4513'; // Brown tie base
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 28, 1.8, 3.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 29, 1.8, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     // Orange tie center/pattern
     ctx.fillStyle = '#CD853F';
     ctx.beginPath();
-    ctx.ellipse(centerX, y + 28, 1.3, 2.8, 0, 0, Math.PI * 2);
+    ctx.ellipse(centerX, y + 29, 1.3, 3.2, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Yellow buttons ON the suit positioned exactly as in reference
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(centerX + 4, y + 30, 1.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(centerX + 4, y + 34, 1.3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Triangle-shaped arms with hands on hips
+    // Proper arm shapes with hands on hips
     ctx.fillStyle = '#C4965A';
-    // Left arm - triangle shape from shoulder to hip
+    // Left arm - realistic arm shape
     ctx.beginPath();
-    ctx.moveTo(x + 2, y + 27); // Shoulder
-    ctx.lineTo(x - 3, y + 32); // Hip position (hand)
-    ctx.lineTo(x + 5, y + 34); // Back to body
-    ctx.closePath();
+    ctx.ellipse(x - 1, y + 28, 2.5, 3, -0.3, 0, Math.PI * 2); // Upper arm
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x - 3, y + 32, 2, 2.5, -0.5, 0, Math.PI * 2); // Forearm/hand on hip
     ctx.fill();
     
-    // Right arm - triangle shape from shoulder to hip
+    // Right arm - realistic arm shape
     ctx.beginPath();
-    ctx.moveTo(x + w - 2, y + 27); // Shoulder
-    ctx.lineTo(x + w + 3, y + 32); // Hip position (hand)
-    ctx.lineTo(x + w - 5, y + 34); // Back to body
-    ctx.closePath();
+    ctx.ellipse(x + w + 1, y + 28, 2.5, 3, 0.3, 0, Math.PI * 2); // Upper arm
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + w + 3, y + 32, 2, 2.5, 0.5, 0, Math.PI * 2); // Forearm/hand on hip
     ctx.fill();
     
     // Bigger legs positioned farther apart BELOW the suit
