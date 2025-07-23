@@ -140,7 +140,7 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       updateCoinsCollected: () => {
-        // Add coin to the bank
+        // Add coin to the bank (this will automatically sync to database if user is authenticated)
         const { addCoins } = useCoinBank.getState();
         addCoins(1);
         

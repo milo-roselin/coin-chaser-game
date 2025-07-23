@@ -65,7 +65,10 @@ export const useCoinBank = create<CoinBankState>()(
         const authState = useAuth.getState();
         
         if (authState.user) {
-          await authState.syncCoinBank(totalCoins);
+          const success = await authState.syncCoinBank(totalCoins);
+          if (!success) {
+            console.error('Failed to sync coin bank to database');
+          }
         }
       },
     }),

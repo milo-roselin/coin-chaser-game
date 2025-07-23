@@ -44,6 +44,9 @@ export default function VictoryScreen() {
 
   const handleGlobalScoreSubmit = async () => {
     if (user && !globalScoreSubmitted) {
+      // First sync coin bank to ensure database has latest coin count
+      await useCoinBank.getState().syncToDatabase();
+      
       const success = await submitScore(totalScore, totalCoinsCollected, currentLevel);
       if (success) {
         setGlobalScoreSubmitted(true);
