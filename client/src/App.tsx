@@ -1,7 +1,6 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { useCoinGame } from "./lib/stores/useCoinGame";
 import { useAudio } from "./lib/stores/useAudio";
-import { useDevicePreference } from "./lib/stores/useDevicePreference";
 import { initializeMobileFullscreen } from "./lib/utils/mobileFullscreen";
 import StartScreen from "./components/Game/StartScreen";
 import GameScreen from "./components/Game/GameScreen";
@@ -14,40 +13,11 @@ import "@fontsource/inter";
 function App() {
   const { gameState } = useCoinGame();
   const { setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound } = useAudio();
-  const { selectedDevice, getScreenDimensions } = useDevicePreference();
-  const [screenDimensions, setScreenDimensions] = useState({ width: '100vw', height: '100vh' });
 
   // Initialize mobile fullscreen
   useEffect(() => {
     initializeMobileFullscreen();
   }, []);
-
-  // Update screen dimensions based on device selection
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (selectedDevice === 'auto') {
-        setScreenDimensions({ width: '100vw', height: '100vh' });
-      } else {
-        const dimensions = getScreenDimensions();
-        setScreenDimensions({ 
-          width: `${dimensions.width}px`, 
-          height: `${dimensions.height}px` 
-        });
-      }
-    };
-    
-    updateDimensions();
-    
-    // Listen for window resize events
-    const handleResize = () => {
-      if (selectedDevice === 'auto') {
-        setScreenDimensions({ width: '100vw', height: '100vh' });
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [selectedDevice, getScreenDimensions]);
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -121,33 +91,22 @@ function App() {
 
   return (
     <div 
-      className="w-full h-screen flex items-center justify-center"
       style={{ 
-        background: selectedDevice !== 'auto' ? '#f3f4f6' : 'transparent',
+        width: '100vw', 
+        height: '100vh', 
+        position: 'relative', 
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 100%)',
         fontFamily: 'Inter, sans-serif'
       }}
     >
-      <div 
-        className={selectedDevice !== 'auto' ? 'border-2 border-gray-400 shadow-2xl' : ''}
-        style={{ 
-          width: screenDimensions.width, 
-          height: screenDimensions.height, 
-          position: 'relative',
-          overflow: 'hidden',
-          background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 100%)',
-          ...(selectedDevice !== 'auto' && {
-            borderRadius: '8px'
-          })
-        }}
-      >
-        <Suspense fallback={
-          <div className="flex items-center justify-center w-full h-full">
-            <div className="text-2xl font-bold text-blue-600">Loading...</div>
-          </div>
-        }>
-          {renderScreen()}
-        </Suspense>
-      </div>
+      <Suspense fallback={
+        <div className="flex items-center justify-center w-full h-full">
+          <div className="text-2xl font-bold text-blue-600">Loading...</div>
+        </div>
+      }>
+        {renderScreen()}
+      </Suspense>
     </div>
   );
 }
