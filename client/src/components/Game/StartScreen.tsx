@@ -160,7 +160,7 @@ export default function StartScreen() {
   }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
-    <div className="game-container flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white relative">
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
