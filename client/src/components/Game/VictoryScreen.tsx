@@ -7,6 +7,7 @@ import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { Trophy, Home, Upload, Lock, Coins } from "lucide-react";
 import CoinBankDisplay from "./CoinBankDisplay";
+import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 
 export default function VictoryScreen() {
   const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
@@ -126,6 +127,11 @@ export default function VictoryScreen() {
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
+      </div>
+      
+      {/* Mobile Fullscreen Button - Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <MobileFullscreenButton />
       </div>
       
       {/* Victory Message */}

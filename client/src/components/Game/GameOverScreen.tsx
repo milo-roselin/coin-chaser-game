@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { RotateCcw, Home, Play, Lock } from "lucide-react";
 import CoinBankDisplay from "./CoinBankDisplay";
+import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 
 export default function GameOverScreen() {
   const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel } = useCoinGame();
@@ -93,6 +94,11 @@ export default function GameOverScreen() {
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay />
+      </div>
+      
+      {/* Mobile Fullscreen Button - Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <MobileFullscreenButton />
       </div>
       
       {/* Game Over Message */}

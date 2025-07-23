@@ -1,6 +1,7 @@
 import { Suspense, useEffect } from "react";
 import { useCoinGame } from "./lib/stores/useCoinGame";
 import { useAudio } from "./lib/stores/useAudio";
+import { initializeMobileFullscreen } from "./lib/utils/mobileFullscreen";
 import StartScreen from "./components/Game/StartScreen";
 import GameScreen from "./components/Game/GameScreen";
 import GameOverScreen from "./components/Game/GameOverScreen";
@@ -12,6 +13,11 @@ import "@fontsource/inter";
 function App() {
   const { gameState } = useCoinGame();
   const { setBackgroundMusic, setHitSound, setSuccessSound, setExplosionSound, setCoinSound } = useAudio();
+
+  // Initialize mobile fullscreen
+  useEffect(() => {
+    initializeMobileFullscreen();
+  }, []);
 
   // Initialize audio on component mount
   useEffect(() => {

@@ -9,6 +9,7 @@ import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User } from "lucide-rea
 import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
 import { AvatarSelector } from "./AvatarSelector";
+import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
@@ -163,6 +164,11 @@ export default function StartScreen() {
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
+      </div>
+      
+      {/* Mobile Fullscreen Button - Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <MobileFullscreenButton />
       </div>
       
       {/* Game Logo */}
