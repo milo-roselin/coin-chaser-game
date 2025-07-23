@@ -123,7 +123,7 @@ export default function VictoryScreen() {
   }, [handleHome, handleSubmitScore, scoreSubmitted, playerName, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+    <div className="game-container flex flex-col items-center justify-center bg-gradient-to-br from-green-500 to-blue-600 text-white relative">
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
