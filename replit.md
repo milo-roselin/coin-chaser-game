@@ -96,6 +96,47 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 23, 2025 - Cross-Device Authentication and Global Leaderboard System Complete
+- **User Authentication System**: Implemented comprehensive login/registration system with:
+  - Secure password hashing using bcrypt
+  - Session-based authentication with express-session
+  - User registration with validation (minimum 6 characters, unique usernames)
+  - Persistent login sessions across browser sessions
+  - Authentication state management with Zustand
+- **Database Integration**: Connected PostgreSQL database with Drizzle ORM:
+  - Users table with username, password, and timestamps
+  - Scores table with user relationships, score data, and level information
+  - Proper foreign key relationships and data integrity
+  - Database pushed successfully with `npm run db:push`
+- **Global Leaderboard**: Full-featured cross-device scoring system:
+  - Real-time global leaderboard with player rankings
+  - Automatic score submission for authenticated users
+  - Global leaderboard accessible from start screen
+  - Visual distinction between current user and others
+  - Trophy icons for top 3 players with gold/silver/bronze styling
+- **Victory Screen Enhancement**: Dual scoring system integration:
+  - Maintains existing local leaderboard functionality
+  - Automatic global score submission for logged-in users
+  - Login prompt for unauthenticated users
+  - Clear status indicators for both local and global score saving
+- **Start Screen Integration**: Added global leaderboard access:
+  - Split leaderboard buttons: Local [L] and Global [G]
+  - Keyboard shortcuts for both leaderboard types
+  - Authentication status checking on app initialization
+- **API Endpoints**: Complete RESTful API with:
+  - POST /api/auth/register - User registration
+  - POST /api/auth/login - User login
+  - POST /api/auth/logout - User logout
+  - GET /api/auth/me - Current user status
+  - POST /api/scores - Submit score (authenticated users only)
+  - GET /api/leaderboard - Global leaderboard data
+  - GET /api/scores/me - Personal score history
+- **Security Features**: Proper authentication middleware and session management
+- **Error Handling**: Comprehensive error states and user feedback
+- **Mobile Responsive**: All authentication UI components work seamlessly on mobile devices
+
+The game now supports cross-device score tracking, allowing players to compete globally while maintaining their local progress. Users can create accounts, login from any device, and see their scores persist across sessions.
+
 ## July 21, 2025 - Avatar Thumbnail System Complete
 - **Avatar PNG Thumbnails**: Successfully implemented user-provided avatar images as thumbnails
   - Wario: Custom yellow square with purple mustache saved to `/client/public/images/wario-thumbnail.png`

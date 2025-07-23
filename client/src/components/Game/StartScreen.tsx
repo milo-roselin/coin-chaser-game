@@ -5,21 +5,30 @@ import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
-import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User } from "lucide-react";
+import { useAuth } from "@/lib/stores/useAuth";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User, Globe } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
 import { AvatarSelector } from "./AvatarSelector";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
+import GlobalLeaderboard from "./GlobalLeaderboard";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
   const { getSelectedAvatar } = usePlayerAvatar();
   const { totalCoins } = useCoinBank();
+  const { checkAuth } = useAuth();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAudioSettings, setShowAudioSettings] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [showGlobalLeaderboard, setShowGlobalLeaderboard] = useState(false);
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const handleStartGame = () => {
     // Enable audio context on user interaction
@@ -85,6 +94,12 @@ export default function StartScreen() {
       if (key === 'l' || code === 'KeyL') {
         e.preventDefault();
         handleShowLeaderboard();
+        return;
+      }
+
+      if (key === 'g' || code === 'KeyG') {
+        e.preventDefault();
+        setShowGlobalLeaderboard(true);
         return;
       }
       
@@ -214,16 +229,29 @@ export default function StartScreen() {
             </Button>
           )}
 
-          <Button 
-            onClick={handleShowLeaderboard}
-            variant="outline"
-            size="lg"
-            className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
-          >
-            <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-            Leaderboard
-            <span className="ml-auto text-xs sm:text-sm opacity-75">[L]</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleShowLeaderboard}
+              variant="outline"
+              size="lg"
+              className="flex-1 text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+            >
+              <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Local
+              <span className="ml-auto text-xs sm:text-sm opacity-75">[L]</span>
+            </Button>
+            
+            <Button 
+              onClick={() => setShowGlobalLeaderboard(true)}
+              variant="outline"
+              size="lg"
+              className="flex-1 text-base sm:text-lg py-3 sm:py-4 border-2 border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold rounded-xl"
+            >
+              <Globe className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Global
+              <span className="ml-auto text-xs sm:text-sm opacity-75">[G]</span>
+            </Button>
+          </div>
 
           <Button 
             onClick={() => setShowAvatarSelector(true)}
@@ -324,6 +352,22 @@ export default function StartScreen() {
           Collect coins and avoid TNT guards patrolling around them. Reach the portal to win!
         </p>
       </div>
+
+      {/* Modals */}
+      {showAudioSettings && (
+        <AudioSettingsMenu 
+          isOpen={showAudioSettings} 
+          onClose={() => setShowAudioSettings(false)} 
+        />
+      )}
+      
+      {showAvatarSelector && (
+        <AvatarSelector onClose={() => setShowAvatarSelector(false)} />
+      )}
+
+      {showGlobalLeaderboard && (
+        <GlobalLeaderboard onClose={() => setShowGlobalLeaderboard(false)} />
+      )}
       
       {/* Audio Settings Modal */}
       <AudioSettingsMenu 

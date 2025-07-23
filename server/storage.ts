@@ -1,39 +1,70 @@
-import { users, type User, type InsertUser } from "@shared/schema";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { users, scores, type User, type InsertUser, type Score, type InsertScore } from "@shared/schema";
+import { eq, desc, sql } from "drizzle-orm";
 
-// modify the interface with any CRUD methods
-// you might need
+const connectionString = process.env.DATABASE_URL!;
+const sqlConnection = neon(connectionString);
+const db = drizzle(sqlConnection);
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  insertUser(user: InsertUser): Promise<User>;
+  insertScore(score: InsertScore): Promise<Score>;
+  getTopScores(limit: number): Promise<Array<Score & { username: string }>>;
+  getUserScores(userId: number): Promise<Score[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  currentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.currentId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async insertUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async insertScore(insertScore: InsertScore): Promise<Score> {
+    const result = await db.insert(scores).values(insertScore).returning();
+    return result[0];
+  }
+
+  async getTopScores(limit: number): Promise<Array<Score & { username: string }>> {
+    const result = await db
+      .select({
+        id: scores.id,
+        userId: scores.userId,
+        score: scores.score,
+        coins: scores.coins,
+        level: scores.level,
+        createdAt: scores.createdAt,
+        username: users.username,
+      })
+      .from(scores)
+      .innerJoin(users, eq(scores.userId, users.id))
+      .orderBy(desc(scores.score))
+      .limit(limit);
+    
+    return result;
+  }
+
+  async getUserScores(userId: number): Promise<Score[]> {
+    const result = await db
+      .select()
+      .from(scores)
+      .where(eq(scores.userId, userId))
+      .orderBy(desc(scores.score));
+    
+    return result;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

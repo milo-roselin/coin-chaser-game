@@ -5,25 +5,32 @@ import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useLeaderboard } from "@/lib/stores/useLeaderboard";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
-import { Trophy, Home, Upload, Lock, Coins } from "lucide-react";
+import { useAuth } from "@/lib/stores/useAuth";
+import { useGlobalLeaderboard } from "@/lib/stores/useGlobalLeaderboard";
+import { Trophy, Home, Upload, Lock, Coins, Globe, LogIn } from "lucide-react";
 import CoinBankDisplay from "./CoinBankDisplay";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
+import LoginForm from "../Auth/LoginForm";
 
 export default function VictoryScreen() {
   const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
   const { addScore } = useLeaderboard();
   const { totalCoins, sessionCoins } = useCoinBank();
+  const { user } = useAuth();
+  const { submitScore } = useGlobalLeaderboard();
   const [playerName, setPlayerName] = useState("");
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [globalScoreSubmitted, setGlobalScoreSubmitted] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Load saved name when screen loads but don't auto-submit
+  // Handle score submission on screen load
   useEffect(() => {
     const savedName = localStorage.getItem('playerName');
     if (savedName) {
       setPlayerName(savedName);
-      // Auto-submit only if we have a saved name
+      // Auto-submit to local leaderboard
       addScore({
         name: savedName,
         score: totalScore,
@@ -32,8 +39,21 @@ export default function VictoryScreen() {
       });
       setScoreSubmitted(true);
     }
-    // No anonymous submission - player must enter a name
-  }, [addScore, totalScore, totalCoinsCollected]);
+
+    // Auto-submit to global leaderboard if user is logged in
+    if (user) {
+      handleGlobalScoreSubmit();
+    }
+  }, [addScore, totalScore, totalCoinsCollected, user]);
+
+  const handleGlobalScoreSubmit = async () => {
+    if (user && !globalScoreSubmitted) {
+      const success = await submitScore(totalScore, totalCoinsCollected, currentLevel);
+      if (success) {
+        setGlobalScoreSubmitted(true);
+      }
+    }
+  };
 
   const handleSubmitScore = () => {
     if (playerName.trim()) {
@@ -46,6 +66,11 @@ export default function VictoryScreen() {
       });
       setScoreSubmitted(true);
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLogin(false);
+    handleGlobalScoreSubmit();
   };
 
   const handleHome = () => {
@@ -172,12 +197,35 @@ export default function VictoryScreen() {
             {scoreSubmitted ? (
               <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
                 <Trophy className="mr-2 h-5 w-5" />
-                Score saved to leaderboard!
+                Score saved to local leaderboard!
               </div>
             ) : (
               <div className="text-orange-600 font-semibold flex items-center justify-center mb-4">
                 <Trophy className="mr-2 h-5 w-5" />
                 Enter your name to save score
+              </div>
+            )}
+
+            {/* Global Leaderboard Status */}
+            {user ? (
+              <div className="text-blue-600 font-semibold flex items-center justify-center mb-2">
+                <Globe className="mr-2 h-5 w-5" />
+                {globalScoreSubmitted ? 'Score saved globally!' : 'Saving to global leaderboard...'}
+              </div>
+            ) : (
+              <div className="text-center mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Login to save your score globally and compete with players worldwide!
+                </p>
+                <Button
+                  onClick={() => setShowLogin(true)}
+                  size="sm"
+                  variant="outline"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Login / Sign Up
+                </Button>
               </div>
             )}
             
@@ -265,6 +313,14 @@ export default function VictoryScreen() {
           <span className="ml-auto text-xs sm:text-sm opacity-75">[H]</span>
         </Button>
       </div>
+
+      {/* Login Form Modal */}
+      {showLogin && (
+        <LoginForm
+          onSuccess={handleLoginSuccess}
+          onClose={() => setShowLogin(false)}
+        />
+      )}
     </div>
   );
 }
