@@ -10,6 +10,7 @@ import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
 import { AvatarSelector } from "./AvatarSelector";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
+import DeviceSelector from "./DeviceSelector";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
@@ -188,6 +189,11 @@ export default function StartScreen() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Device Selector */}
+      <div className="mb-6 w-full max-w-4xl">
+        <DeviceSelector />
       </div>
 
       {/* Main Menu Card */}

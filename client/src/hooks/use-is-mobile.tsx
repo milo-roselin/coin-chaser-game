@@ -1,9 +1,11 @@
 import * as React from "react"
+import { useDevicePreference } from "@/lib/stores/useDevicePreference"
 
 const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+  const [autoDetectedMobile, setAutoDetectedMobile] = React.useState<boolean | undefined>(undefined)
+  const { getIsMobile } = useDevicePreference()
 
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
@@ -14,7 +16,7 @@ export function useIsMobile() {
       const isTablet = window.innerWidth <= 1024 && hasTouchScreen
       const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
       
-      setIsMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
+      setAutoDetectedMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
     }
     mql.addEventListener("change", onChange)
     
@@ -24,9 +26,10 @@ export function useIsMobile() {
     const isTablet = window.innerWidth <= 1024 && hasTouchScreen
     const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
     
-    setIsMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
+    setAutoDetectedMobile(isSmallScreen || hasTouchScreen || isTablet || isIPad)
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
-  return !!isMobile
+  // Use device preference if available, otherwise fall back to auto-detection
+  return getIsMobile()
 }
