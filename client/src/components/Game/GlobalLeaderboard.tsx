@@ -119,7 +119,7 @@ export default function GlobalLeaderboard({ onClose }: GlobalLeaderboardProps) {
                       
                       return (
                         <div
-                          key={entry.id}
+                          key={`user-${entry.userId}-${index}`}
                           className={`
                             p-4 rounded-lg border-2 transition-all
                             ${getRankColor(rank)}
