@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/stores/useAuth';
-import { LogIn, UserPlus, AlertCircle } from 'lucide-react';
+import { LogIn, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -14,6 +14,7 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login, register, isLoading, error, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,6 +38,7 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
     clearError();
     setUsername('');
     setPassword('');
+    setShowPassword(false);
   };
 
   return (
@@ -76,17 +78,30 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
               />
             </div>
             
-            <div>
+            <div className="relative">
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="text-center"
+                className="text-center pr-10"
                 minLength={6}
                 required
                 disabled={isLoading}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
+                disabled={isLoading}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
               {!isLogin && (
                 <p className="text-xs text-gray-500 mt-1 text-center">
                   Password must be at least 6 characters

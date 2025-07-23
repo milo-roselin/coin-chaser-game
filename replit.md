@@ -96,18 +96,13 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 23, 2025 - Complete Username Uniqueness Protection System
-- **Bulletproof Username Validation**: Implemented comprehensive protection against duplicate usernames:
-  - Database schema-level UNIQUE constraint on username field (`users_username_unique`)  
-  - Application-level check before user creation (returns 409 status for conflicts)
-  - Database-level error handling for constraint violations as fallback
-  - Frontend error display with clear messaging for username conflicts
-- **Tested Username Protection**: Verified system prevents duplicate usernames through:
-  - API endpoint testing (existing usernames return "Username already exists" error)
-  - Database constraint testing (direct SQL insertion fails with unique violation)
-  - Registration flow testing (frontend properly displays error messages)
-- **Smart Score Management**: Only one score per user with intelligent update logic
-- **Complete Database Integrity**: Multiple UNIQUE constraints ensure data consistency across users and scores tables
+## July 23, 2025 - Enhanced Authentication with Password Visibility Toggle
+- **Password Visibility Toggle**: Added eye/eye-off icon to login form allowing users to show/hide password while typing
+- **Improved Login Experience**: Users can now verify they're entering the correct password, reducing login failures
+- **Score Submission Debugging**: Added comprehensive logging to track score submission process and identify authentication issues
+- **Authentication Issues Identified**: Found that score submissions require proper user authentication, added detailed console logging
+- **Complete Username Protection**: Bulletproof validation system prevents duplicate usernames at multiple levels
+- **Database Integrity**: UNIQUE constraints ensure data consistency across tables
 
 ## July 23, 2025 - Database-Integrated Score and Coin Bank System Complete
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests
