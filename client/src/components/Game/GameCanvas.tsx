@@ -5,6 +5,55 @@ import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { GameEngine } from "@/lib/gameEngine";
 
+// Utility function to handle fullscreen operations
+const handleFullscreenOperations = {
+  enter: async () => {
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                           window.innerWidth <= 768;
+    
+    if (!isMobileDevice) return;
+    
+    try {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+        console.log('Fullscreen activated for mobile device');
+      } else if ((document.documentElement as any).webkitRequestFullscreen) {
+        await (document.documentElement as any).webkitRequestFullscreen();
+        console.log('Webkit fullscreen activated for mobile device');
+      } else if ((document.documentElement as any).mozRequestFullScreen) {
+        await (document.documentElement as any).mozRequestFullScreen();
+        console.log('Mozilla fullscreen activated for mobile device');
+      } else if ((document.documentElement as any).msRequestFullscreen) {
+        await (document.documentElement as any).msRequestFullscreen();
+        console.log('MS fullscreen activated for mobile device');
+      }
+    } catch (err) {
+      console.log('Fullscreen activation failed:', err);
+    }
+  },
+  
+  exit: async () => {
+    try {
+      if (document.exitFullscreen && document.fullscreenElement) {
+        await document.exitFullscreen();
+        console.log('Exited fullscreen mode');
+      } else if ((document as any).webkitExitFullscreen && (document as any).webkitFullscreenElement) {
+        await (document as any).webkitExitFullscreen();
+        console.log('Exited webkit fullscreen mode');
+      } else if ((document as any).mozCancelFullScreen && (document as any).mozFullScreenElement) {
+        await (document as any).mozCancelFullScreen();
+        console.log('Exited mozilla fullscreen mode');
+      } else if ((document as any).msExitFullscreen && (document as any).msFullscreenElement) {
+        await (document as any).msExitFullscreen();
+        console.log('Exited MS fullscreen mode');
+      }
+    } catch (err) {
+      console.log('Error exiting fullscreen:', err);
+    }
+  }
+};
+
 const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
@@ -19,10 +68,19 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     winGame,
     playerPosition,
     setPlayerPosition,
-    currentLevel
+    currentLevel,
+    gameState
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
+
+  // Monitor game state changes to handle fullscreen exit
+  useEffect(() => {
+    if (gameState !== "playing") {
+      // Exit fullscreen when game ends, is paused, or returns to menu
+      handleFullscreenOperations.exit();
+    }
+  }, [gameState]);
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -57,23 +115,36 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       // Scroll to top to ensure we're at the beginning of the page
       window.scrollTo(0, 0);
       
-      // For iPad, try to request fullscreen mode
+      // For mobile devices, try to request fullscreen mode
       const requestFullscreen = async () => {
         try {
           if (document.documentElement.requestFullscreen) {
             await document.documentElement.requestFullscreen();
+            console.log('Fullscreen activated successfully');
           } else if ((document.documentElement as any).webkitRequestFullscreen) {
             await (document.documentElement as any).webkitRequestFullscreen();
+            console.log('Webkit fullscreen activated successfully');
+          } else if ((document.documentElement as any).mozRequestFullScreen) {
+            await (document.documentElement as any).mozRequestFullScreen();
+            console.log('Mozilla fullscreen activated successfully');
+          } else if ((document.documentElement as any).msRequestFullscreen) {
+            await (document.documentElement as any).msRequestFullscreen();
+            console.log('MS fullscreen activated successfully');
           }
         } catch (err) {
-          console.log('Fullscreen not available, using viewport approach');
+          console.log('Fullscreen not available, using viewport approach:', err);
         }
       };
       
-      // Try fullscreen on iPad
-      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      if (isIPad) {
-        requestFullscreen();
+      // Detect mobile devices (including tablets)
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                             window.innerWidth <= 768;
+      
+      // Force fullscreen on all mobile devices when game starts
+      if (isMobileDevice) {
+        console.log('Mobile device detected, attempting fullscreen');
+        handleFullscreenOperations.enter();
       }
       
       // Force body to be exactly viewport size
@@ -107,18 +178,26 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         ensureFullViewport();
         
         // Use a more stable approach - detect device type once and stick with it
-        const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                               window.innerWidth <= 768;
         let viewportWidth, viewportHeight;
         
-        if (isIPad) {
-          // For iPad, use fixed dimensions based on screen once detected
-          viewportWidth = screen.width > screen.height ? screen.width : screen.height; // Use larger dimension
-          viewportHeight = screen.width < screen.height ? screen.width : screen.height; // Use smaller dimension
+        if (isMobileDevice) {
+          // For mobile devices, use screen dimensions to fill the entire screen
+          viewportWidth = screen.width;
+          viewportHeight = screen.height;
           
-          // Force to common iPad size if screen detection fails
-          if (viewportWidth < 800) {
-            viewportWidth = 1024;
-            viewportHeight = 768;
+          // Fallback to window dimensions if screen API unavailable
+          if (!viewportWidth || !viewportHeight) {
+            viewportWidth = window.innerWidth;
+            viewportHeight = window.innerHeight;
+          }
+          
+          // Additional viewport meta tag enforcement for mobile
+          const viewportMeta = document.querySelector('meta[name="viewport"]');
+          if (viewportMeta) {
+            viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
           }
         } else {
           // For desktop/other devices, use window dimensions
