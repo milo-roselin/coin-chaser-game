@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useAuth } from './useAuth';
 
 interface CoinBankState {
   totalCoins: number;
@@ -9,6 +10,8 @@ interface CoinBankState {
   resetSessionCoins: () => void;
   getTotalCoins: () => number;
   getSessionCoins: () => number;
+  syncWithUser: (userCoinBank: number) => void;
+  syncToDatabase: () => Promise<void>;
 }
 
 export const useCoinBank = create<CoinBankState>()(
@@ -22,6 +25,9 @@ export const useCoinBank = create<CoinBankState>()(
           totalCoins: state.totalCoins + amount,
           sessionCoins: state.sessionCoins + amount,
         }));
+        
+        // Sync to database if user is authenticated
+        get().syncToDatabase();
       },
 
       spendCoins: (amount: number) => {
@@ -42,6 +48,19 @@ export const useCoinBank = create<CoinBankState>()(
       getTotalCoins: () => get().totalCoins,
       
       getSessionCoins: () => get().sessionCoins,
+
+      syncWithUser: (userCoinBank: number) => {
+        set({ totalCoins: userCoinBank });
+      },
+
+      syncToDatabase: async () => {
+        const { totalCoins } = get();
+        const authState = useAuth.getState();
+        
+        if (authState.user) {
+          await authState.syncCoinBank(totalCoins);
+        }
+      },
     }),
     {
       name: 'coin-bank-storage',

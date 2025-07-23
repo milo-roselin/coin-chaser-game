@@ -52,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.username = user.username;
       
       res.json({ 
-        user: { id: user.id, username: user.username },
+        user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
         message: 'User registered successfully' 
       });
     } catch (error) {
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.username = user.username;
       
       res.json({ 
-        user: { id: user.id, username: user.username },
+        user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
         message: 'Login successful' 
       });
     } catch (error) {
@@ -105,17 +105,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user
-  app.get('/api/auth/me', (req, res) => {
+  app.get('/api/auth/me', async (req, res) => {
     if (!req.session.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    res.json({ 
-      user: { 
-        id: req.session.userId, 
-        username: req.session.username 
-      } 
-    });
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+      
+      res.json({ 
+        user: { 
+          id: user.id, 
+          username: user.username,
+          coinBank: user.coinBank || 0
+        } 
+      });
+    } catch (error) {
+      console.error('Get user error:', error);
+      res.status(500).json({ error: 'Failed to get user' });
+    }
   });
 
   // Submit score (requires authentication)
@@ -166,6 +177,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Personal scores error:', error);
       res.status(500).json({ error: 'Failed to fetch personal scores' });
+    }
+  });
+
+  // Update user's coin bank
+  app.put('/api/coinbank', requireAuth, async (req, res) => {
+    try {
+      const { coinBank } = req.body;
+      const userId = req.session.userId!;
+      
+      if (typeof coinBank !== 'number' || coinBank < 0) {
+        return res.status(400).json({ error: 'Invalid coin bank value' });
+      }
+
+      await storage.updateUserCoinBank(userId, coinBank);
+      res.json({ coinBank });
+    } catch (error) {
+      console.error('Coin bank update error:', error);
+      res.status(500).json({ error: 'Failed to update coin bank' });
+    }
+  });
+
+  // Add coins to user's coin bank
+  app.post('/api/coinbank/add', requireAuth, async (req, res) => {
+    try {
+      const { coins } = req.body;
+      const userId = req.session.userId!;
+      
+      if (typeof coins !== 'number' || coins <= 0) {
+        return res.status(400).json({ error: 'Invalid coins value' });
+      }
+
+      const newCoinBank = await storage.addCoinsToBank(userId, coins);
+      res.json({ coinBank: newCoinBank, coinsAdded: coins });
+    } catch (error) {
+      console.error('Add coins error:', error);
+      res.status(500).json({ error: 'Failed to add coins' });
     }
   });
 

@@ -14,6 +14,8 @@ export interface IStorage {
   insertScore(score: InsertScore): Promise<Score>;
   getTopScores(limit: number): Promise<Array<Score & { username: string }>>;
   getUserScores(userId: number): Promise<Score[]>;
+  updateUserCoinBank(userId: number, coinBank: number): Promise<void>;
+  addCoinsToBank(userId: number, coins: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -64,6 +66,31 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(scores.score));
     
     return result;
+  }
+
+  async updateUserCoinBank(userId: number, coinBank: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ coinBank })
+      .where(eq(users.id, userId));
+  }
+
+  async addCoinsToBank(userId: number, coins: number): Promise<number> {
+    // Get current coin bank
+    const [user] = await db
+      .select({ coinBank: users.coinBank })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    const newCoinBank = user.coinBank + coins;
+
+    // Update with new total
+    await db
+      .update(users)
+      .set({ coinBank: newCoinBank })
+      .where(eq(users.id, userId));
+
+    return newCoinBank;
   }
 }
 
