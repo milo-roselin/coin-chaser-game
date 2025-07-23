@@ -44,17 +44,17 @@
   flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
-  padding: 20px 16px !important;
+  padding: 80px 16px !important;
 }
 
 canvas {
   width: calc(100vw - 32px) !important;
-  height: calc(100vh - 40px) !important;
+  height: calc(100vh - 160px) !important;
   max-width: calc(100vw - 32px) !important;
-  max-height: calc(100vh - 40px) !important;
+  max-height: calc(100vh - 160px) !important;
   touch-action: none !important;
   position: fixed !important;
-  top: 20px !important;
+  top: 80px !important;
   left: 16px !important;
   display: block !important;
   border-radius: 8px !important;
@@ -80,10 +80,10 @@ body {
 /* Game container styles */
 .game-container {
   width: calc(100% - 32px) !important;
-  height: calc(100% - 40px) !important;
+  height: calc(100% - 160px) !important;
   max-width: calc(100vw - 32px) !important;
-  max-height: calc(100vh - 40px) !important;
-  margin: 20px 16px !important;
+  max-height: calc(100vh - 160px) !important;
+  margin: 80px 16px !important;
   border-radius: 8px !important;
   overflow: hidden !important;
   position: relative !important;
@@ -100,24 +100,24 @@ body {
   left: 0 !important;
   overflow: hidden !important;
   -webkit-overflow-scrolling: touch !important;
-  padding: 12px 8px !important;
+  padding: 60px 8px !important;
 }
 
 .mobile-fullscreen canvas {
   width: calc(100vw - 16px) !important;
-  height: calc(100vh - 24px) !important;
+  height: calc(100vh - 120px) !important;
   max-width: calc(100vw - 16px) !important;
-  max-height: calc(100vh - 24px) !important;
-  top: 12px !important;
+  max-height: calc(100vh - 120px) !important;
+  top: 60px !important;
   left: 8px !important;
 }
 
 .mobile-fullscreen .game-container {
   width: calc(100% - 16px) !important;
-  height: calc(100% - 24px) !important;
+  height: calc(100% - 120px) !important;
   max-width: calc(100vw - 16px) !important;
-  max-height: calc(100vh - 24px) !important;
-  margin: 12px 8px !important;
+  max-height: calc(100vh - 120px) !important;
+  margin: 60px 8px !important;
 }
 
 /* Hide address bar and browser UI on mobile */
@@ -146,24 +146,24 @@ body {
     min-height: 100vh !important;
     min-height: calc(var(--vh, 1vh) * 100) !important;
     width: 100% !important;
-    padding: 16px 12px !important;
+    padding: 70px 12px !important;
   }
   
   canvas {
     width: calc(100vw - 24px) !important;
-    height: calc(100vh - 32px) !important;
+    height: calc(100vh - 140px) !important;
     max-width: calc(100vw - 24px) !important;
-    max-height: calc(100vh - 32px) !important;
-    top: 16px !important;
+    max-height: calc(100vh - 140px) !important;
+    top: 70px !important;
     left: 12px !important;
   }
   
   .game-container {
     width: calc(100% - 24px) !important;
-    height: calc(100% - 32px) !important;
+    height: calc(100% - 140px) !important;
     max-width: calc(100vw - 24px) !important;
-    max-height: calc(100vh - 32px) !important;
-    margin: 16px 12px !important;
+    max-height: calc(100vh - 140px) !important;
+    margin: 70px 12px !important;
   }
 }
 
