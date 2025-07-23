@@ -6,6 +6,7 @@ import { useAudio } from "@/lib/stores/useAudio";
 import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { useAuth } from "@/lib/stores/useAuth";
+import { useUserStats } from "@/lib/stores/useUserStats";
 import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User, Globe } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
@@ -19,6 +20,11 @@ export default function StartScreen() {
   const { getSelectedAvatar } = usePlayerAvatar();
   const { totalCoins } = useCoinBank();
   const { checkAuth } = useAuth();
+  const { getHighestScore, getHighestLevel } = useUserStats();
+  
+  // Use database values for authenticated users, local storage for guests
+  const displayScore = getHighestScore();
+  const displayLevel = getHighestLevel();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showAudioSettings, setShowAudioSettings] = useState(false);
@@ -48,7 +54,7 @@ export default function StartScreen() {
     // Start background music
     startBackgroundMusic();
     
-    startFromLevel(highestLevelUnlocked);
+    startFromLevel(displayLevel);
   };
 
   const handleShowLeaderboard = () => {
@@ -154,7 +160,7 @@ export default function StartScreen() {
         // Set timeout to execute level selection after 1 second
         const timeout = setTimeout(() => {
           const level = parseInt(newInput);
-          if (level > 0 && level <= highestLevelUnlocked) {
+          if (level > 0 && level <= displayLevel) {
             startFromLevel(level);
           }
           setLevelInput("");
@@ -172,7 +178,7 @@ export default function StartScreen() {
         clearTimeout(inputTimeout);
       }
     };
-  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
+  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, displayLevel, startFromLevel, levelInput, inputTimeout]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-24 pb-16 sm:pt-8 sm:pb-8 md:pt-12 md:pb-12">
@@ -193,13 +199,13 @@ export default function StartScreen() {
         </div>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">Coin Rush</h1>
         <p className="text-sm sm:text-base text-gray-600">Collect coins, avoid obstacles and more!</p>
-        {highestLevelUnlocked > 1 && (
+        {displayLevel > 1 && (
           <div className="mt-4 p-3 bg-purple-100 rounded-lg">
             <p className="text-sm font-semibold text-purple-700">
-              Checkpoint: Level {highestLevelUnlocked} Unlocked
+              Checkpoint: Level {displayLevel} Unlocked
             </p>
             <p className="text-xs text-purple-600">
-              Total Score: {totalScore.toLocaleString()}
+              Highest Score: {displayScore.toLocaleString()}
             </p>
           </div>
         )}
@@ -218,13 +224,13 @@ export default function StartScreen() {
             <span className="ml-auto text-xs sm:text-sm opacity-75">[N]</span>
           </Button>
 
-          {highestLevelUnlocked > 1 && (
+          {displayLevel > 1 && (
             <Button 
               onClick={handleContinue}
               size="lg"
               className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
             >
-              🌀 Continue from Level {highestLevelUnlocked}
+              🌀 Continue from Level {displayLevel}
               <span className="ml-auto text-xs sm:text-sm opacity-75">[C]</span>
             </Button>
           )}
@@ -289,7 +295,7 @@ export default function StartScreen() {
             </Button>
           </div>
 
-          {highestLevelUnlocked > 1 && (
+          {displayLevel > 1 && (
             <Button 
               onClick={handleResetProgress}
               variant="outline"

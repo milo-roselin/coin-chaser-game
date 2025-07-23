@@ -46,6 +46,11 @@ export const useAuth = create<AuthStore>()(
                 useCoinBank.getState().syncWithUser(data.user.coinBank);
               });
             }
+            
+            // Fetch user stats for authenticated users
+            import('./useUserStats').then(({ useUserStats }) => {
+              useUserStats.getState().fetchUserStats();
+            });
           } else {
             set({ user: null });
           }
@@ -79,6 +84,11 @@ export const useAuth = create<AuthStore>()(
                 useCoinBank.getState().syncWithUser(data.user.coinBank);
               });
             }
+            
+            // Fetch user stats after login
+            import('./useUserStats').then(({ useUserStats }) => {
+              useUserStats.getState().fetchUserStats();
+            });
             
             return true;
           } else {
@@ -117,6 +127,11 @@ export const useAuth = create<AuthStore>()(
               });
             }
             
+            // Fetch user stats after registration
+            import('./useUserStats').then(({ useUserStats }) => {
+              useUserStats.getState().fetchUserStats();
+            });
+            
             return true;
           } else {
             set({ error: data.error, isLoading: false });
@@ -138,6 +153,11 @@ export const useAuth = create<AuthStore>()(
           console.error('Logout error:', error);
         } finally {
           set({ user: null, error: null });
+          
+          // Clear user stats on logout
+          import('./useUserStats').then(({ useUserStats }) => {
+            useUserStats.getState().clearStats();
+          });
         }
       },
 
