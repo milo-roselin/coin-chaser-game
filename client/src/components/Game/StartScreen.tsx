@@ -160,56 +160,59 @@ export default function StartScreen() {
   }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
-    <div className="screen-container">
-      <div className="screen-content">
-        {/* Fixed top UI elements */}
-        <div className="fixed-ui">
-          <CoinBankDisplay showSessionCoins={true} />
-          <MobileFullscreenButton />
+    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+      {/* Coin Bank Display - Top Left */}
+      <div className="absolute top-4 left-4 z-10">
+        <CoinBankDisplay showSessionCoins={true} />
+      </div>
+      
+      {/* Mobile Fullscreen Button - Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <MobileFullscreenButton />
+      </div>
+      
+      {/* Game Logo */}
+      <div className="mb-8 text-center">
+        <div className="mb-4 flex justify-center">
+          <img src="/gold-coin.svg" alt="Gold Coin" className="w-20 h-20" />
         </div>
-        
-        {/* Game Logo */}
-        <div className="responsive-mb-lg text-center safe-area-top">
-          <div className="responsive-mb-sm flex justify-center">
-            <img src="/gold-coin.svg" alt="Gold Coin" className="w-12 h-12 sm:w-20 sm:h-20" />
+        <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
+        <p className="text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
+        {highestLevelUnlocked > 1 && (
+          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
+            <p className="text-sm font-semibold text-purple-700">
+              Checkpoint: Level {highestLevelUnlocked} Unlocked
+            </p>
+            <p className="text-xs text-purple-600">
+              Total Score: {totalScore.toLocaleString()}
+            </p>
           </div>
-          <h1 className="responsive-title font-bold text-blue-600 responsive-mb-sm">Coin Rush</h1>
-          <p className="responsive-subtitle text-gray-600">Collect coins, avoid obstacles and more!</p>
+        )}
+      </div>
+
+      {/* Main Menu Card */}
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl">
+        <CardContent className="p-6 space-y-4">
+          <Button 
+            onClick={handleStartGame}
+            size="lg"
+            className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+          >
+            <Play className="mr-2 h-6 w-6" />
+            New Game
+            <span className="ml-auto text-sm opacity-75">[N]</span>
+          </Button>
+
           {highestLevelUnlocked > 1 && (
-            <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-purple-100 rounded-lg">
-              <p className="text-xs sm:text-sm font-semibold text-purple-700">
-                Checkpoint: Level {highestLevelUnlocked} Unlocked
-              </p>
-              <p className="text-xs text-purple-600">
-                Total Score: {totalScore.toLocaleString()}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Main Menu Card */}
-        <Card className="responsive-card bg-white/90 backdrop-blur-sm shadow-xl">
-          <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4">
             <Button 
-              onClick={handleStartGame}
+              onClick={handleContinue}
               size="lg"
-              className="w-full responsive-button-lg bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+              className="w-full text-xl py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
             >
-              <Play className="mr-2 responsive-icon" />
-              New Game
-              <span className="ml-auto text-xs sm:text-sm opacity-75">[N]</span>
+              🌀 Continue from Level {highestLevelUnlocked}
+              <span className="ml-auto text-sm opacity-75">[C]</span>
             </Button>
-
-            {highestLevelUnlocked > 1 && (
-              <Button 
-                onClick={handleContinue}
-                size="lg"
-                className="w-full text-base sm:text-xl py-4 sm:py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
-              >
-                🌀 Continue from Level {highestLevelUnlocked}
-                <span className="ml-auto text-xs sm:text-sm opacity-75">[C]</span>
-              </Button>
-            )}
+          )}
 
           <Button 
             onClick={handleShowLeaderboard}
@@ -333,8 +336,7 @@ export default function StartScreen() {
         <AvatarSelector 
           onClose={() => setShowAvatarSelector(false)} 
         />
-        )}
-      </div>
+      )}
     </div>
   );
 }
