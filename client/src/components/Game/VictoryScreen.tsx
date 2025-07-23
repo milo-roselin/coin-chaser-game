@@ -46,11 +46,16 @@ export default function VictoryScreen() {
       // Set flag immediately to prevent multiple submissions
       setGlobalScoreSubmitted(true);
       
+      console.log(`Attempting score submission: Score=${totalScore}, Coins=${coinsCollected}, Level=${currentLevel}, User=${user.username}`);
+      
       // First sync coin bank to ensure database has latest coin count
       await useCoinBank.getState().syncToDatabase();
       
       const success = await submitScore(totalScore, coinsCollected, currentLevel);
-      if (!success) {
+      if (success) {
+        console.log('Score submission successful');
+      } else {
+        console.log('Score submission failed, resetting flag');
         // Reset flag if submission failed
         setGlobalScoreSubmitted(false);
       }

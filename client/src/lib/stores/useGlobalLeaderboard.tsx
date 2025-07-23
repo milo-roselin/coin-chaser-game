@@ -48,6 +48,8 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
 
   submitScore: async (score: number, coins: number, level: number) => {
     try {
+      console.log(`Submitting score to API: ${score} points, ${coins} coins, level ${level}`);
+      
       const response = await fetch('/api/scores', {
         method: 'POST',
         headers: {
@@ -57,16 +59,21 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
         body: JSON.stringify({ score, coins, level }),
       });
 
+      const responseData = await response.json();
+      console.log('Score submission response:', response.status, responseData);
+
       if (response.ok) {
+        console.log('Score submitted successfully, refreshing leaderboard');
         // Refresh leaderboard after successful submission
         await get().fetchLeaderboard();
         return true;
       } else {
-        const errorData = await response.json();
-        set({ error: errorData.error || 'Failed to submit score' });
+        console.error('Score submission failed:', responseData);
+        set({ error: responseData.error || 'Failed to submit score' });
         return false;
       }
     } catch (error) {
+      console.error('Score submission network error:', error);
       set({ error: 'Network error. Please try again.' });
       return false;
     }
