@@ -96,13 +96,18 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 23, 2025 - Bulletproof Database Integrity System Complete
-- **Guaranteed Unique Users**: Implemented multiple layers of protection to ensure only one entry per user appears in global leaderboard:
+## July 23, 2025 - Bulletproof Single-Score Per User System Complete
+- **Unique Score Constraint**: Added database-level UNIQUE constraint on `user_id` in scores table to prevent duplicate score entries
+- **Smart Score Management**: Implemented intelligent score insertion logic:
+  - Updates existing score only if new score is higher
+  - Keeps existing score if new score is lower
+  - Prevents any possibility of multiple scores per user
+- **Database Cleanup**: Removed duplicate scores, keeping only the highest score per user
+- **Simplified Leaderboard Query**: Optimized SQL query since each user now has exactly one score entry
+- **Guaranteed Unique Users**: Multiple layers of protection ensure only one entry per user appears in global leaderboard:
   - Database schema-level unique constraint on username field
   - Database index `idx_users_username` for additional protection
-  - SQL query enhanced with DISTINCT clauses in both CTE and main query
-  - GROUP BY user_id ensures natural deduplication by user ID
-- **Database Integrity Verified**: Confirmed system prevents any possibility of duplicate users appearing on global leaderboard
+  - UNIQUE constraint on user_id in scores table
 - **Authentication-Only Scoring**: Local scores remain in localStorage and never reach database, only authenticated users can submit global scores
 - **React Key Fix**: Resolved duplicate key warning in GlobalLeaderboard component using `user-${entry.userId}-${index}` keys
 

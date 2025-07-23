@@ -36,28 +36,46 @@ export class DatabaseStorage implements IStorage {
   }
 
   async insertScore(insertScore: InsertScore): Promise<Score> {
-    const result = await db.insert(scores).values(insertScore).returning();
-    return result[0];
+    // Check if user already has a score
+    const existingScore = await db
+      .select()
+      .from(scores)
+      .where(eq(scores.userId, insertScore.userId))
+      .limit(1);
+
+    if (existingScore.length > 0) {
+      // User has existing score - update if new score is higher
+      if (insertScore.score > existingScore[0].score) {
+        const result = await db
+          .update(scores)
+          .set({
+            score: insertScore.score,
+            coins: insertScore.coins,
+            level: insertScore.level,
+            createdAt: new Date()
+          })
+          .where(eq(scores.userId, insertScore.userId))
+          .returning();
+        return result[0];
+      } else {
+        // Return existing score if new score is not higher
+        return existingScore[0];
+      }
+    } else {
+      // User has no existing score - insert new one
+      const result = await db.insert(scores).values(insertScore).returning();
+      return result[0];
+    }
   }
 
   async getTopScores(limit: number): Promise<Array<Score & { username: string }>> {
-    // Use raw SQL to get cumulative scores per user with total coin bank
-    // DISTINCT ensures only one entry per user_id appears in results
+    // Since each user now has only one score, we can simplify the query
     const result = await db.execute(sql`
-      WITH user_totals AS (
-        SELECT DISTINCT u.id, u.username, u.coin_bank,
-               COALESCE(SUM(s.score), 0) as total_score,
-               MAX(s.level) as highest_level,
-               MAX(s.created_at) as latest_game
-        FROM users u
-        LEFT JOIN scores s ON u.id = s.user_id
-        GROUP BY u.id, u.username, u.coin_bank
-        HAVING COALESCE(SUM(s.score), 0) > 0
-      )
-      SELECT DISTINCT 0 as id, id as "userId", total_score as score, coin_bank as "coins", 
-             highest_level as level, latest_game as "createdAt", username
-      FROM user_totals 
-      ORDER BY total_score DESC
+      SELECT s.id, s.user_id as "userId", s.score, u.coin_bank as "coins", 
+             s.level, s.created_at as "createdAt", u.username
+      FROM scores s
+      JOIN users u ON s.user_id = u.id
+      ORDER BY s.score DESC
       LIMIT ${limit}
     `);
     
