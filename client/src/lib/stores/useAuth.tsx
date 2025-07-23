@@ -41,8 +41,10 @@ export const useAuth = create<AuthStore>()(
             
             // Sync coin bank with user data
             if (data.user?.coinBank !== undefined) {
-              const { syncWithUser } = require('./useCoinBank').useCoinBank.getState();
-              syncWithUser(data.user.coinBank);
+              // Import dynamically to avoid circular dependency
+              import('./useCoinBank').then(({ useCoinBank }) => {
+                useCoinBank.getState().syncWithUser(data.user.coinBank);
+              });
             }
           } else {
             set({ user: null });
@@ -70,10 +72,12 @@ export const useAuth = create<AuthStore>()(
           if (response.ok) {
             set({ user: data.user, isLoading: false, error: null });
             
-            // Sync coin bank with user data
+            // Sync coin bank with user data on login
             if (data.user?.coinBank !== undefined) {
-              const { syncWithUser } = require('./useCoinBank').useCoinBank.getState();
-              syncWithUser(data.user.coinBank);
+              // Import dynamically to avoid circular dependency
+              import('./useCoinBank').then(({ useCoinBank }) => {
+                useCoinBank.getState().syncWithUser(data.user.coinBank);
+              });
             }
             
             return true;
@@ -107,8 +111,10 @@ export const useAuth = create<AuthStore>()(
             
             // Sync coin bank with user data for new users
             if (data.user?.coinBank !== undefined) {
-              const { syncWithUser } = require('./useCoinBank').useCoinBank.getState();
-              syncWithUser(data.user.coinBank);
+              // Import dynamically to avoid circular dependency
+              import('./useCoinBank').then(({ useCoinBank }) => {
+                useCoinBank.getState().syncWithUser(data.user.coinBank);
+              });
             }
             
             return true;

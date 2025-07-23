@@ -36,6 +36,9 @@ export const useCoinBank = create<CoinBankState>()(
           set((state) => ({
             totalCoins: state.totalCoins - amount,
           }));
+          
+          // Sync to database if user is authenticated
+          get().syncToDatabase();
           return true;
         }
         return false;
@@ -50,7 +53,11 @@ export const useCoinBank = create<CoinBankState>()(
       getSessionCoins: () => get().sessionCoins,
 
       syncWithUser: (userCoinBank: number) => {
-        set({ totalCoins: userCoinBank });
+        // Only sync if the database value is different from local storage
+        const { totalCoins } = get();
+        if (userCoinBank !== totalCoins) {
+          set({ totalCoins: userCoinBank });
+        }
       },
 
       syncToDatabase: async () => {

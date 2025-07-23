@@ -1,4 +1,5 @@
 import { useCoinBank } from "@/lib/stores/useCoinBank";
+import { useAuth } from "@/lib/stores/useAuth";
 
 interface CoinBankDisplayProps {
   className?: string;
@@ -7,6 +8,10 @@ interface CoinBankDisplayProps {
 
 export default function CoinBankDisplay({ className = "", showSessionCoins = false }: CoinBankDisplayProps) {
   const { totalCoins, sessionCoins } = useCoinBank();
+  const { user } = useAuth();
+  
+  // Use database value for authenticated users, local storage for guests
+  const displayCoins = user ? user.coinBank : totalCoins;
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
@@ -109,7 +114,7 @@ export default function CoinBankDisplay({ className = "", showSessionCoins = fal
                   textShadow: '3px 3px 0px #000000, -2px -2px 0px #000000, 2px -2px 0px #000000, -2px 2px 0px #000000',
                   filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.9))'
                 }}>
-{totalCoins.toLocaleString()}
+{displayCoins.toLocaleString()}
           </span>
         </div>
       </div>
