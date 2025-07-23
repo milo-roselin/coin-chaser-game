@@ -55,8 +55,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
         message: 'User registered successfully' 
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
+      
+      // Handle unique constraint violation as fallback
+      if (error.code === '23505' && error.constraint === 'users_username_unique') {
+        return res.status(409).json({ error: 'Username already exists' });
+      }
+      
       res.status(500).json({ error: 'Registration failed' });
     }
   });

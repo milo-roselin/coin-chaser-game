@@ -96,20 +96,18 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 23, 2025 - Bulletproof Single-Score Per User System Complete
-- **Unique Score Constraint**: Added database-level UNIQUE constraint on `user_id` in scores table to prevent duplicate score entries
-- **Smart Score Management**: Implemented intelligent score insertion logic:
-  - Updates existing score only if new score is higher
-  - Keeps existing score if new score is lower
-  - Prevents any possibility of multiple scores per user
-- **Database Cleanup**: Removed duplicate scores, keeping only the highest score per user
-- **Simplified Leaderboard Query**: Optimized SQL query since each user now has exactly one score entry
-- **Guaranteed Unique Users**: Multiple layers of protection ensure only one entry per user appears in global leaderboard:
-  - Database schema-level unique constraint on username field
-  - Database index `idx_users_username` for additional protection
-  - UNIQUE constraint on user_id in scores table
-- **Authentication-Only Scoring**: Local scores remain in localStorage and never reach database, only authenticated users can submit global scores
-- **React Key Fix**: Resolved duplicate key warning in GlobalLeaderboard component using `user-${entry.userId}-${index}` keys
+## July 23, 2025 - Complete Username Uniqueness Protection System
+- **Bulletproof Username Validation**: Implemented comprehensive protection against duplicate usernames:
+  - Database schema-level UNIQUE constraint on username field (`users_username_unique`)  
+  - Application-level check before user creation (returns 409 status for conflicts)
+  - Database-level error handling for constraint violations as fallback
+  - Frontend error display with clear messaging for username conflicts
+- **Tested Username Protection**: Verified system prevents duplicate usernames through:
+  - API endpoint testing (existing usernames return "Username already exists" error)
+  - Database constraint testing (direct SQL insertion fails with unique violation)
+  - Registration flow testing (frontend properly displays error messages)
+- **Smart Score Management**: Only one score per user with intelligent update logic
+- **Complete Database Integrity**: Multiple UNIQUE constraints ensure data consistency across users and scores tables
 
 ## July 23, 2025 - Database-Integrated Score and Coin Bank System Complete
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests
