@@ -216,6 +216,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get maximum coin bank value from all users
+  app.get('/api/coinbank/max', async (req, res) => {
+    try {
+      const maxCoinBank = await storage.getMaxCoinBank();
+      res.json({ maxCoinBank });
+    } catch (error) {
+      console.error('Get max coin bank error:', error);
+      res.status(500).json({ error: 'Failed to get max coin bank' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

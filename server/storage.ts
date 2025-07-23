@@ -16,6 +16,7 @@ export interface IStorage {
   getUserScores(userId: number): Promise<Score[]>;
   updateUserCoinBank(userId: number, coinBank: number): Promise<void>;
   addCoinsToBank(userId: number, coins: number): Promise<number>;
+  getMaxCoinBank(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -91,6 +92,14 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
 
     return newCoinBank;
+  }
+
+  async getMaxCoinBank(): Promise<number> {
+    const result = await db
+      .select({ maxCoinBank: sql<number>`MAX(${users.coinBank})` })
+      .from(users);
+    
+    return result[0]?.maxCoinBank || 0;
   }
 }
 

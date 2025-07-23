@@ -1,5 +1,7 @@
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { useAuth } from "@/lib/stores/useAuth";
+import { useGlobalCoinBank } from "@/lib/stores/useGlobalCoinBank";
+import { useEffect } from "react";
 
 interface CoinBankDisplayProps {
   className?: string;
@@ -9,9 +11,15 @@ interface CoinBankDisplayProps {
 export default function CoinBankDisplay({ className = "", showSessionCoins = false }: CoinBankDisplayProps) {
   const { totalCoins, sessionCoins } = useCoinBank();
   const { user } = useAuth();
+  const { maxCoinBank, fetchMaxCoinBank } = useGlobalCoinBank();
   
-  // Use database value for authenticated users, local storage for guests
-  const displayCoins = user ? user.coinBank : totalCoins;
+  // Fetch max coin bank on component mount
+  useEffect(() => {
+    fetchMaxCoinBank();
+  }, [fetchMaxCoinBank]);
+  
+  // Always use database maximum value
+  const displayCoins = maxCoinBank > 0 ? maxCoinBank : (user ? user.coinBank : totalCoins);
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
