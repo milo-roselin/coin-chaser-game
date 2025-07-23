@@ -160,7 +160,7 @@ export default function StartScreen() {
   }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+    <div className="flex flex-col items-center justify-start sm:justify-center w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-16 pb-8 sm:pt-4 sm:pb-4">
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
@@ -172,12 +172,12 @@ export default function StartScreen() {
       </div>
       
       {/* Game Logo */}
-      <div className="mb-8 text-center">
-        <div className="mb-4 flex justify-center">
-          <img src="/gold-coin.svg" alt="Gold Coin" className="w-20 h-20" />
+      <div className="mb-4 sm:mb-8 text-center mt-4 sm:mt-0">
+        <div className="mb-2 sm:mb-4 flex justify-center">
+          <img src="/gold-coin.svg" alt="Gold Coin" className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" />
         </div>
-        <h1 className="text-4xl font-bold text-blue-600 mb-2">Coin Rush</h1>
-        <p className="text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 mb-1 sm:mb-2">Coin Rush</h1>
+        <p className="text-sm sm:text-base md:text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
         {highestLevelUnlocked > 1 && (
           <div className="mt-4 p-3 bg-purple-100 rounded-lg">
             <p className="text-sm font-semibold text-purple-700">
@@ -191,26 +191,26 @@ export default function StartScreen() {
       </div>
 
       {/* Main Menu Card */}
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl">
-        <CardContent className="p-6 space-y-4">
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mx-2">
+        <CardContent className="p-3 sm:p-6 space-y-2 sm:space-y-4">
           <Button 
             onClick={handleStartGame}
             size="lg"
-            className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+            className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
           >
-            <Play className="mr-2 h-6 w-6" />
+            <Play className="mr-2 h-4 w-4 sm:h-6 sm:w-6" />
             New Game
-            <span className="ml-auto text-sm opacity-75">[N]</span>
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[N]</span>
           </Button>
 
           {highestLevelUnlocked > 1 && (
             <Button 
               onClick={handleContinue}
               size="lg"
-              className="w-full text-xl py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
+              className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
             >
               🌀 Continue from Level {highestLevelUnlocked}
-              <span className="ml-auto text-sm opacity-75">[C]</span>
+              <span className="ml-auto text-xs sm:text-sm opacity-75">[C]</span>
             </Button>
           )}
 
@@ -218,23 +218,23 @@ export default function StartScreen() {
             onClick={handleShowLeaderboard}
             variant="outline"
             size="lg"
-            className="w-full text-lg py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+            className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
           >
-            <Trophy className="mr-2 h-5 w-5" />
+            <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             Leaderboard
-            <span className="ml-auto text-sm opacity-75">[L]</span>
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[L]</span>
           </Button>
 
           <Button 
             onClick={() => setShowAvatarSelector(true)}
             variant="outline"
             size="lg"
-            className="w-full text-lg py-4 border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-semibold rounded-xl"
+            className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-semibold rounded-xl"
           >
-            <User className="mr-2 h-5 w-5" />
+            <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             Choose Avatar
-            <span className="ml-2 text-sm text-yellow-500">({totalCoins} coins)</span>
-            <span className="ml-auto text-sm opacity-75">[A]</span>
+            <span className="ml-2 text-xs sm:text-sm text-yellow-500">({totalCoins} coins)</span>
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[A]</span>
           </Button>
 
           <div className="flex gap-2">
@@ -242,22 +242,22 @@ export default function StartScreen() {
               onClick={toggleMute}
               variant="outline"
               size="lg"
-              className="flex-1 text-lg py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
+              className="flex-1 text-sm sm:text-lg py-3 sm:py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
             >
-              {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
+              {isMuted ? <VolumeX className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />}
               {isMuted ? "Unmute" : "Mute"}
-              <span className="ml-auto text-sm opacity-75">[M]</span>
+              <span className="ml-auto text-xs sm:text-sm opacity-75">[M]</span>
             </Button>
             
             <Button 
               onClick={() => setShowAudioSettings(true)}
               variant="outline"
               size="lg"
-              className="px-4 py-4 border-2 border-blue-300 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+              className="px-3 sm:px-4 py-3 sm:py-4 border-2 border-blue-300 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
               title="Audio Settings [O]"
             >
-              <Settings className="h-5 w-5" />
-              <span className="ml-2 text-sm opacity-75">[O]</span>
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="ml-1 sm:ml-2 text-xs sm:text-sm opacity-75">[O]</span>
             </Button>
           </div>
 
@@ -277,11 +277,11 @@ export default function StartScreen() {
 
       {/* Level Selection Grid */}
       {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mt-6">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🎯 Level Select</h3>
+        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mt-3 sm:mt-6 mx-2">
+          <CardContent className="p-3 sm:p-6">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-4 text-center">🎯 Level Select</h3>
             <div className="overflow-x-auto">
-              <div className="flex flex-wrap gap-3 mb-4 justify-center min-h-[60px]">
+              <div className="flex flex-wrap gap-2 sm:gap-3 mb-2 sm:mb-4 justify-center min-h-[40px] sm:min-h-[60px]">
                 {Array.from({ length: highestLevelUnlocked }, (_, i) => {
                   const level = i + 1;
                   const isUnlocked = level <= highestLevelUnlocked;
@@ -290,7 +290,7 @@ export default function StartScreen() {
                       key={level}
                       onClick={() => startFromLevel(level)}
                       size="default"
-                      className={`w-12 h-12 text-base font-bold flex-shrink-0 ${
+                      className={`w-8 h-8 sm:w-12 sm:h-12 text-sm sm:text-base font-bold flex-shrink-0 ${
                         isUnlocked 
                           ? 'bg-blue-500 hover:bg-blue-600 text-white' 
                           : 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -298,13 +298,13 @@ export default function StartScreen() {
                       disabled={!isUnlocked}
                       title={isUnlocked ? `Press ${level} to start Level ${level}` : `Level ${level} locked`}
                     >
-                      {isUnlocked ? level : <Lock className="h-4 w-4" />}
+                      {isUnlocked ? level : <Lock className="h-3 w-3 sm:h-4 sm:w-4" />}
                     </Button>
                   );
                 })}
               </div>
             </div>
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-gray-500 text-center px-2">
               Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
               <br />
               <span className="text-xs opacity-75">
@@ -317,9 +317,9 @@ export default function StartScreen() {
       )}
 
       {/* Instructions */}
-      <div className="mt-8 text-center max-w-md">
+      <div className="mt-4 sm:mt-8 text-center max-w-md mx-2 mb-8 sm:mb-4">
         <p className="text-sm text-gray-600 mb-2">How to Play:</p>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 px-2">
           Use arrow keys or WASD to move your character. You can also tap and hold to move. 
           Collect coins and avoid TNT guards patrolling around them. Reach the portal to win!
         </p>

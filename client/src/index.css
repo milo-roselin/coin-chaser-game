@@ -193,3 +193,79 @@ button:focus, button:active, button:hover {
   -webkit-tap-highlight-color: transparent !important;
   -webkit-touch-callout: none !important;
 }
+
+/* Mobile layout improvements */
+@media (max-width: 640px) {
+  /* Ensure start screen content is properly contained */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Add safe area padding for iOS devices */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Ensure proper scrolling on mobile */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Reduce font sizes and spacing on small screens */
+  .text-4xl {
+    font-size: 1.875rem !important; /* 30px */
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem !important; /* 24px */
+  }
+  
+  .text-2xl {
+    font-size: 1.25rem !important; /* 20px */
+  }
+  
+  /* Compact card padding on mobile */
+  .mobile-compact {
+    padding: 0.75rem !important;
+  }
+  
+  /* Reduce button heights on mobile */
+  .py-6 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  .py-4 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+}
+
+/* Portrait phone specific adjustments */
+@media (max-width: 480px) and (orientation: portrait) {
+  /* Further reduce spacing for very small screens */
+  .mb-8 {
+    margin-bottom: 1rem !important;
+  }
+  
+  .mt-8 {
+    margin-top: 1rem !important;
+  }
+  
+  .p-6 {
+    padding: 0.75rem !important;
+  }
+  
+  /* Ensure content fits within viewport */
+  .max-w-md {
+    max-width: calc(100vw - 1rem) !important;
+  }
+  
+  .max-w-4xl {
+    max-width: calc(100vw - 1rem) !important;
+  }
+}
