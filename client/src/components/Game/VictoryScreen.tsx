@@ -123,66 +123,63 @@ export default function VictoryScreen() {
   }, [handleHome, handleSubmitScore, scoreSubmitted, playerName, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
-      {/* Coin Bank Display - Top Left */}
-      <div className="absolute top-4 left-4 z-10">
-        <CoinBankDisplay showSessionCoins={true} />
-      </div>
-      
-      {/* Mobile Fullscreen Button - Top Right */}
-      <div className="absolute top-4 right-4 z-10">
-        <MobileFullscreenButton />
-      </div>
-      
-      {/* Victory Message */}
-      <div className="mb-8 text-center">
-        <div className="text-6xl mb-4">🎉</div>
-        <h1 className="text-4xl font-bold text-green-600 mb-2">Level {currentLevel} Complete!</h1>
-        <p className="text-lg text-gray-600">
-          {scoreSubmitted ? "Score saved to leaderboard!" : "Enter your name to save score"}
-        </p>
-      </div>
+    <div className="screen-container">
+      <div className="screen-content">
+        {/* Fixed top UI elements */}
+        <div className="fixed-ui">
+          <CoinBankDisplay showSessionCoins={true} />
+          <MobileFullscreenButton />
+        </div>
+        
+        {/* Victory Message */}
+        <div className="responsive-mb-lg text-center safe-area-top">
+          <div className="responsive-emoji responsive-mb-sm">🎉</div>
+          <h1 className="responsive-title font-bold text-green-600 responsive-mb-sm">Level {currentLevel} Complete!</h1>
+          <p className="responsive-subtitle text-gray-600">
+            {scoreSubmitted ? "Score saved to leaderboard!" : "Enter your name to save score"}
+          </p>
+        </div>
 
-      {/* Score Card */}
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
-        <CardContent className="p-6 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Trophy className="h-8 w-8 text-yellow-500 mr-2" />
-            <h2 className="text-2xl font-bold text-gray-800">Victory!</h2>
+        {/* Score Card */}
+        <Card className="responsive-card bg-white/90 backdrop-blur-sm shadow-xl responsive-mb-md">
+          <CardContent className="p-3 sm:p-6 text-center">
+          <div className="flex items-center justify-center mb-3 sm:mb-4">
+            <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500 mr-2" />
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Victory!</h2>
           </div>
-          <div className="space-y-2 mb-6">
-            <div className="text-3xl font-bold text-blue-600">{score}</div>
-            <div className="text-lg text-gray-600">
+          <div className="space-y-1 sm:space-y-2 mb-4 sm:mb-6">
+            <div className="text-2xl sm:text-3xl font-bold text-blue-600">{score}</div>
+            <div className="text-base sm:text-lg text-gray-600">
               Level Coins: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
-            <div className="text-sm text-gray-500 border-t pt-2">
+            <div className="text-xs sm:text-sm text-gray-500 border-t pt-2">
               Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
             </div>
 
-            <div className="text-sm text-gray-500 border-t pt-2">
+            <div className="text-xs sm:text-sm text-gray-500 border-t pt-2">
               <div className="flex items-center justify-center gap-1">
-                <Coins className="h-4 w-4 text-yellow-600" />
+                <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
                 <span>Coin Bank: <span className="font-semibold text-yellow-600">{totalCoins.toLocaleString()}</span></span>
               </div>
             </div>
 
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {scoreSubmitted ? (
-              <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
-                <Trophy className="mr-2 h-5 w-5" />
+              <div className="text-green-600 font-semibold flex items-center justify-center mb-3 sm:mb-4 text-sm sm:text-base">
+                <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Score saved to leaderboard!
               </div>
             ) : (
-              <div className="text-orange-600 font-semibold flex items-center justify-center mb-4">
-                <Trophy className="mr-2 h-5 w-5" />
+              <div className="text-orange-600 font-semibold flex items-center justify-center mb-3 sm:mb-4 text-sm sm:text-base">
+                <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Enter your name to save score
               </div>
             )}
             
-            <div className="border-t pt-4">
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="border-t pt-3 sm:pt-4">
+              <p className="text-xs sm:text-sm text-gray-600 mb-2">
                 {scoreSubmitted ? "Want to update your name?" : "Enter your name to save to leaderboard:"}
               </p>
               <Input
@@ -214,7 +211,7 @@ export default function VictoryScreen() {
 
       {/* Level Selection Grid */}
       {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-4 sm:mb-6 mx-2">
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🎯 Play Another Level</h3>
             <div className="overflow-x-auto">
@@ -253,17 +250,18 @@ export default function VictoryScreen() {
         </Card>
       )}
 
-      {/* Action Button */}
-      <div className="w-full max-w-md">
-        <Button 
-          onClick={handleHome}
-          size="lg"
-          className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
-        >
-          <Home className="mr-2 h-6 w-6" />
-          Back to Menu
-          <span className="ml-auto text-sm opacity-75">[H]</span>
-        </Button>
+        {/* Action Button */}
+        <div className="responsive-card">
+          <Button 
+            onClick={handleHome}
+            size="lg"
+            className="w-full responsive-button-lg bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+          >
+            <Home className="mr-2 responsive-icon" />
+            Back to Menu
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[H]</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -91,9 +91,10 @@ export default function LeaderboardScreen() {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full p-4">
-      {/* Header */}
-      <div className="w-full max-w-md mb-6">
+    <div className="screen-container">
+      <div className="screen-content">
+        {/* Header */}
+        <div className="responsive-card responsive-mb-md">
         <Button
           onClick={handleBack}
           variant="outline"
@@ -105,15 +106,15 @@ export default function LeaderboardScreen() {
           <span className="ml-auto text-xs opacity-75">[B]</span>
         </Button>
 
-        <div className="text-center">
-          <div className="text-5xl mb-4">🏆</div>
-          <h1 className="text-3xl font-bold text-blue-600 mb-2">Leaderboard</h1>
-          <p className="text-gray-600">Top players and their scores</p>
+          <div className="text-center">
+            <div className="responsive-emoji responsive-mb-sm">🏆</div>
+            <h1 className="responsive-title font-bold text-blue-600 responsive-mb-sm">Leaderboard</h1>
+            <p className="responsive-subtitle text-gray-600">Top players and their scores</p>
+          </div>
         </div>
-      </div>
 
-      {/* Leaderboard */}
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl">
+        {/* Leaderboard */}
+        <Card className="responsive-card bg-white/90 backdrop-blur-sm shadow-xl">
         <CardHeader>
           <CardTitle className="text-center text-xl">High Scores</CardTitle>
           <p className="text-center text-sm text-gray-600">Click on your name to edit it</p>
@@ -197,7 +198,8 @@ export default function LeaderboardScreen() {
             </div>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

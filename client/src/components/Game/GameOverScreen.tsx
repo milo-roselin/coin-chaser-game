@@ -90,26 +90,23 @@ export default function GameOverScreen() {
   }, [handleRetry, handleHome, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
-      {/* Coin Bank Display - Top Left */}
-      <div className="absolute top-4 left-4 z-10">
-        <CoinBankDisplay />
-      </div>
-      
-      {/* Mobile Fullscreen Button - Top Right */}
-      <div className="absolute top-4 right-4 z-10">
-        <MobileFullscreenButton />
-      </div>
-      
-      {/* Game Over Message */}
-      <div className="mb-8 text-center">
-        <div className="text-6xl mb-4">💥</div>
-        <h1 className="text-4xl font-bold text-red-600 mb-2">Game Over!</h1>
-        <p className="text-lg text-gray-600">Better luck next time!</p>
-      </div>
+    <div className="screen-container">
+      <div className="screen-content">
+        {/* Fixed top UI elements */}
+        <div className="fixed-ui">
+          <CoinBankDisplay />
+          <MobileFullscreenButton />
+        </div>
+        
+        {/* Game Over Message */}
+        <div className="responsive-mb-lg text-center safe-area-top">
+          <div className="responsive-emoji responsive-mb-sm">💥</div>
+          <h1 className="responsive-title font-bold text-red-600 responsive-mb-sm">Game Over!</h1>
+          <p className="responsive-subtitle text-gray-600">Better luck next time!</p>
+        </div>
 
-      {/* Score Card */}
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+        {/* Score Card */}
+        <Card className="responsive-card bg-white/90 backdrop-blur-sm shadow-xl responsive-mb-md">
         <CardContent className="p-6 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Final Score</h2>
           <div className="space-y-2">
@@ -124,9 +121,9 @@ export default function GameOverScreen() {
         </CardContent>
       </Card>
 
-      {/* Checkpoint Section */}
-      {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
+        {/* Checkpoint Section */}
+        {highestLevelUnlocked > 1 && (
+          <Card className="responsive-wide-card bg-white/90 backdrop-blur-sm shadow-xl responsive-mb-md">
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🏃‍♂️ Continue from Checkpoint</h3>
             <div className="overflow-x-auto">
@@ -165,28 +162,29 @@ export default function GameOverScreen() {
         </Card>
       )}
 
-      {/* Action Buttons */}
-      <div className="space-y-3 w-full max-w-md">
-        <Button 
-          onClick={handleRetry}
-          size="lg"
-          className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
-        >
-          <RotateCcw className="mr-2 h-6 w-6" />
-          Try Again (Level {currentLevel})
-          <span className="ml-auto text-sm opacity-75">[R]</span>
-        </Button>
+        {/* Action Buttons */}
+        <div className="space-y-3 responsive-card">
+          <Button 
+            onClick={handleRetry}
+            size="lg"
+            className="w-full responsive-button-lg bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+          >
+            <RotateCcw className="mr-2 responsive-icon" />
+            Try Again (Level {currentLevel})
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[R]</span>
+          </Button>
 
-        <Button 
-          onClick={handleHome}
-          variant="outline"
-          size="lg"
-          className="w-full text-lg py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
-        >
-          <Home className="mr-2 h-5 w-5" />
-          Back to Menu
-          <span className="ml-auto text-sm opacity-75">[H]</span>
-        </Button>
+          <Button 
+            onClick={handleHome}
+            variant="outline"
+            size="lg"
+            className="w-full responsive-button border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
+          >
+            <Home className="mr-2 responsive-icon" />
+            Back to Menu
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[H]</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
