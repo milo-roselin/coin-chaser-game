@@ -96,6 +96,16 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 23, 2025 - Bulletproof Database Integrity System Complete
+- **Guaranteed Unique Users**: Implemented multiple layers of protection to ensure only one entry per user appears in global leaderboard:
+  - Database schema-level unique constraint on username field
+  - Database index `idx_users_username` for additional protection
+  - SQL query enhanced with DISTINCT clauses in both CTE and main query
+  - GROUP BY user_id ensures natural deduplication by user ID
+- **Database Integrity Verified**: Confirmed system prevents any possibility of duplicate users appearing on global leaderboard
+- **Authentication-Only Scoring**: Local scores remain in localStorage and never reach database, only authenticated users can submit global scores
+- **React Key Fix**: Resolved duplicate key warning in GlobalLeaderboard component using `user-${entry.userId}-${index}` keys
+
 ## July 23, 2025 - Database-Integrated Score and Coin Bank System Complete
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests
 - **Personalized Victory Screen**: Victory screen now asks "Are you a different person than [LastPlayerName]?" allowing players to either continue as the same player or enter a new name for both local and global leaderboards

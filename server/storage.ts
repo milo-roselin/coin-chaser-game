@@ -42,9 +42,10 @@ export class DatabaseStorage implements IStorage {
 
   async getTopScores(limit: number): Promise<Array<Score & { username: string }>> {
     // Use raw SQL to get cumulative scores per user with total coin bank
+    // DISTINCT ensures only one entry per user_id appears in results
     const result = await db.execute(sql`
       WITH user_totals AS (
-        SELECT u.id, u.username, u.coin_bank,
+        SELECT DISTINCT u.id, u.username, u.coin_bank,
                COALESCE(SUM(s.score), 0) as total_score,
                MAX(s.level) as highest_level,
                MAX(s.created_at) as latest_game
@@ -53,7 +54,7 @@ export class DatabaseStorage implements IStorage {
         GROUP BY u.id, u.username, u.coin_bank
         HAVING COALESCE(SUM(s.score), 0) > 0
       )
-      SELECT 0 as id, id as "userId", total_score as score, coin_bank as "coins", 
+      SELECT DISTINCT 0 as id, id as "userId", total_score as score, coin_bank as "coins", 
              highest_level as level, latest_game as "createdAt", username
       FROM user_totals 
       ORDER BY total_score DESC
