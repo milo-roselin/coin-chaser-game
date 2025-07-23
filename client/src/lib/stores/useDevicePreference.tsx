@@ -13,7 +13,7 @@ interface DevicePreferenceState {
 export const useDevicePreference = create<DevicePreferenceState>()(
   persist(
     (set, get) => ({
-      selectedDevice: 'auto',
+      selectedDevice: 'desktop',
       
       setSelectedDevice: (device: DeviceType) => {
         set({ selectedDevice: device });

@@ -192,7 +192,7 @@ export default function StartScreen() {
       </div>
 
       {/* Device Selector */}
-      <div className="mb-6 w-full max-w-4xl">
+      <div className="mb-4 w-full max-w-2xl">
         <DeviceSelector />
       </div>
 
