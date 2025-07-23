@@ -36,9 +36,13 @@ export default function MobileFullscreenButton({ className = '' }: MobileFullscr
 
   const handleToggleFullscreen = () => {
     if (fullscreen) {
-      exitFullscreen();
+      exitFullscreen().catch(() => {
+        // Handle exit fullscreen errors silently
+      });
     } else {
-      requestFullscreen();
+      requestFullscreen().catch(() => {
+        // Handle fullscreen request errors silently
+      });
     }
   };
 

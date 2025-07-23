@@ -3,40 +3,64 @@ export const isMobileDevice = (): boolean => {
   return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
-export const requestFullscreen = (): void => {
-  if (!isMobileDevice()) return;
+export const requestFullscreen = (): Promise<void> => {
+  if (!isMobileDevice()) return Promise.resolve();
 
   const element = document.documentElement;
   
   try {
     if (element.requestFullscreen) {
-      element.requestFullscreen();
+      return element.requestFullscreen().catch((error) => {
+        console.log('Fullscreen request failed:', error);
+      });
     } else if ((element as any).webkitRequestFullscreen) {
-      (element as any).webkitRequestFullscreen();
+      const promise = (element as any).webkitRequestFullscreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('Webkit fullscreen request failed:', error);
+      }) : Promise.resolve();
     } else if ((element as any).mozRequestFullScreen) {
-      (element as any).mozRequestFullScreen();
+      const promise = (element as any).mozRequestFullScreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('Firefox fullscreen request failed:', error);
+      }) : Promise.resolve();
     } else if ((element as any).msRequestFullscreen) {
-      (element as any).msRequestFullscreen();
+      const promise = (element as any).msRequestFullscreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('IE fullscreen request failed:', error);
+      }) : Promise.resolve();
     }
   } catch (error) {
     console.log('Fullscreen request failed:', error);
   }
+  return Promise.resolve();
 };
 
-export const exitFullscreen = (): void => {
+export const exitFullscreen = (): Promise<void> => {
   try {
     if (document.exitFullscreen) {
-      document.exitFullscreen();
+      return document.exitFullscreen().catch((error) => {
+        console.log('Exit fullscreen failed:', error);
+      });
     } else if ((document as any).webkitExitFullscreen) {
-      (document as any).webkitExitFullscreen();
+      const promise = (document as any).webkitExitFullscreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('Webkit exit fullscreen failed:', error);
+      }) : Promise.resolve();
     } else if ((document as any).mozCancelFullScreen) {
-      (document as any).mozCancelFullScreen();
+      const promise = (document as any).mozCancelFullScreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('Firefox exit fullscreen failed:', error);
+      }) : Promise.resolve();
     } else if ((document as any).msExitFullscreen) {
-      (document as any).msExitFullscreen();
+      const promise = (document as any).msExitFullscreen();
+      return promise ? promise.catch((error: any) => {
+        console.log('IE exit fullscreen failed:', error);
+      }) : Promise.resolve();
     }
   } catch (error) {
     console.log('Exit fullscreen failed:', error);
   }
+  return Promise.resolve();
 };
 
 export const isFullscreen = (): boolean => {
@@ -63,7 +87,9 @@ export const initializeMobileFullscreen = (): void => {
   // Auto-request fullscreen on first user interaction
   const autoRequestFullscreen = () => {
     if (!isFullscreen()) {
-      requestFullscreen();
+      requestFullscreen().catch(() => {
+        // Silently handle fullscreen request failures
+      });
     }
     // Remove listener after first interaction
     document.removeEventListener('touchstart', autoRequestFullscreen);
@@ -81,7 +107,9 @@ export const initializeMobileFullscreen = (): void => {
       
       // Try to maintain fullscreen
       if (!isFullscreen()) {
-        requestFullscreen();
+        requestFullscreen().catch(() => {
+          // Silently handle fullscreen request failures
+        });
       }
       
       // Force viewport height update for iOS
