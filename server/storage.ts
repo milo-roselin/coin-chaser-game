@@ -45,23 +45,24 @@ export class DatabaseStorage implements IStorage {
         .limit(1);
 
     if (existingScore.length > 0) {
-      // User has existing score - update if new score is higher
-      if (insertScore.score > existingScore[0].score) {
-        const result = await db
-          .update(scores)
-          .set({
-            score: insertScore.score,
-            coins: insertScore.coins,
-            level: insertScore.level,
-            createdAt: new Date()
-          })
-          .where(eq(scores.userId, insertScore.userId))
-          .returning();
-        return result[0];
-      } else {
-        // Return existing score if new score is not higher
-        return existingScore[0];
-      }
+      // User has existing score - ADD the new score to the existing total (cumulative scoring)
+      const newTotalScore = existingScore[0].score + insertScore.score;
+      const newTotalCoins = existingScore[0].coins + insertScore.coins;
+      const newHighestLevel = Math.max(existingScore[0].level, insertScore.level);
+      
+      console.log(`Cumulative scoring: ${existingScore[0].score} + ${insertScore.score} = ${newTotalScore}`);
+      
+      const result = await db
+        .update(scores)
+        .set({
+          score: newTotalScore,
+          coins: newTotalCoins,
+          level: newHighestLevel,
+          createdAt: new Date()
+        })
+        .where(eq(scores.userId, insertScore.userId))
+        .returning();
+      return result[0];
     } else {
       // User has no existing score - insert new one
       const result = await db.insert(scores).values(insertScore).returning();
@@ -79,14 +80,20 @@ export class DatabaseStorage implements IStorage {
           .where(eq(scores.userId, insertScore.userId))
           .limit(1);
           
-        if (existingScore.length > 0 && insertScore.score > existingScore[0].score) {
-          // Update with higher score
+        if (existingScore.length > 0) {
+          // User has existing score - ADD the new score to the existing total (cumulative scoring)
+          const newTotalScore = existingScore[0].score + insertScore.score;
+          const newTotalCoins = existingScore[0].coins + insertScore.coins;
+          const newHighestLevel = Math.max(existingScore[0].level, insertScore.level);
+          
+          console.log(`Cumulative scoring (error fallback): ${existingScore[0].score} + ${insertScore.score} = ${newTotalScore}`);
+          
           const result = await db
             .update(scores)
             .set({
-              score: insertScore.score,
-              coins: insertScore.coins,
-              level: insertScore.level,
+              score: newTotalScore,
+              coins: newTotalCoins,
+              level: newHighestLevel,
               createdAt: new Date()
             })
             .where(eq(scores.userId, insertScore.userId))
