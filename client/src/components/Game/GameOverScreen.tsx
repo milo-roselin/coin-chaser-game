@@ -90,7 +90,7 @@ export default function GameOverScreen() {
   }, [handleRetry, handleHome, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-4 relative">
+    <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-20 pb-12 sm:pt-6 sm:pb-6">
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay />
@@ -102,15 +102,15 @@ export default function GameOverScreen() {
       </div>
       
       {/* Game Over Message */}
-      <div className="mb-8 text-center">
-        <div className="text-6xl mb-4">💥</div>
-        <h1 className="text-4xl font-bold text-red-600 mb-2">Game Over!</h1>
-        <p className="text-lg text-gray-600">Better luck next time!</p>
+      <div className="mb-4 sm:mb-8 text-center mt-2 sm:mt-0">
+        <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4">💥</div>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-red-600 mb-1 sm:mb-2">Game Over!</h1>
+        <p className="text-sm sm:text-base md:text-lg text-gray-600">Better luck next time!</p>
       </div>
 
       {/* Score Card */}
-      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-6">
-        <CardContent className="p-6 text-center">
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl mb-3 sm:mb-6 mx-2">
+        <CardContent className="p-3 sm:p-6 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Final Score</h2>
           <div className="space-y-2">
             <div className="text-3xl font-bold text-blue-600">{score}</div>
@@ -126,8 +126,8 @@ export default function GameOverScreen() {
 
       {/* Checkpoint Section */}
       {highestLevelUnlocked > 1 && (
-        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-6">
-          <CardContent className="p-6">
+        <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mb-3 sm:mb-6 mx-2">
+          <CardContent className="p-3 sm:p-6">
             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">🏃‍♂️ Continue from Checkpoint</h3>
             <div className="overflow-x-auto">
               <div className="flex flex-wrap gap-3 mb-4 justify-center min-h-[60px]">
@@ -166,26 +166,26 @@ export default function GameOverScreen() {
       )}
 
       {/* Action Buttons */}
-      <div className="space-y-3 w-full max-w-md">
+      <div className="space-y-2 sm:space-y-3 w-full max-w-md mx-2 mb-8 sm:mb-4">
         <Button 
           onClick={handleRetry}
           size="lg"
-          className="w-full text-xl py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+          className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
         >
-          <RotateCcw className="mr-2 h-6 w-6" />
+          <RotateCcw className="mr-2 h-4 w-4 sm:h-6 sm:w-6" />
           Try Again (Level {currentLevel})
-          <span className="ml-auto text-sm opacity-75">[R]</span>
+          <span className="ml-auto text-xs sm:text-sm opacity-75">[R]</span>
         </Button>
 
         <Button 
           onClick={handleHome}
           variant="outline"
           size="lg"
-          className="w-full text-lg py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
+          className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
         >
-          <Home className="mr-2 h-5 w-5" />
+          <Home className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
           Back to Menu
-          <span className="ml-auto text-sm opacity-75">[H]</span>
+          <span className="ml-auto text-xs sm:text-sm opacity-75">[H]</span>
         </Button>
       </div>
     </div>
