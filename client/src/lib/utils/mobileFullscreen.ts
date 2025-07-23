@@ -12,21 +12,25 @@ export const requestFullscreen = (): Promise<void> => {
     if (element.requestFullscreen) {
       return element.requestFullscreen().catch((error) => {
         console.log('Fullscreen request failed:', error);
+        return Promise.resolve();
       });
     } else if ((element as any).webkitRequestFullscreen) {
       const promise = (element as any).webkitRequestFullscreen();
       return promise ? promise.catch((error: any) => {
         console.log('Webkit fullscreen request failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     } else if ((element as any).mozRequestFullScreen) {
       const promise = (element as any).mozRequestFullScreen();
       return promise ? promise.catch((error: any) => {
         console.log('Firefox fullscreen request failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     } else if ((element as any).msRequestFullscreen) {
       const promise = (element as any).msRequestFullscreen();
       return promise ? promise.catch((error: any) => {
         console.log('IE fullscreen request failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     }
   } catch (error) {
@@ -40,21 +44,25 @@ export const exitFullscreen = (): Promise<void> => {
     if (document.exitFullscreen) {
       return document.exitFullscreen().catch((error) => {
         console.log('Exit fullscreen failed:', error);
+        return Promise.resolve();
       });
     } else if ((document as any).webkitExitFullscreen) {
       const promise = (document as any).webkitExitFullscreen();
       return promise ? promise.catch((error: any) => {
         console.log('Webkit exit fullscreen failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     } else if ((document as any).mozCancelFullScreen) {
       const promise = (document as any).mozCancelFullScreen();
       return promise ? promise.catch((error: any) => {
         console.log('Firefox exit fullscreen failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     } else if ((document as any).msExitFullscreen) {
       const promise = (document as any).msExitFullscreen();
       return promise ? promise.catch((error: any) => {
         console.log('IE exit fullscreen failed:', error);
+        return Promise.resolve();
       }) : Promise.resolve();
     }
   } catch (error) {
