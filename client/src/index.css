@@ -140,6 +140,18 @@ body {
     width: 100vw !important;
     height: 100vh !important;
   }
+  
+  /* iPad specific content spacing */
+  .min-h-screen {
+    min-height: calc(100vh - 4rem) !important;
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+  
+  /* Reduce element sizes on iPad */
+  .text-4xl, .text-3xl, .text-2xl {
+    line-height: 1.2 !important;
+  }
 }
 
 /* Force full screen on all mobile devices */
@@ -194,12 +206,14 @@ button:focus, button:active, button:hover {
   -webkit-touch-callout: none !important;
 }
 
-/* Mobile layout improvements */
-@media (max-width: 640px) {
+/* Mobile and tablet layout improvements */
+@media (max-width: 1024px) {
   /* Ensure start screen content is properly contained */
   .min-h-screen {
     min-height: 100vh;
     min-height: calc(var(--vh, 1vh) * 100);
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
   
   /* Add safe area padding for iOS devices */
@@ -215,6 +229,15 @@ button:focus, button:active, button:hover {
     -webkit-overflow-scrolling: touch;
   }
   
+  /* Tablet specific adjustments */
+  .flex.flex-col.items-center {
+    justify-content: flex-start !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+}
+
+@media (max-width: 640px) {
   /* Reduce font sizes and spacing on small screens */
   .text-4xl {
     font-size: 1.875rem !important; /* 30px */

@@ -160,7 +160,7 @@ export default function StartScreen() {
   }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, highestLevelUnlocked, startFromLevel, levelInput, inputTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-start sm:justify-center w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-16 pb-8 sm:pt-4 sm:pb-4">
+    <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-24 pb-16 sm:pt-8 sm:pb-8 md:pt-12 md:pb-12">
       {/* Coin Bank Display - Top Left */}
       <div className="absolute top-4 left-4 z-10">
         <CoinBankDisplay showSessionCoins={true} />
@@ -172,12 +172,12 @@ export default function StartScreen() {
       </div>
       
       {/* Game Logo */}
-      <div className="mb-4 sm:mb-8 text-center mt-4 sm:mt-0">
-        <div className="mb-2 sm:mb-4 flex justify-center">
-          <img src="/gold-coin.svg" alt="Gold Coin" className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" />
+      <div className="mb-4 sm:mb-6 text-center mt-2 sm:mt-0">
+        <div className="mb-2 sm:mb-3 flex justify-center">
+          <img src="/gold-coin.svg" alt="Gold Coin" className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16" />
         </div>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 mb-1 sm:mb-2">Coin Rush</h1>
-        <p className="text-sm sm:text-base md:text-lg text-gray-600">Collect coins, avoid obstacles and more!</p>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">Coin Rush</h1>
+        <p className="text-sm sm:text-base text-gray-600">Collect coins, avoid obstacles and more!</p>
         {highestLevelUnlocked > 1 && (
           <div className="mt-4 p-3 bg-purple-100 rounded-lg">
             <p className="text-sm font-semibold text-purple-700">
@@ -317,7 +317,7 @@ export default function StartScreen() {
       )}
 
       {/* Instructions */}
-      <div className="mt-4 sm:mt-8 text-center max-w-md mx-2 mb-8 sm:mb-4">
+      <div className="mt-3 sm:mt-6 text-center max-w-md mx-2 mb-12 sm:mb-6">
         <p className="text-sm text-gray-600 mb-2">How to Play:</p>
         <p className="text-xs text-gray-500 px-2">
           Use arrow keys or WASD to move your character. You can also tap and hold to move. 
