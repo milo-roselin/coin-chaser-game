@@ -100,6 +100,7 @@ The application is architected for scalability with clear separation between fro
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests
 - **Personalized Victory Screen**: Victory screen now asks "Are you a different person than [LastPlayerName]?" allowing players to either continue as the same player or enter a new name for both local and global leaderboards
 - **Accurate Global Leaderboard**: Fixed global leaderboard to display users' total coin bank values (from users table) instead of individual game session coins, ensuring consistency with coin bank display
+- **Cumulative Scoring System**: Changed leaderboard from showing highest individual game score to cumulative total of all scores, so each game adds to your total rather than replacing it
 - **Database-Aware Score Tracking**: Modified score display system to prioritize database values for authenticated users:
   - useUserStats store fetches user's highest score, total coins, and highest level from database
   - StartScreen displays database scores/levels for logged-in users, local storage for guests

@@ -41,18 +41,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTopScores(limit: number): Promise<Array<Score & { username: string }>> {
-    // Use raw SQL with CTE to get highest score per user, with total coin bank
+    // Use raw SQL to get cumulative scores per user with total coin bank
     const result = await db.execute(sql`
-      WITH ranked_scores AS (
-        SELECT s.id, s.user_id, s.score, s.level, s.created_at, u.username, u.coin_bank,
-               ROW_NUMBER() OVER (PARTITION BY s.user_id ORDER BY s.score DESC) as rn
-        FROM scores s
-        JOIN users u ON s.user_id = u.id
+      WITH user_totals AS (
+        SELECT u.id, u.username, u.coin_bank,
+               COALESCE(SUM(s.score), 0) as total_score,
+               MAX(s.level) as highest_level,
+               MAX(s.created_at) as latest_game
+        FROM users u
+        LEFT JOIN scores s ON u.id = s.user_id
+        GROUP BY u.id, u.username, u.coin_bank
+        HAVING COALESCE(SUM(s.score), 0) > 0
       )
-      SELECT id, user_id as "userId", score, coin_bank as "coins", level, created_at as "createdAt", username
-      FROM ranked_scores 
-      WHERE rn = 1
-      ORDER BY score DESC
+      SELECT 0 as id, id as "userId", total_score as score, coin_bank as "coins", 
+             highest_level as level, latest_game as "createdAt", username
+      FROM user_totals 
+      ORDER BY total_score DESC
       LIMIT ${limit}
     `);
     
@@ -61,7 +65,7 @@ export class DatabaseStorage implements IStorage {
       userId: row.userId,
       score: row.score,
       coins: row.coins,
-      level: row.level,
+      level: row.level || 1,
       createdAt: new Date(row.createdAt),
       username: row.username
     }));
