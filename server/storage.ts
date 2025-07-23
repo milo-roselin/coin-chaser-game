@@ -41,15 +41,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTopScores(limit: number): Promise<Array<Score & { username: string }>> {
-    // Use raw SQL with CTE to get highest score per user
+    // Use raw SQL with CTE to get highest score per user, with total coin bank
     const result = await db.execute(sql`
       WITH ranked_scores AS (
-        SELECT s.id, s.user_id, s.score, s.coins, s.level, s.created_at, u.username,
+        SELECT s.id, s.user_id, s.score, s.level, s.created_at, u.username, u.coin_bank,
                ROW_NUMBER() OVER (PARTITION BY s.user_id ORDER BY s.score DESC) as rn
         FROM scores s
         JOIN users u ON s.user_id = u.id
       )
-      SELECT id, user_id as "userId", score, coins, level, created_at as "createdAt", username
+      SELECT id, user_id as "userId", score, coin_bank as "coins", level, created_at as "createdAt", username
       FROM ranked_scores 
       WHERE rn = 1
       ORDER BY score DESC
