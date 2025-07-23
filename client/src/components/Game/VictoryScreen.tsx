@@ -34,10 +34,9 @@ export default function VictoryScreen() {
 
   // Handle score submission on screen load - only once per victory screen
   useEffect(() => {
-    // Don't auto-submit anymore - let user decide if they're the same person
-    
-    // Auto-submit to global leaderboard if user is logged in - only once
+    // Only auto-submit to global leaderboard if user is logged in and score hasn't been submitted yet
     if (user && !globalScoreSubmitted) {
+      console.log(`Auto-submitting score for authenticated user: ${user.username}, Score: ${totalScore}, Coins: ${coinsCollected}`);
       handleGlobalScoreSubmit();
     }
   }, [user]); // Remove dependency on totalScore and totalCoinsCollected to prevent multiple submissions
