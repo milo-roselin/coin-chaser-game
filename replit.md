@@ -96,19 +96,6 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 23, 2025 - Mobile Fullscreen Enhancement
-- **Automatic Mobile Fullscreen**: Game now automatically enters fullscreen mode on mobile devices when gameplay starts
-  - Comprehensive mobile device detection (Android, iOS, tablets, small screens)
-  - Cross-browser fullscreen API support (standard, webkit, moz, ms prefixes)
-  - Automatic fullscreen exit when game ends or returns to menu
-  - Enhanced viewport handling with screen dimensions for true fullscreen experience
-  - Mobile-optimized meta tags for web app capabilities and status bar styling
-- **Avatar Selection Keyboard Shortcuts**: Added number keys 1-5 for quick avatar selection
-  - Visual indicators showing keyboard shortcuts on each avatar card
-  - ESC key to close avatar selector
-  - "[A]" keyboard shortcut added to main menu for opening avatar selector
-- **Improved Mobile Experience**: Better touch handling and fullscreen immersion for mobile gaming
-
 ## July 21, 2025 - Avatar Thumbnail System Complete
 - **Avatar PNG Thumbnails**: Successfully implemented user-provided avatar images as thumbnails
   - Wario: Custom yellow square with purple mustache saved to `/client/public/images/wario-thumbnail.png`
