@@ -26,8 +26,8 @@ export const useCoinBank = create<CoinBankState>()(
           sessionCoins: state.sessionCoins + amount,
         }));
         
-        // Sync to database if user is authenticated
-        get().syncToDatabase();
+        // Sync to database if user is authenticated (debounced to avoid too many calls)
+        setTimeout(() => get().syncToDatabase(), 100);
       },
 
       spendCoins: (amount: number) => {

@@ -32,24 +32,28 @@ export default function VictoryScreen() {
     return savedName || 'Anonymous Player';
   };
 
-  // Handle score submission on screen load
+  // Handle score submission on screen load - only once per victory screen
   useEffect(() => {
     // Don't auto-submit anymore - let user decide if they're the same person
     
-    // Auto-submit to global leaderboard if user is logged in
-    if (user) {
+    // Auto-submit to global leaderboard if user is logged in - only once
+    if (user && !globalScoreSubmitted) {
       handleGlobalScoreSubmit();
     }
-  }, [totalScore, totalCoinsCollected, user]);
+  }, [user]); // Remove dependency on totalScore and totalCoinsCollected to prevent multiple submissions
 
   const handleGlobalScoreSubmit = async () => {
     if (user && !globalScoreSubmitted) {
+      // Set flag immediately to prevent multiple submissions
+      setGlobalScoreSubmitted(true);
+      
       // First sync coin bank to ensure database has latest coin count
       await useCoinBank.getState().syncToDatabase();
       
-      const success = await submitScore(totalScore, totalCoinsCollected, currentLevel);
-      if (success) {
-        setGlobalScoreSubmitted(true);
+      const success = await submitScore(totalScore, coinsCollected, currentLevel);
+      if (!success) {
+        // Reset flag if submission failed
+        setGlobalScoreSubmitted(false);
       }
     }
   };

@@ -163,8 +163,12 @@ export const useAuth = create<AuthStore>()(
 
       syncCoinBank: async (coinBank: number) => {
         const { user } = get();
-        if (!user) return false;
+        if (!user) {
+          console.log('No user authenticated, cannot sync coin bank');
+          return false;
+        }
 
+        console.log(`Syncing coin bank: ${coinBank} coins for user ${user.username}`);
         try {
           const response = await fetch('/api/coinbank', {
             method: 'PUT',
@@ -176,10 +180,13 @@ export const useAuth = create<AuthStore>()(
           });
 
           if (response.ok) {
+            console.log(`Coin bank sync successful: ${coinBank} coins`);
             set({ user: { ...user, coinBank } });
             return true;
+          } else {
+            console.error('Coin bank sync failed with status:', response.status);
+            return false;
           }
-          return false;
         } catch (error) {
           console.error('Coin bank sync error:', error);
           return false;
