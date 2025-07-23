@@ -36,12 +36,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async insertScore(insertScore: InsertScore): Promise<Score> {
-    // Check if user already has a score
-    const existingScore = await db
-      .select()
-      .from(scores)
-      .where(eq(scores.userId, insertScore.userId))
-      .limit(1);
+    try {
+      // Check if user already has a score
+      const existingScore = await db
+        .select()
+        .from(scores)
+        .where(eq(scores.userId, insertScore.userId))
+        .limit(1);
 
     if (existingScore.length > 0) {
       // User has existing score - update if new score is higher
@@ -65,6 +66,38 @@ export class DatabaseStorage implements IStorage {
       // User has no existing score - insert new one
       const result = await db.insert(scores).values(insertScore).returning();
       return result[0];
+    }
+    } catch (error: any) {
+      // Handle unique constraint violation - fallback to update logic
+      if (error.code === '23505' && error.constraint === 'unique_user_score') {
+        console.log(`Unique constraint violation for user ${insertScore.userId}, attempting update...`);
+        
+        // Get existing score and compare
+        const existingScore = await db
+          .select()
+          .from(scores)
+          .where(eq(scores.userId, insertScore.userId))
+          .limit(1);
+          
+        if (existingScore.length > 0 && insertScore.score > existingScore[0].score) {
+          // Update with higher score
+          const result = await db
+            .update(scores)
+            .set({
+              score: insertScore.score,
+              coins: insertScore.coins,
+              level: insertScore.level,
+              createdAt: new Date()
+            })
+            .where(eq(scores.userId, insertScore.userId))
+            .returning();
+          return result[0];
+        } else {
+          // Return existing score
+          return existingScore[0] || insertScore as Score;
+        }
+      }
+      throw error;
     }
   }
 
