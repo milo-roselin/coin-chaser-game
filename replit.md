@@ -98,6 +98,7 @@ The application is architected for scalability with clear separation between fro
 
 ## July 23, 2025 - Database-Integrated Score and Coin Bank System Complete
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests
+- **Personalized Victory Screen**: Victory screen now asks "Are you a different person than [LastPlayerName]?" allowing players to either continue as the same player or enter a new name for both local and global leaderboards
 - **Database-Aware Score Tracking**: Modified score display system to prioritize database values for authenticated users:
   - useUserStats store fetches user's highest score, total coins, and highest level from database
   - StartScreen displays database scores/levels for logged-in users, local storage for guests
