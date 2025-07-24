@@ -7,16 +7,22 @@ import connectPgSimple from "connect-pg-simple";
 import { neon } from "@neondatabase/serverless";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Use memory store for now to fix immediate session issues
-  // Session middleware for authentication
+  // Setup PostgreSQL session store for persistence across server restarts
+  const PgSession = connectPgSimple(session);
+  
   app.use(session({
+    store: new PgSession({
+      conString: process.env.DATABASE_URL!,
+      createTableIfMissing: true,
+      pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
+    }),
     secret: process.env.SESSION_SECRET || 'coin-game-secret-key-2025',
     resave: false,
     saveUninitialized: false,
-    name: 'sessionId', // Custom session name 
+    name: 'connect.sid', // Use default express-session name
     cookie: {
       secure: false, // Set to true in production with HTTPS
-      httpOnly: true,
+      httpOnly: false, // Allow JavaScript access to debug session issues  
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       sameSite: 'lax' // Helps with session persistence across requests
     }
