@@ -96,6 +96,13 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 24, 2025 - Simplified Single Global Leaderboard System
+- **Eliminated Local Leaderboard**: Removed dual leaderboard system in favor of single global leaderboard
+- **Streamlined UI**: StartScreen now has single "Leaderboard" button instead of separate Local/Global buttons
+- **Updated Keyboard Shortcuts**: "L" key now opens global leaderboard (removed "G" shortcut)
+- **Simplified Victory Screen**: Removed local leaderboard references and addScore functionality
+- **Cleaner User Experience**: Players now interact with just one leaderboard system for consistency
+
 ## July 23, 2025 - Enhanced Authentication with Password Visibility Toggle
 - **Password Visibility Toggle**: Added eye/eye-off icon to login form allowing users to show/hide password while typing
 - **Improved Login Experience**: Users can now verify they're entering the correct password, reducing login failures

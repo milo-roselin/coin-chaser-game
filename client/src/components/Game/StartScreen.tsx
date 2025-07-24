@@ -16,7 +16,7 @@ import GlobalLeaderboard from "./GlobalLeaderboard";
 import LoginForm from "../Auth/LoginForm";
 
 export default function StartScreen() {
-  const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
+  const { startGame, startFromLevel, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
   const { getSelectedAvatar } = usePlayerAvatar();
   const { totalCoins } = useCoinBank();
@@ -59,9 +59,7 @@ export default function StartScreen() {
     startFromLevel(displayLevel);
   };
 
-  const handleShowLeaderboard = () => {
-    showLeaderboard();
-  };
+
 
   const handleResetProgress = () => {
     if (confirm("Reset all progress? This will delete your checkpoint and start from Level 1.")) {
@@ -110,12 +108,6 @@ export default function StartScreen() {
       }
       
       if (key === 'l' || code === 'KeyL') {
-        e.preventDefault();
-        handleShowLeaderboard();
-        return;
-      }
-
-      if (key === 'g' || code === 'KeyG') {
         e.preventDefault();
         setShowGlobalLeaderboard(true);
         return;
@@ -202,7 +194,7 @@ export default function StartScreen() {
         clearTimeout(inputTimeout);
       }
     };
-  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, handleLogout, displayLevel, startFromLevel, levelInput, inputTimeout, user]);
+  }, [handleStartGame, handleContinue, toggleMute, handleResetProgress, handleLogout, displayLevel, startFromLevel, levelInput, inputTimeout, user]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-24 pb-16 sm:pt-8 sm:pb-8 md:pt-12 md:pb-12">
@@ -276,29 +268,16 @@ export default function StartScreen() {
             </Button>
           )}
 
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleShowLeaderboard}
-              variant="outline"
-              size="lg"
-              className="flex-1 text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
-            >
-              <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              Local
-              <span className="ml-auto text-xs sm:text-sm opacity-75">[L]</span>
-            </Button>
-            
-            <Button 
-              onClick={() => setShowGlobalLeaderboard(true)}
-              variant="outline"
-              size="lg"
-              className="flex-1 text-base sm:text-lg py-3 sm:py-4 border-2 border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold rounded-xl"
-            >
-              <Globe className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              Global
-              <span className="ml-auto text-xs sm:text-sm opacity-75">[G]</span>
-            </Button>
-          </div>
+          <Button 
+            onClick={() => setShowGlobalLeaderboard(true)}
+            variant="outline"
+            size="lg"
+            className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold rounded-xl"
+          >
+            <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            Leaderboard
+            <span className="ml-auto text-xs sm:text-sm opacity-75">[L]</span>
+          </Button>
 
           {!user && (
             <Button 

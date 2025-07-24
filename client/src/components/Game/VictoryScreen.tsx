@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
-import { useLeaderboard } from "@/lib/stores/useLeaderboard";
+
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { useAuth } from "@/lib/stores/useAuth";
 import { useGlobalLeaderboard } from "@/lib/stores/useGlobalLeaderboard";
@@ -14,7 +14,7 @@ import LoginForm from "../Auth/LoginForm";
 
 export default function VictoryScreen() {
   const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
-  const { addScore } = useLeaderboard();
+
   const { totalCoins, sessionCoins } = useCoinBank();
   const { user } = useAuth();
   const { submitScore } = useGlobalLeaderboard();
@@ -65,12 +65,6 @@ export default function VictoryScreen() {
   const handleSubmitScore = () => {
     if (playerName.trim()) {
       localStorage.setItem('playerName', playerName.trim());
-      addScore({
-        name: playerName.trim(),
-        score: totalScore,
-        coins: totalCoinsCollected,
-        date: new Date().toISOString()
-      });
       setScoreSubmitted(true);
     }
   };
@@ -79,12 +73,6 @@ export default function VictoryScreen() {
     const savedName = localStorage.getItem('playerName');
     if (savedName) {
       setPlayerName(savedName);
-      addScore({
-        name: savedName,
-        score: totalScore,
-        coins: totalCoinsCollected,
-        date: new Date().toISOString()
-      });
       setScoreSubmitted(true);
     }
   };
@@ -218,7 +206,7 @@ export default function VictoryScreen() {
             {scoreSubmitted ? (
               <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
                 <Trophy className="mr-2 h-5 w-5" />
-                Score saved to local leaderboard!
+                Score saved to leaderboard!
               </div>
             ) : (
               <div className="text-orange-600 font-semibold flex items-center justify-center mb-4">
