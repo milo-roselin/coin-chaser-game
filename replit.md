@@ -96,13 +96,13 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 23, 2025 - Enhanced Authentication with Password Visibility Toggle
+## July 24, 2025 - Fixed Victory Screen Global Leaderboard Score Submission
+- **Session Persistence Fixed**: Implemented explicit session saving with `req.session.save()` to prevent session loss after login
+- **Victory Screen Working**: Scores now properly save to global leaderboard from victory screen for authenticated users
 - **Password Visibility Toggle**: Added eye/eye-off icon to login form allowing users to show/hide password while typing
-- **Improved Login Experience**: Users can now verify they're entering the correct password, reducing login failures
-- **Score Submission Debugging**: Added comprehensive logging to track score submission process and identify authentication issues
-- **Authentication Issues Identified**: Found that score submissions require proper user authentication, added detailed console logging
-- **Complete Username Protection**: Bulletproof validation system prevents duplicate usernames at multiple levels
-- **Database Integrity**: UNIQUE constraints ensure data consistency across tables
+- **Session Configuration Enhanced**: Added rolling sessions and improved cookie settings for better session management
+- **Score Submission Verified**: Confirmed authenticated users can successfully save scores to database during gameplay
+- **Authentication Stability**: Login sessions now persist properly throughout game sessions preventing 401 errors
 
 ## July 23, 2025 - Database-Integrated Score and Coin Bank System Complete
 - **User-Specific Database Values**: Coin bank UI displays the authenticated user's personal coin bank from database, local storage for guests

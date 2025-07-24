@@ -3,17 +3,22 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
 import session from "express-session";
+import pgSimple from "connect-pg-simple";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session middleware for authentication
+  // Session middleware for authentication with memory store for simplicity
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'coin-game-secret-key',
+    secret: process.env.SESSION_SECRET || 'coin-game-secret-key-very-long-and-secure-session',
     resave: false,
     saveUninitialized: false,
+    name: 'connect.sid',
     cookie: {
       secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-    }
+      sameSite: 'lax'
+    },
+    rolling: true // Refresh session on each request
   }));
 
   // Authentication middleware
@@ -47,13 +52,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.insertUser({ username, password: hashedPassword });
       
-      // Set session
+      // Set session and save explicitly
       req.session.userId = user.id;
       req.session.username = user.username;
       
-      res.json({ 
-        user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
-        message: 'User registered successfully' 
+      // Ensure session is saved before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: 'Session creation failed' });
+        }
+        
+        res.json({ 
+          user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
+          message: 'User registered successfully' 
+        });
       });
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -86,13 +99,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Set session
+      // Set session and save explicitly
       req.session.userId = user.id;
       req.session.username = user.username;
       
-      res.json({ 
-        user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
-        message: 'Login successful' 
+      // Ensure session is saved before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ error: 'Session creation failed' });
+        }
+        
+        res.json({ 
+          user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
+          message: 'Login successful' 
+        });
       });
     } catch (error) {
       console.error('Login error:', error);
