@@ -246,14 +246,13 @@ export default function StartScreen() {
 
       {/* User Score Display for Logged-in Users */}
       {user && (
-        <Card className="w-full max-w-md bg-blue-50/90 backdrop-blur-sm shadow-lg mx-2 mb-3 sm:mb-4">
-          <CardContent className="p-3 sm:p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <UserCheck className="h-5 w-5 text-blue-600 mr-2" />
-              <h3 className="text-lg font-bold text-blue-700">{user.username}</h3>
+        <Card className="w-full max-w-md bg-blue-50/90 backdrop-blur-sm shadow-lg mx-2 mb-2">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <UserCheck className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-700">{user.username}</span>
+              <span className="text-lg font-bold text-blue-600">{displayScore.toLocaleString()}</span>
             </div>
-            <div className="text-2xl font-bold text-blue-600 mb-1">{displayScore.toLocaleString()}</div>
-            <div className="text-sm text-blue-500">Total Score</div>
           </CardContent>
         </Card>
       )}
