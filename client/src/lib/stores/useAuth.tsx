@@ -53,9 +53,17 @@ export const useAuth = create<AuthStore>()(
             });
           } else {
             set({ user: null });
+            // Initialize coin bank for unauthenticated users
+            import('./useCoinBank').then(({ useCoinBank }) => {
+              useCoinBank.getState().initializeForUnauthenticated();
+            });
           }
         } catch (error) {
           set({ user: null });
+          // Initialize coin bank for unauthenticated users on error
+          import('./useCoinBank').then(({ useCoinBank }) => {
+            useCoinBank.getState().initializeForUnauthenticated();
+          });
         }
       },
 
@@ -77,11 +85,23 @@ export const useAuth = create<AuthStore>()(
           if (response.ok) {
             set({ user: data.user, isLoading: false, error: null });
             
-            // Sync coin bank with user data on login
+            // Handle coin bank sync and transfer session coins on login
             if (data.user?.coinBank !== undefined) {
               // Import dynamically to avoid circular dependency
               import('./useCoinBank').then(({ useCoinBank }) => {
-                useCoinBank.getState().syncWithUser(data.user.coinBank);
+                const coinBank = useCoinBank.getState();
+                const sessionCoins = coinBank.getSessionCoins();
+                
+                // Transfer session coins to user account if any exist
+                if (sessionCoins > 0) {
+                  const newTotal = data.user.coinBank + sessionCoins;
+                  coinBank.syncWithUser(newTotal);
+                  coinBank.resetSessionCoins();
+                  // Sync the updated total to database
+                  coinBank.syncToDatabase();
+                } else {
+                  coinBank.syncWithUser(data.user.coinBank);
+                }
               });
             }
             
@@ -119,11 +139,23 @@ export const useAuth = create<AuthStore>()(
           if (response.ok) {
             set({ user: data.user, isLoading: false, error: null });
             
-            // Sync coin bank with user data for new users
+            // Handle coin bank sync and transfer session coins for new users
             if (data.user?.coinBank !== undefined) {
               // Import dynamically to avoid circular dependency
               import('./useCoinBank').then(({ useCoinBank }) => {
-                useCoinBank.getState().syncWithUser(data.user.coinBank);
+                const coinBank = useCoinBank.getState();
+                const sessionCoins = coinBank.getSessionCoins();
+                
+                // Transfer session coins to new user account if any exist
+                if (sessionCoins > 0) {
+                  const newTotal = data.user.coinBank + sessionCoins;
+                  coinBank.syncWithUser(newTotal);
+                  coinBank.resetSessionCoins();
+                  // Sync the updated total to database
+                  coinBank.syncToDatabase();
+                } else {
+                  coinBank.syncWithUser(data.user.coinBank);
+                }
               });
             }
             
@@ -154,9 +186,13 @@ export const useAuth = create<AuthStore>()(
         } finally {
           set({ user: null, error: null });
           
-          // Clear user stats on logout
+          // Clear user stats and coin bank on logout
           import('./useUserStats').then(({ useUserStats }) => {
             useUserStats.getState().clearStats();
+          });
+          
+          import('./useCoinBank').then(({ useCoinBank }) => {
+            useCoinBank.getState().clearForUnauthenticated();
           });
         }
       },
