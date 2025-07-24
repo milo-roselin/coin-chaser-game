@@ -58,6 +58,8 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
             <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
               <p className="font-semibold">Test Accounts:</p>
               <p>• Username: <span className="font-mono">Teddy</span> Password: <span className="font-mono">password123</span></p>
+              <p>• Username: <span className="font-mono">junaid</span> Password: <span className="font-mono">password123</span></p>
+              <p>• Username: <span className="font-mono">Milo_The_Awesome</span> Password: <span className="font-mono">mypassword</span></p>
               <p className="text-xs text-gray-500 mt-1">Or create a new account below</p>
             </div>
           )}
