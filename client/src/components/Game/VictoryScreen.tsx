@@ -18,19 +18,12 @@ export default function VictoryScreen() {
   const { totalCoins, sessionCoins } = useCoinBank();
   const { user } = useAuth();
   const { submitScore } = useGlobalLeaderboard();
-  const [playerName, setPlayerName] = useState("");
-  const [scoreSubmitted, setScoreSubmitted] = useState(false);
   const [globalScoreSubmitted, setGlobalScoreSubmitted] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [showNameInput, setShowNameInput] = useState(false);
 
-  // Get last player name for personalized prompt
-  const getLastPlayerName = () => {
-    const savedName = localStorage.getItem('playerName');
-    return savedName || 'Anonymous Player';
-  };
+
 
   // Handle score submission on screen load - only once per victory screen
   useEffect(() => {
@@ -62,20 +55,7 @@ export default function VictoryScreen() {
     }
   };
 
-  const handleSubmitScore = () => {
-    if (playerName.trim()) {
-      localStorage.setItem('playerName', playerName.trim());
-      setScoreSubmitted(true);
-    }
-  };
 
-  const handleSamePlayer = () => {
-    const savedName = localStorage.getItem('playerName');
-    if (savedName) {
-      setPlayerName(savedName);
-      setScoreSubmitted(true);
-    }
-  };
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
@@ -102,12 +82,7 @@ export default function VictoryScreen() {
         return;
       }
       
-      // Handle submit score keys
-      if ((key === 's' || code === 'KeyS' || key === 'enter' || code === 'Enter' || e.keyCode === 13) && playerName.trim()) {
-        e.preventDefault();
-        handleSubmitScore();
-        return;
-      }
+
       
       // Handle number keys for multi-digit input
       const numberKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -154,7 +129,7 @@ export default function VictoryScreen() {
         clearTimeout(inputTimeout);
       }
     };
-  }, [handleHome, handleSubmitScore, scoreSubmitted, playerName, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
+  }, [handleHome, startFromLevel, highestLevelUnlocked, levelInput, inputTimeout]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-20 pb-12 sm:pt-6 sm:pb-6">
@@ -173,7 +148,7 @@ export default function VictoryScreen() {
         <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4">🎉</div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-600 mb-1 sm:mb-2">Level {currentLevel} Complete!</h1>
         <p className="text-sm sm:text-base md:text-lg text-gray-600">
-          {scoreSubmitted ? "Score saved to leaderboard!" : "Choose player identity to save score"}
+          Level Complete!
         </p>
       </div>
 
@@ -203,17 +178,6 @@ export default function VictoryScreen() {
           </div>
 
           <div className="space-y-4">
-            {scoreSubmitted ? (
-              <div className="text-green-600 font-semibold flex items-center justify-center mb-4">
-                <Trophy className="mr-2 h-5 w-5" />
-                Score saved to leaderboard!
-              </div>
-            ) : (
-              <div className="text-orange-600 font-semibold flex items-center justify-center mb-4">
-                <Trophy className="mr-2 h-5 w-5" />
-                Choose player identity to save score
-              </div>
-            )}
 
             {/* Global Leaderboard Status */}
             {user ? (
@@ -238,97 +202,7 @@ export default function VictoryScreen() {
               </div>
             )}
             
-            <div className="border-t pt-4">
-              {!scoreSubmitted ? (
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-700 mb-3 font-medium">
-                      Are you a different person than <span className="font-bold text-blue-600">{getLastPlayerName()}</span>?
-                    </p>
-                    
-                    <div className="flex gap-2 mb-4">
-                      <Button
-                        onClick={handleSamePlayer}
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 border-green-500 text-green-600 hover:bg-green-50"
-                      >
-                        No, same player
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setPlayerName('');
-                          setShowNameInput(true);
-                        }}
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 border-blue-500 text-blue-600 hover:bg-blue-50"
-                      >
-                        Yes, different player
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {showNameInput && (
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        Enter your name to save to leaderboard:
-                      </p>
-                      <Input
-                        placeholder="Enter your name"
-                        value={playerName}
-                        onChange={(e) => setPlayerName(e.target.value)}
-                        maxLength={20}
-                        className="text-center mb-2"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && playerName.trim()) {
-                            handleSubmitScore();
-                          }
-                        }}
-                      />
-                      <Button
-                        onClick={handleSubmitScore}
-                        disabled={!playerName.trim()}
-                        size="sm"
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                      >
-                        <Upload className="mr-2 h-4 w-4" />
-                        Save Score
-                        <span className="ml-auto text-sm opacity-75">[S]</span>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Want to update your name?
-                  </p>
-                  <Input
-                    placeholder="Enter your name"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    maxLength={20}
-                    className="text-center mb-2"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && playerName.trim()) {
-                        handleSubmitScore();
-                      }
-                    }}
-                  />
-                  <Button
-                    onClick={handleSubmitScore}
-                    disabled={!playerName.trim()}
-                    size="sm"
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    Update Name
-                    <span className="ml-auto text-sm opacity-75">[S]</span>
-                  </Button>
-                </div>
-              )}
-            </div>
+
           </div>
         </CardContent>
       </Card>
