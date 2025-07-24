@@ -7,19 +7,20 @@ import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { useAuth } from "@/lib/stores/useAuth";
 import { useUserStats } from "@/lib/stores/useUserStats";
-import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User, Globe } from "lucide-react";
+import { Trophy, Play, Volume2, VolumeX, Lock, Settings, User, Globe, LogOut, UserCheck } from "lucide-react";
 import AudioSettingsMenu from "./AudioSettingsMenu";
 import CoinBankDisplay from "./CoinBankDisplay";
 import { AvatarSelector } from "./AvatarSelector";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 import GlobalLeaderboard from "./GlobalLeaderboard";
+import LoginForm from "../Auth/LoginForm";
 
 export default function StartScreen() {
   const { startGame, startFromLevel, showLeaderboard, highestLevelUnlocked, totalScore, resetProgress } = useCoinGame();
   const { isMuted, toggleMute, startBackgroundMusic } = useAudio();
   const { getSelectedAvatar } = usePlayerAvatar();
   const { totalCoins } = useCoinBank();
-  const { checkAuth } = useAuth();
+  const { checkAuth, logout, user } = useAuth();
   const { getHighestScore, getHighestLevel } = useUserStats();
   
   // Use database values for authenticated users, local storage for guests
@@ -30,6 +31,7 @@ export default function StartScreen() {
   const [showAudioSettings, setShowAudioSettings] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [showGlobalLeaderboard, setShowGlobalLeaderboard] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   // Check authentication status on component mount
   useEffect(() => {
@@ -65,6 +67,16 @@ export default function StartScreen() {
     if (confirm("Reset all progress? This will delete your checkpoint and start from Level 1.")) {
       resetProgress();
     }
+  };
+
+  const handleLogout = async () => {
+    if (confirm("Are you sure you want to log out?")) {
+      await logout();
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLogin(false);
   };
 
   useEffect(() => {
@@ -132,6 +144,18 @@ export default function StartScreen() {
         handleResetProgress();
         return;
       }
+
+      if ((key === 'x' || code === 'KeyX') && user) {
+        e.preventDefault();
+        handleLogout();
+        return;
+      }
+
+      if ((key === 'i' || code === 'KeyI') && !user) {
+        e.preventDefault();
+        setShowLogin(true);
+        return;
+      }
       
       // Handle number keys for multi-digit input
       const numberKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -178,7 +202,7 @@ export default function StartScreen() {
         clearTimeout(inputTimeout);
       }
     };
-  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, displayLevel, startFromLevel, levelInput, inputTimeout]);
+  }, [handleStartGame, handleContinue, handleShowLeaderboard, toggleMute, handleResetProgress, handleLogout, displayLevel, startFromLevel, levelInput, inputTimeout, user]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-24 pb-16 sm:pt-8 sm:pb-8 md:pt-12 md:pb-12">
@@ -187,8 +211,25 @@ export default function StartScreen() {
         <CoinBankDisplay showSessionCoins={true} />
       </div>
       
-      {/* Mobile Fullscreen Button - Top Right */}
-      <div className="absolute top-4 right-4 z-10">
+      {/* User Status and Mobile Fullscreen Button - Top Right */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        {user && (
+          <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-lg px-3 py-2 border border-gray-200">
+            <div className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4 text-green-600" />
+              <span className="text-sm font-medium text-gray-700">{user.username}</span>
+              <Button
+                onClick={handleLogout}
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Logout [X]"
+              >
+                <LogOut className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
         <MobileFullscreenButton />
       </div>
       
@@ -258,6 +299,19 @@ export default function StartScreen() {
               <span className="ml-auto text-xs sm:text-sm opacity-75">[G]</span>
             </Button>
           </div>
+
+          {!user && (
+            <Button 
+              onClick={() => setShowLogin(true)}
+              variant="outline"
+              size="lg"
+              className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+            >
+              <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Login / Sign Up
+              <span className="ml-auto text-xs sm:text-sm opacity-75">[I]</span>
+            </Button>
+          )}
 
           <Button 
             onClick={() => setShowAvatarSelector(true)}
@@ -373,6 +427,13 @@ export default function StartScreen() {
 
       {showGlobalLeaderboard && (
         <GlobalLeaderboard onClose={() => setShowGlobalLeaderboard(false)} />
+      )}
+
+      {showLogin && (
+        <LoginForm
+          onSuccess={handleLoginSuccess}
+          onClose={() => setShowLogin(false)}
+        />
       )}
       
       {/* Audio Settings Modal */}
