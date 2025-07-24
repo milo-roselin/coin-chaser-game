@@ -74,12 +74,13 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
       console.log('Score submission response:', response.status, responseData);
 
       if (response.ok) {
-        console.log('Score submitted successfully, refreshing leaderboard');
+        console.log('✅ Score submitted successfully to global leaderboard!');
+        console.log('Score details:', responseData);
         // Refresh leaderboard after successful submission
         await get().fetchLeaderboard();
         return true;
       } else {
-        console.error('Score submission failed:', responseData);
+        console.error('❌ Score submission failed:', responseData);
         set({ error: responseData.error || 'Failed to submit score' });
         return false;
       }

@@ -37,26 +37,23 @@ export default function VictoryScreen() {
     // Only auto-submit to global leaderboard if user is logged in and score hasn't been submitted yet
     if (user && !globalScoreSubmitted) {
       console.log(`Auto-submitting score for authenticated user: ${user.username}, Score: ${totalScore}, Coins: ${coinsCollected}`);
-      handleGlobalScoreSubmit();
+      // Add small delay to ensure session is properly established
+      setTimeout(() => {
+        handleGlobalScoreSubmit();
+      }, 500);
     }
   }, [user]); // Remove dependency on totalScore and totalCoinsCollected to prevent multiple submissions
 
   const handleGlobalScoreSubmit = async () => {
     if (user && !globalScoreSubmitted) {
-      // Set flag immediately to prevent multiple submissions
-      setGlobalScoreSubmitted(true);
-      
-      console.log(`Attempting score submission: Score=${totalScore}, Coins=${coinsCollected}, Level=${currentLevel}, User=${user.username}`);
-      
-      // First sync coin bank to ensure database has latest coin count
-      await useCoinBank.getState().syncToDatabase();
+      console.log(`🚀 Starting score submission: Score=${totalScore}, Coins=${coinsCollected}, Level=${currentLevel}, User=${user.username}`);
       
       const success = await submitScore(totalScore, coinsCollected, currentLevel);
       if (success) {
-        console.log('Score submission successful');
+        console.log('✅ Victory screen: Score submission successful, updating UI');
+        setGlobalScoreSubmitted(true);
       } else {
-        console.log('Score submission failed, resetting flag');
-        // Reset flag if submission failed
+        console.log('❌ Victory screen: Score submission failed');
         setGlobalScoreSubmitted(false);
       }
     }
@@ -91,7 +88,10 @@ export default function VictoryScreen() {
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
-    handleGlobalScoreSubmit();
+    // Re-check auth state and then submit score
+    setTimeout(() => {
+      handleGlobalScoreSubmit();
+    }, 1000);
   };
 
   const handleHome = () => {
@@ -229,9 +229,9 @@ export default function VictoryScreen() {
 
             {/* Global Leaderboard Status */}
             {user ? (
-              <div className="text-blue-600 font-semibold flex items-center justify-center mb-2">
+              <div className={`font-semibold flex items-center justify-center mb-2 ${globalScoreSubmitted ? 'text-green-600' : 'text-blue-600'}`}>
                 <Globe className="mr-2 h-5 w-5" />
-                {globalScoreSubmitted ? 'Score saved globally!' : 'Saving to global leaderboard...'}
+                {globalScoreSubmitted ? 'Score saved to global leaderboard!' : 'Saving to global leaderboard...'}
               </div>
             ) : (
               <div className="text-center mb-4">

@@ -24,7 +24,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       secure: false, // Set to true in production with HTTPS
       httpOnly: false, // Allow JavaScript access to debug session issues  
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      sameSite: 'lax' // Helps with session persistence across requests
+      sameSite: 'lax', // Helps with session persistence across requests
+      path: '/', // Explicit path setting
+      domain: undefined // Let browser determine domain
     }
   }));
 

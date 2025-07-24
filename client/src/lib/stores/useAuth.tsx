@@ -37,6 +37,7 @@ export const useAuth = create<AuthStore>()(
           
           if (response.ok) {
             const data = await response.json();
+            console.log('Auth check successful:', data.user.username);
             set({ user: data.user, error: null });
             
             // Sync coin bank with user data
@@ -52,9 +53,11 @@ export const useAuth = create<AuthStore>()(
               useUserStats.getState().fetchUserStats();
             });
           } else {
+            console.log('Auth check failed: Not authenticated');
             set({ user: null });
           }
         } catch (error) {
+          console.log('Auth check error:', error);
           set({ user: null });
         }
       },
