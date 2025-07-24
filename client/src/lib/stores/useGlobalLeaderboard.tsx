@@ -50,6 +50,17 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
     try {
       console.log(`Submitting score to API: ${score} points, ${coins} coins, level ${level}`);
       
+      // First check if user is still authenticated
+      const authCheck = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
+      
+      if (!authCheck.ok) {
+        console.error('User not authenticated during score submission');
+        set({ error: 'Please login to submit scores' });
+        return false;
+      }
+      
       const response = await fetch('/api/scores', {
         method: 'POST',
         headers: {
