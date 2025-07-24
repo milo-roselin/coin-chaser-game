@@ -48,12 +48,6 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
           <CardTitle className="text-2xl font-bold text-gray-800">
             {isLogin ? 'Login to Game' : 'Create Account'}
           </CardTitle>
-          <p className="text-sm text-gray-600">
-            {isLogin 
-              ? 'Login to save your scores across devices' 
-              : 'Create an account to track your progress globally'
-            }
-          </p>
           {isLogin && (
             <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
               <p className="font-semibold">Test Accounts:</p>
