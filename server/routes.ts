@@ -3,24 +3,39 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { neon } from "@neondatabase/serverless";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup PostgreSQL session store for better session persistence
+  const PgSession = connectPgSimple(session);
+  const pgClient = neon(process.env.DATABASE_URL!);
+  
   // Session middleware for authentication
   app.use(session({
+    store: new PgSession({
+      conString: process.env.DATABASE_URL!,
+      createTableIfMissing: true,
+      pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
+    }),
     secret: process.env.SESSION_SECRET || 'coin-game-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      sameSite: 'lax' // Helps with session persistence across requests
     }
   }));
 
   // Authentication middleware
   const requireAuth = (req: any, res: any, next: any) => {
     if (!req.session.userId) {
+      console.log(`Authentication failed: No userId in session for ${req.method} ${req.path}`);
       return res.status(401).json({ error: 'Authentication required' });
     }
+    console.log(`Authenticated user ${req.session.userId} for ${req.method} ${req.path}`);
     next();
   };
 
