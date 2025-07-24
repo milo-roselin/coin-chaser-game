@@ -3,46 +3,24 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
 import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
-import { neon } from "@neondatabase/serverless";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup PostgreSQL session store for persistence across server restarts
-  const PgSession = connectPgSimple(session);
-  
+  // Session middleware for authentication
   app.use(session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL!,
-      createTableIfMissing: true,
-      pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
-    }),
-    secret: process.env.SESSION_SECRET || 'coin-game-secret-key-2025',
+    secret: process.env.SESSION_SECRET || 'coin-game-secret-key',
     resave: false,
     saveUninitialized: false,
-    name: 'connect.sid', // Use default express-session name
     cookie: {
       secure: false, // Set to true in production with HTTPS
-      httpOnly: false, // Allow JavaScript access to debug session issues  
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      sameSite: 'lax', // Helps with session persistence across requests
-      path: '/', // Explicit path setting
-      domain: undefined // Let browser determine domain
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     }
   }));
 
   // Authentication middleware
   const requireAuth = (req: any, res: any, next: any) => {
-    console.log(`Session check for ${req.method} ${req.path}:`, {
-      sessionId: req.sessionID,
-      userId: req.session?.userId,
-      sessionExists: !!req.session
-    });
-    
-    if (!req.session || !req.session.userId) {
-      console.log(`Authentication failed: No userId in session for ${req.method} ${req.path}`);
+    if (!req.session.userId) {
       return res.status(401).json({ error: 'Authentication required' });
     }
-    console.log(`Authenticated user ${req.session.userId} for ${req.method} ${req.path}`);
     next();
   };
 
@@ -69,24 +47,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.insertUser({ username, password: hashedPassword });
       
-      // Set session with explicit save
+      // Set session
       req.session.userId = user.id;
       req.session.username = user.username;
-      
-      console.log(`Registration successful: Setting userId ${user.id} in session ${req.sessionID}`);
-      
-      // Force save session before responding
-      await new Promise((resolve, reject) => {
-        req.session.save((err: any) => {
-          if (err) {
-            console.error('Registration session save error:', err);
-            reject(err);
-          } else {
-            console.log(`Registration session saved successfully for user ${user.id}`);
-            resolve(void 0);
-          }
-        });
-      });
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
@@ -123,24 +86,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Set session with explicit save
+      // Set session
       req.session.userId = user.id;
       req.session.username = user.username;
-      
-      console.log(`Login successful: Setting userId ${user.id} in session ${req.sessionID}`);
-      
-      // Force save session before responding
-      await new Promise((resolve, reject) => {
-        req.session.save((err: any) => {
-          if (err) {
-            console.error('Login session save error:', err);
-            reject(err);
-          } else {
-            console.log(`Login session saved successfully for user ${user.id}`);
-            resolve(void 0);
-          }
-        });
-      });
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
