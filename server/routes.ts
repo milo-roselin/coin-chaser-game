@@ -48,8 +48,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: 'Username already exists' });
       }
 
-      // Store password as plain text
-      const user = await storage.insertUser({ username, password });
+      // Hash password and create user
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await storage.insertUser({ username, password: hashedPassword });
       
       // Set session and save explicitly
       req.session.userId = user.id;
@@ -93,7 +94,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      if (password !== user.password) {
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
