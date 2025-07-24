@@ -7,31 +7,30 @@ import connectPgSimple from "connect-pg-simple";
 import { neon } from "@neondatabase/serverless";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup PostgreSQL session store for better session persistence
-  const PgSession = connectPgSimple(session);
-  const pgClient = neon(process.env.DATABASE_URL!);
-  
+  // Use memory store for now to fix immediate session issues
   // Session middleware for authentication
   app.use(session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL!,
-      createTableIfMissing: true,
-      pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
-    }),
-    secret: process.env.SESSION_SECRET || 'coin-game-secret-key',
+    secret: process.env.SESSION_SECRET || 'coin-game-secret-key-2025',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId', // Custom session name 
     cookie: {
       secure: false, // Set to true in production with HTTPS
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
       sameSite: 'lax' // Helps with session persistence across requests
     }
   }));
 
   // Authentication middleware
   const requireAuth = (req: any, res: any, next: any) => {
-    if (!req.session.userId) {
+    console.log(`Session check for ${req.method} ${req.path}:`, {
+      sessionId: req.sessionID,
+      userId: req.session?.userId,
+      sessionExists: !!req.session
+    });
+    
+    if (!req.session || !req.session.userId) {
       console.log(`Authentication failed: No userId in session for ${req.method} ${req.path}`);
       return res.status(401).json({ error: 'Authentication required' });
     }
