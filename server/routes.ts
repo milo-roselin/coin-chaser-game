@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import bcrypt from "bcrypt";
 import session from "express-session";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -45,9 +44,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: 'Username already exists' });
       }
 
-      // Hash password and create user
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await storage.insertUser({ username, password: hashedPassword });
+      // Store password as plain text for development
+      const user = await storage.insertUser({ username, password });
       
       // Set session
       req.session.userId = user.id;
@@ -92,8 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      if (!isValidPassword) {
+      // Simple plain text password comparison for development
+      if (password !== user.password) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
