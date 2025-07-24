@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import bcrypt from "bcrypt";
 import session from "express-session";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -12,8 +13,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     cookie: {
       secure: false, // Set to true in production with HTTPS
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      httpOnly: true,
-      sameSite: 'lax'
     }
   }));
 
@@ -44,21 +43,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ error: 'Username already exists' });
       }
 
-      // Store password as plain text for development
-      const user = await storage.insertUser({ username, password });
+      // Hash password and create user
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await storage.insertUser({ username, password: hashedPassword });
       
       // Set session
       req.session.userId = user.id;
       req.session.username = user.username;
-      
-      // Save session explicitly to ensure it persists
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-        }
-      });
-      
-      console.log(`Registration successful for user ${user.username} (ID: ${user.id}), session ID: ${req.sessionID}`);
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
@@ -90,23 +81,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Simple plain text password comparison for development
-      if (password !== user.password) {
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
       // Set session
       req.session.userId = user.id;
       req.session.username = user.username;
-      
-      // Save session explicitly to ensure it persists
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-        }
-      });
-      
-      console.log(`Login successful for user ${user.username} (ID: ${user.id}), session ID: ${req.sessionID}`);
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
@@ -130,8 +112,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get current user
   app.get('/api/auth/me', async (req, res) => {
-    console.log(`Auth check - Session ID: ${req.sessionID}, User ID: ${req.session.userId}`);
-    
     if (!req.session.userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
