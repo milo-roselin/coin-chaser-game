@@ -96,6 +96,13 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 24, 2025 - Fixed Global Leaderboard Upload Issues with Enhanced Session Management
+- **Session Persistence Fixed**: Implemented explicit session saving with `req.session.save()` to ensure userId persists after login/registration
+- **Authentication Logging Enhanced**: Added detailed session debugging showing sessionId, userId, and session existence status
+- **Immediate Score Upload**: Scores now save instantly to global leaderboard without delays or authentication failures
+- **Session Validation**: All API requests properly authenticated with persistent user sessions
+- **Testing Confirmed**: New users can register and submit scores immediately, existing working accounts continue functioning
+
 ## July 23, 2025 - Fixed Cumulative Scoring System with Password Security
 - **Cumulative Scoring Implementation**: Changed score system from "highest score wins" to cumulative - each game adds to your total score instead of replacing it
 - **Database Logic Updated**: Modified `insertScore()` to add new score to existing total: `newTotalScore = existingScore + newScore`

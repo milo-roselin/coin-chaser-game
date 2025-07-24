@@ -61,9 +61,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.insertUser({ username, password: hashedPassword });
       
-      // Set session
+      // Set session with explicit save
       req.session.userId = user.id;
       req.session.username = user.username;
+      
+      console.log(`Registration successful: Setting userId ${user.id} in session ${req.sessionID}`);
+      
+      // Force save session before responding
+      await new Promise((resolve, reject) => {
+        req.session.save((err: any) => {
+          if (err) {
+            console.error('Registration session save error:', err);
+            reject(err);
+          } else {
+            console.log(`Registration session saved successfully for user ${user.id}`);
+            resolve(void 0);
+          }
+        });
+      });
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
@@ -100,9 +115,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Set session
+      // Set session with explicit save
       req.session.userId = user.id;
       req.session.username = user.username;
+      
+      console.log(`Login successful: Setting userId ${user.id} in session ${req.sessionID}`);
+      
+      // Force save session before responding
+      await new Promise((resolve, reject) => {
+        req.session.save((err: any) => {
+          if (err) {
+            console.error('Login session save error:', err);
+            reject(err);
+          } else {
+            console.log(`Login session saved successfully for user ${user.id}`);
+            resolve(void 0);
+          }
+        });
+      });
       
       res.json({ 
         user: { id: user.id, username: user.username, coinBank: user.coinBank || 0 },
