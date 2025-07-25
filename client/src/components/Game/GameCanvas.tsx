@@ -204,7 +204,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onObstacleHit: () => {
           playExplosion();
-          updateScore(-500); // Reduce score by 500 points, coins stay the same
+          endGame();
         },
         onLevelComplete: () => {
           winGame();
