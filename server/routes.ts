@@ -239,27 +239,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.session.userId!;
       const penalty = 500;
       
-      // Get user's current highest score
-      const scores = await storage.getUserScores(userId);
-      if (scores.length === 0) {
-        return res.json({ message: 'No scores to penalize', newHighestScore: 0 });
-      }
-      
-      const currentHighestScore = Math.max(...scores.map(s => s.score));
-      const newScore = Math.max(0, currentHighestScore - penalty); // Don't go below 0
-      
-      // Submit a penalty entry with negative score to track the deduction
-      await storage.insertScore({
-        userId,
-        score: newScore,
-        coins: 0,
-        level: 0, // Special level 0 to indicate penalty
-      });
+      // Apply penalty using the new dedicated method
+      const result = await storage.applyScorePenalty(userId, penalty);
       
       res.json({ 
         penalty,
-        previousScore: currentHighestScore,
-        newHighestScore: newScore,
+        previousScore: result.previousScore,
+        newHighestScore: result.newScore,
         message: `${penalty} points deducted for TNT collision`
       });
     } catch (error) {

@@ -17,6 +17,7 @@ export interface IStorage {
   updateUserCoinBank(userId: number, coinBank: number): Promise<void>;
   addCoinsToBank(userId: number, coins: number): Promise<number>;
   getMaxCoinBank(): Promise<number>;
+  applyScorePenalty(userId: number, penalty: number): Promise<{ previousScore: number; newScore: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -164,6 +165,40 @@ export class DatabaseStorage implements IStorage {
       .from(users);
     
     return result[0]?.maxCoinBank || 0;
+  }
+
+  async applyScorePenalty(userId: number, penalty: number): Promise<{ previousScore: number; newScore: number }> {
+    // Get user's current highest score
+    const existingScores = await db
+      .select()
+      .from(scores)
+      .where(eq(scores.userId, userId))
+      .orderBy(desc(scores.score))
+      .limit(1);
+
+    const previousScore = existingScores.length > 0 ? existingScores[0].score : 0;
+    const newScore = Math.max(0, previousScore - penalty); // Don't go below 0
+
+    if (existingScores.length > 0) {
+      // Update existing score directly
+      await db
+        .update(scores)
+        .set({
+          score: newScore,
+          createdAt: new Date()
+        })
+        .where(eq(scores.id, existingScores[0].id));
+    } else {
+      // Create new score entry if none exists
+      await db.insert(scores).values({
+        userId,
+        score: newScore,
+        coins: 0,
+        level: 0
+      });
+    }
+
+    return { previousScore, newScore };
   }
 }
 
