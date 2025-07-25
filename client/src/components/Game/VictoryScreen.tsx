@@ -13,7 +13,7 @@ import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 import LoginForm from "../Auth/LoginForm";
 
 export default function VictoryScreen() {
-  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected } = useCoinGame();
+  const { score, coinsCollected, resetGame, totalScore, highestLevelUnlocked, startFromLevel, currentLevel, totalCoinsCollected, setHighestLevelUnlocked } = useCoinGame();
 
   const { totalCoins, sessionCoins } = useCoinBank();
   const { user } = useAuth();
@@ -22,6 +22,7 @@ export default function VictoryScreen() {
   const [showLogin, setShowLogin] = useState(false);
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [displayHighestLevel, setDisplayHighestLevel] = useState(highestLevelUnlocked);
 
 
 
@@ -33,6 +34,38 @@ export default function VictoryScreen() {
       handleGlobalScoreSubmit();
     }
   }, [user]); // Remove dependency on totalScore and totalCoinsCollected to prevent multiple submissions
+
+  // Sync display level with database level for authenticated users
+  useEffect(() => {
+    const syncDatabaseLevel = async () => {
+      if (user) {
+        try {
+          const statsResponse = await fetch('/api/user/stats', {
+            credentials: 'include'
+          });
+          
+          if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            console.log('Syncing display level with database:', stats.highestLevel);
+            setDisplayHighestLevel(stats.highestLevel);
+            
+            // Also update local state if database has higher level
+            if (stats.highestLevel > highestLevelUnlocked) {
+              setHighestLevelUnlocked(stats.highestLevel);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to sync database level:', error);
+          setDisplayHighestLevel(highestLevelUnlocked);
+        }
+      } else {
+        // For guests, use local storage value
+        setDisplayHighestLevel(highestLevelUnlocked);
+      }
+    };
+
+    syncDatabaseLevel();
+  }, [user, highestLevelUnlocked, setHighestLevelUnlocked]);
 
   const handleGlobalScoreSubmit = async () => {
     if (user && !globalScoreSubmitted) {
@@ -60,11 +93,13 @@ export default function VictoryScreen() {
             console.log('Database stats:', stats);
             
             // Update local game state to match database
-            const { setHighestLevelUnlocked } = useCoinGame.getState();
             if (stats.highestLevel > highestLevelUnlocked) {
-              useCoinGame.setState({ highestLevelUnlocked: stats.highestLevel });
+              setHighestLevelUnlocked(stats.highestLevel);
               console.log(`Updated local highest level to: ${stats.highestLevel}`);
             }
+            
+            // Update display level immediately
+            setDisplayHighestLevel(stats.highestLevel);
           }
         } catch (error) {
           console.error('Failed to sync stats after score submission:', error);
@@ -259,7 +294,7 @@ export default function VictoryScreen() {
               </div>
             </div>
             <p className="text-xs text-gray-500 text-center">
-              Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
+              Jump to any unlocked level • Highest: Level {displayHighestLevel}
               <br />
               <span className="text-xs opacity-75">
                 Type level number (e.g., press 1 then 7 for Level 17)
