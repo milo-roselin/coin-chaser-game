@@ -15,6 +15,28 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const [isPaused, setIsPaused] = useState(false);
   const [penaltyApplied, setPenaltyApplied] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Track state internally to prevent React re-renders during gameplay
+  const internalStateRef = useRef({
+    scoreAccumulator: 0,
+    coinsAccumulator: 0,
+    lastSyncTime: Date.now()
+  });
+
+  // Function to sync any pending accumulated state
+  const syncPendingState = () => {
+    if (internalStateRef.current.scoreAccumulator > 0 || internalStateRef.current.coinsAccumulator > 0) {
+      updateScore(internalStateRef.current.scoreAccumulator);
+      
+      for (let i = 0; i < internalStateRef.current.coinsAccumulator; i++) {
+        updateCoinsCollected();
+      }
+      
+      // Reset accumulators
+      internalStateRef.current.scoreAccumulator = 0;
+      internalStateRef.current.coinsAccumulator = 0;
+    }
+  };
 
   const { 
     updateScore, 
@@ -213,13 +235,31 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       {
         onCoinCollected: (score: number) => {
           playCoin();
-          // Use a simple timeout to prevent blocking the render thread
-          setTimeout(() => {
-            updateScore(score);
-            updateCoinsCollected();
-          }, 16); // One frame delay (16ms at 60fps)
+          
+          // Accumulate internally without triggering React re-renders
+          internalStateRef.current.scoreAccumulator += score;
+          internalStateRef.current.coinsAccumulator += 1;
+          
+          // Only sync to React state every second to prevent flashing
+          const now = Date.now();
+          if (now - internalStateRef.current.lastSyncTime > 1000) {
+            internalStateRef.current.lastSyncTime = now;
+            updateScore(internalStateRef.current.scoreAccumulator);
+            
+            // Update coins and sync to database
+            for (let i = 0; i < internalStateRef.current.coinsAccumulator; i++) {
+              updateCoinsCollected();
+            }
+            
+            // Reset accumulators
+            internalStateRef.current.scoreAccumulator = 0;
+            internalStateRef.current.coinsAccumulator = 0;
+          }
         },
         onObstacleHit: () => {
+          // Sync any pending state before ending game
+          syncPendingState();
+          
           playExplosion();
           endGame();
           
@@ -243,6 +283,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           }
         },
         onLevelComplete: () => {
+          // Sync any pending state before winning
+          syncPendingState();
           winGame();
         },
         onPlayerMove: (x: number, y: number) => {
