@@ -14,6 +14,7 @@ A web-based 2D coin collection game built with a modern full-stack TypeScript ar
 
 - Responsive, mobile-friendly UI with touch controls
 - Multiple game screens: start, play, game over, victory, leaderboard
+- Power ups
 - Customizable avatars
 - Real-time collision detection and game physics
 - Audio system with background music and sound effects
