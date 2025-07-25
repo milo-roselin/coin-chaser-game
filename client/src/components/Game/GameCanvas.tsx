@@ -112,7 +112,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
 
       // Recreate game engine with new dimensions
       if (gameEngineRef.current) {
-        gameEngineRef.current.destroy();
+        // GameEngine doesn't have destroy method, just replace it
+        gameEngineRef.current = null;
       }
 
       const engineWidth = viewportWidth;
@@ -177,7 +178,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
       if (gameEngineRef.current) {
-        gameEngineRef.current.destroy();
+        // GameEngine doesn't have destroy method, just clear reference
+        gameEngineRef.current = null;
       }
       window.removeEventListener('resize', resizeCanvas);
     };
@@ -202,7 +204,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         if (state.gameState === "playing") {
           gameEngineRef.current.startLevel(state.currentLevel, state.levelData);
         } else {
-          gameEngineRef.current.stopLevel();
+          // GameEngine doesn't have stopLevel method, just let it handle state internally
         }
       }
     });
