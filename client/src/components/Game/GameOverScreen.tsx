@@ -7,7 +7,7 @@ import CoinBankDisplay from "./CoinBankDisplay";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 
 export default function GameOverScreen() {
-  const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel } = useCoinGame();
+  const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel, applyPenalty, penaltyApplied } = useCoinGame();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -18,6 +18,13 @@ export default function GameOverScreen() {
   const handleHome = () => {
     resetGame();
   };
+
+  // Apply penalty when GameOver screen first appears
+  useEffect(() => {
+    if (!penaltyApplied) {
+      applyPenalty();
+    }
+  }, []); // Run only once when component mounts
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {

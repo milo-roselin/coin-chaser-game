@@ -14,6 +14,7 @@ interface CoinGameState {
   highestLevelUnlocked: number;
   totalScore: number;
   totalCoinsCollected: number;
+  penaltyApplied: boolean;
   
   // Actions
   startGame: () => void;
@@ -22,6 +23,7 @@ interface CoinGameState {
   resetProgress: () => void;
   endGame: () => void;
   winGame: () => void;
+  applyPenalty: () => Promise<void>;
   showLeaderboard: () => void;
   showNextLevel: () => void;
   nextLevel: () => void;
@@ -41,6 +43,7 @@ export const useCoinGame = create<CoinGameState>()(
       highestLevelUnlocked: 1,
       totalScore: 0,
       totalCoinsCollected: 0,
+      penaltyApplied: false,
       
       startGame: () => {
         set({ 
@@ -48,7 +51,8 @@ export const useCoinGame = create<CoinGameState>()(
           score: 0,
           coinsCollected: 0,
           playerPosition: { x: 50, y: 300 },
-          currentLevel: 1
+          currentLevel: 1,
+          penaltyApplied: false
         });
       },
       
@@ -58,7 +62,8 @@ export const useCoinGame = create<CoinGameState>()(
           score: 0,
           coinsCollected: 0,
           playerPosition: { x: 50, y: 300 },
-          currentLevel: level
+          currentLevel: level,
+          penaltyApplied: false
         });
       },
       
@@ -93,34 +98,7 @@ export const useCoinGame = create<CoinGameState>()(
         });
       },
       
-      endGame: async () => {
-        // Check if user is authenticated and apply penalty
-        const { user } = (await import('./useAuth')).useAuth.getState();
-        if (user) {
-          try {
-            const response = await fetch('/api/scores/penalty', {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
-            
-            if (response.ok) {
-              const result = await response.json();
-              console.log(`TNT Penalty Applied: ${result.message}`);
-              
-              // Refresh user stats to reflect the new score
-              const { useUserStats } = await import('./useUserStats');
-              useUserStats.getState().fetchUserStats();
-            } else {
-              console.error('Failed to apply TNT penalty');
-            }
-          } catch (error) {
-            console.error('Error applying TNT penalty:', error);
-          }
-        }
-        
+      endGame: () => {
         set((state) => ({
           gameState: state.gameState === "playing" ? "gameOver" : state.gameState
         }));
@@ -142,6 +120,43 @@ export const useCoinGame = create<CoinGameState>()(
         // Stop background music when game is won
         const { stopBackgroundMusic } = useAudio.getState();
         stopBackgroundMusic();
+      },
+
+      applyPenalty: async () => {
+        const state = get();
+        if (state.penaltyApplied) {
+          return; // Don't apply penalty twice
+        }
+
+        // Check if user is authenticated and apply penalty
+        const { user } = (await import('./useAuth')).useAuth.getState();
+        if (user) {
+          try {
+            const response = await fetch('/api/scores/penalty', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log(`TNT Penalty Applied: ${result.message}`);
+              
+              // Refresh user stats to reflect the new score
+              const { useUserStats } = await import('./useUserStats');
+              useUserStats.getState().fetchUserStats();
+              
+              // Mark penalty as applied
+              set({ penaltyApplied: true });
+            } else {
+              console.error('Failed to apply TNT penalty');
+            }
+          } catch (error) {
+            console.error('Error applying TNT penalty:', error);
+          }
+        }
       },
       
       showLeaderboard: () => {
