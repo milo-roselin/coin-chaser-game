@@ -36,14 +36,15 @@ export const useCoinBank = create<CoinBankState>()(
             sessionCoins: state.sessionCoins + amount,
           }));
           
-          // Debounced sync to database (only sync once per second max)
+          // Debounced sync to database (longer debounce during gameplay)
           if (syncTimer) {
             clearTimeout(syncTimer);
           }
           syncTimer = setTimeout(() => {
-            get().syncToDatabase();
+            // Use a non-blocking sync that won't interrupt gameplay
+            get().syncToDatabase().catch(err => console.error('Coin sync failed:', err));
             syncTimer = null;
-          }, 1000); // 1 second debounce
+          }, 2000); // 2 second debounce to prevent gameplay interruption
         } else {
           // For unauthenticated users, only track session coins (don't persist total)
           set((state) => ({

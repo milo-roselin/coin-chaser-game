@@ -140,14 +140,17 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       updateCoinsCollected: () => {
-        // Add coin to the bank (this will automatically sync to database if user is authenticated)
-        const { addCoins } = useCoinBank.getState();
-        addCoins(1);
-        
+        // Update game state first
         set((state) => ({ 
           coinsCollected: state.coinsCollected + 1,
           totalCoinsCollected: state.totalCoinsCollected + 1
         }));
+        
+        // Add coin to the bank asynchronously to prevent blocking
+        setTimeout(() => {
+          const { addCoins } = useCoinBank.getState();
+          addCoins(1);
+        }, 0);
       },
       
       setPlayerPosition: (x: number, y: number) => {
