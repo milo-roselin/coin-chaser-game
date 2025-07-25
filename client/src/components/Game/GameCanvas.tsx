@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import React, { useRef, useEffect, forwardRef, useImperativeHandle, useState } from "react";
 import { GameEngine } from "../../lib/gameEngine";
 import { useCoinGame } from "../../lib/stores/useCoinGame";
 import { useAudio } from "../../lib/stores/useAudio";
@@ -14,6 +14,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const gameStateRef = useRef<string>("start");
   const isPausedRef = useRef<boolean>(false);
   const penaltyAppliedRef = useRef<boolean>(false);
+  const [forceRerender, setForceRerender] = useState(0);
   
   // State update queue to batch updates and prevent flashing
   const updateQueueRef = useRef<{
@@ -250,8 +251,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     if (gameEngineRef.current) {
       gameEngineRef.current.togglePause();
       isPausedRef.current = !isPausedRef.current;
-      // Force a re-render only for pause state
-      useCoinGame.setState({ gameState: gameStateRef.current });
+      // Force component re-render to show/hide pause overlay
+      setForceRerender(prev => prev + 1);
     }
   };
 
@@ -270,7 +271,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         onTouchEnd={handleTouchEnd}
       />
       
-      {/* Pause overlay - only show when actually paused */}
+      {/* Pause overlay - show when paused */}
       {isPausedRef.current && (
         <div
           onClick={handlePauseClick}
