@@ -962,7 +962,8 @@ export class GameEngine {
         
         // 10 squares = 10 * 50 pixels = 500 pixels range (much stronger attraction)
         if (distance < 500 && distance > 5) {
-          const attractionSpeed = Math.min(distance * 0.15, 10); // Speed scales with distance
+          console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
+          const attractionSpeed = Math.min(distance * 0.2, 15); // Increased speed
           const normalizedDx = (playerCenterX - coinCenterX) / distance;
           const normalizedDy = (playerCenterY - coinCenterY) / distance;
           
@@ -1010,16 +1011,28 @@ export class GameEngine {
     // Check obstacle collisions (with shield protection)
     for (const obstacle of this.obstacles) {
       if (checkCollision(this.player, obstacle)) {
-        // Check if shield is active
+        // Check if shield is active BEFORE calling game over
         const shieldActive = (window as any).shieldActive;
         const extraLives = (window as any).extraLives || 0;
         
+        console.log('TNT hit detected! Shield active:', shieldActive, 'Extra lives:', extraLives);
+        
         if (shieldActive && extraLives > 0) {
           // Shield blocks the hit - consume one shield
-          console.log('Shield blocked TNT hit! Lives remaining:', extraLives - 1);
+          console.log('Shield BLOCKED TNT hit! Lives remaining:', extraLives - 1);
           this.callbacks.onShieldUsed();
-          return; // Skip the hit
+          
+          // Move player away from obstacle to prevent multiple hits
+          if (obstacle.x < this.player.x) {
+            this.player.x += 40; // Push right
+          } else {
+            this.player.x -= 40; // Push left
+          }
+          this.player.x = Math.max(0, Math.min(this.levelWidth - this.player.width, this.player.x));
+          
+          return; // Skip the hit completely
         } else {
+          console.log('No shield protection - game over');
           this.callbacks.onObstacleHit();
           return;
         }
@@ -1259,26 +1272,32 @@ export class GameEngine {
       const handY = y + h / 2;
       const magnetSize = 8;
       
-      // Draw U-shaped magnet body
+      // Draw U-shaped magnet body (proper U shape)
       ctx.fillStyle = '#C0C0C0'; // Silver magnet body
-      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 3, magnetSize * 1.5);
-      ctx.fillRect(handX + magnetSize/2 - 3, handY - magnetSize, 3, magnetSize * 1.5);
-      ctx.fillRect(handX - magnetSize/2, handY + magnetSize/2, magnetSize, 3);
       
-      // Draw red pole (N)
+      // Draw left arm of U
+      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 2, magnetSize);
+      
+      // Draw right arm of U  
+      ctx.fillRect(handX + magnetSize/2 - 2, handY - magnetSize, 2, magnetSize);
+      
+      // Draw bottom of U (connecting the arms)
+      ctx.fillRect(handX - magnetSize/2, handY, magnetSize, 2);
+      
+      // Draw red pole (N) on left arm
       ctx.fillStyle = '#FF0000';
-      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 3, 4);
+      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 2, 3);
       
-      // Draw blue pole (S)
+      // Draw blue pole (S) on right arm
       ctx.fillStyle = '#0000FF';
-      ctx.fillRect(handX + magnetSize/2 - 3, handY - magnetSize, 3, 4);
+      ctx.fillRect(handX + magnetSize/2 - 2, handY - magnetSize, 2, 3);
       
       // Draw N and S labels
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 5px Arial';
+      ctx.font = 'bold 4px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('N', handX - magnetSize/2 + 1.5, handY - magnetSize + 3);
-      ctx.fillText('S', handX + magnetSize/2 - 1.5, handY - magnetSize + 3);
+      ctx.fillText('N', handX - magnetSize/2 + 1, handY - magnetSize + 2);
+      ctx.fillText('S', handX + magnetSize/2 - 1, handY - magnetSize + 2);
     }
   }
 
