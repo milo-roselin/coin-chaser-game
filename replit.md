@@ -96,6 +96,12 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
+## July 25, 2025 - TNT Collision Penalty System
+- **TNT Point Penalty**: Hitting TNT now reduces score by 500 points instead of ending the game
+- **Coins Preserved**: Coins collected remain unchanged when hitting TNT
+- **Continued Gameplay**: Players can continue playing after TNT hits, making the game less punishing
+- **Strategic Element**: Creates risk/reward balance - players must decide whether to risk TNT areas for coins
+
 ## July 24, 2025 - Simplified Single Global Leaderboard System
 - **Eliminated Local Leaderboard**: Removed dual leaderboard system in favor of single global leaderboard
 - **Streamlined UI**: StartScreen now has single "Leaderboard" button instead of separate Local/Global buttons
