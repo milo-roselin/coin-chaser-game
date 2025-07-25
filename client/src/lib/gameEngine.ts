@@ -959,7 +959,7 @@ export class GameEngine {
       return;
     }
     
-    // Clear canvas with black background first
+    // Only clear and redraw background if we need to
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 

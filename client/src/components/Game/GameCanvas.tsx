@@ -41,8 +41,12 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         
         // Clear canvas to black while waiting for initialization
         if (!gameEngineRef.current.isReady()) {
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          // Only fill black if canvas is actually empty/undefined
+          const imageData = ctx.getImageData(0, 0, 1, 1);
+          if (imageData.data[3] === 0) { // Check if transparent
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          }
         } else {
           gameEngineRef.current.update();
           gameEngineRef.current.render(ctx);
@@ -208,11 +212,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       engineHeight,
       {
         onCoinCollected: (score: number) => {
-          // Use requestAnimationFrame to prevent blocking the render loop
-          requestAnimationFrame(() => {
+          playCoin();
+          // Defer state updates to prevent render interruption
+          Promise.resolve().then(() => {
             updateScore(score);
             updateCoinsCollected();
-            playCoin();
           });
         },
         onObstacleHit: () => {
