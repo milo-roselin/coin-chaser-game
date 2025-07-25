@@ -14,6 +14,7 @@ export interface IStorage {
   insertScore(score: InsertScore): Promise<Score>;
   getTopScores(limit: number): Promise<Array<Score & { username: string }>>;
   getUserScores(userId: number): Promise<Score[]>;
+  updateUserScore(userId: number, score: number): Promise<Score>;
   updateUserCoinBank(userId: number, coinBank: number): Promise<void>;
   addCoinsToBank(userId: number, coins: number): Promise<number>;
   getMaxCoinBank(): Promise<number>;
@@ -131,6 +132,24 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(scores.score));
     
     return result;
+  }
+
+  async updateUserScore(userId: number, score: number): Promise<Score> {
+    // Force update the user's score regardless of whether it's higher or lower
+    const result = await db
+      .update(scores)
+      .set({
+        score: score,
+        createdAt: new Date()
+      })
+      .where(eq(scores.userId, userId))
+      .returning();
+    
+    if (result.length === 0) {
+      throw new Error('No score found to update for user');
+    }
+    
+    return result[0];
   }
 
   async updateUserCoinBank(userId: number, coinBank: number): Promise<void> {

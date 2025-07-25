@@ -4,6 +4,7 @@ import { useAudio } from "@/lib/stores/useAudio";
 import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
 import { useAuth } from "@/lib/stores/useAuth";
 import { useGlobalLeaderboard } from "@/lib/stores/useGlobalLeaderboard";
+import { useUserStats } from "@/lib/stores/useUserStats";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { GameEngine } from "@/lib/gameEngine";
 
@@ -27,6 +28,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
   const { user } = useAuth();
   const { applyTNTPenalty } = useGlobalLeaderboard();
+  const { fetchUserStats } = useUserStats();
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -214,6 +216,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
             console.log('TNT hit! Applying 500 point penalty for logged-in user:', user.username);
             try {
               await applyTNTPenalty(500);
+              // Refresh user stats to show updated score
+              await fetchUserStats();
               console.log('500 point penalty applied successfully - you lost 500 points but kept your coins!');
             } catch (error) {
               console.error('Failed to apply TNT penalty:', error);
@@ -281,7 +285,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess, user, applyTNTPenalty]);
+  }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess, user, applyTNTPenalty, fetchUserStats]);
 
   // Update avatar when selection changes
   useEffect(() => {

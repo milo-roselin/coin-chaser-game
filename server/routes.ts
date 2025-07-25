@@ -253,12 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newScore = Math.max(0, currentScore.score - penalty); // Don't allow negative total scores
 
       // Update the user's score by reducing it by the penalty amount
-      await storage.insertScore({ 
-        userId: userId, 
-        score: newScore, 
-        coins: currentScore.coins, // Keep coins the same
-        level: currentScore.level  // Keep level the same
-      });
+      await storage.updateUserScore(userId, newScore);
       
       res.json({ 
         penalty: penalty,
