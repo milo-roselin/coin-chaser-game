@@ -208,9 +208,12 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       engineHeight,
       {
         onCoinCollected: (score: number) => {
-          updateScore(score);
-          updateCoinsCollected();
-          playCoin();
+          // Use requestAnimationFrame to prevent blocking the render loop
+          requestAnimationFrame(() => {
+            updateScore(score);
+            updateCoinsCollected();
+            playCoin();
+          });
         },
         onObstacleHit: () => {
           playExplosion();
