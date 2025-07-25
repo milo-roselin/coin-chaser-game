@@ -214,7 +214,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
             console.log('TNT hit! Applying 500 point penalty for logged-in user:', user.username);
             try {
               await applyTNTPenalty(500);
-              console.log('500 point penalty applied successfully');
+              console.log('500 point penalty applied successfully - you lost 500 points but kept your coins!');
             } catch (error) {
               console.error('Failed to apply TNT penalty:', error);
             }

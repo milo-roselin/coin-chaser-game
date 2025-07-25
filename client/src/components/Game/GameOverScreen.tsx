@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
-import { RotateCcw, Home, Play, Lock } from "lucide-react";
+import { useAuth } from "@/lib/stores/useAuth";
+import { RotateCcw, Home, Play, Lock, AlertTriangle } from "lucide-react";
 import CoinBankDisplay from "./CoinBankDisplay";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
 
 export default function GameOverScreen() {
   const { score, coinsCollected, currentLevel, highestLevelUnlocked, resetGame, startGame, startFromLevel } = useCoinGame();
+  const { user } = useAuth();
   const [levelInput, setLevelInput] = useState("");
   const [inputTimeout, setInputTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -106,6 +108,19 @@ export default function GameOverScreen() {
         <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-4">💥</div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-red-600 mb-1 sm:mb-2">Game Over!</h1>
         <p className="text-sm sm:text-base md:text-lg text-gray-600">Better luck next time!</p>
+        
+        {/* TNT Penalty Notification for logged-in users */}
+        {user && (
+          <div className="mt-4 p-3 bg-orange-100 border border-orange-300 rounded-lg mx-4">
+            <div className="flex items-center justify-center gap-2 text-orange-800">
+              <AlertTriangle className="h-5 w-5" />
+              <span className="font-semibold">TNT Penalty Applied!</span>
+            </div>
+            <p className="text-sm text-orange-700 mt-1">
+              You lost 500 points but kept your coins. Your total score has been reduced.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Score Card */}

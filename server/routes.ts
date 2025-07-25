@@ -243,16 +243,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid penalty value' });
       }
 
-      // Create a negative score entry to represent the penalty
-      const penaltyScore = await storage.insertScore({ 
+      // Get user's current score
+      const userScores = await storage.getUserScores(userId);
+      if (userScores.length === 0) {
+        return res.status(400).json({ error: 'No existing score to apply penalty to' });
+      }
+
+      const currentScore = userScores[0]; // Get the highest score
+      const newScore = Math.max(0, currentScore.score - penalty); // Don't allow negative total scores
+
+      // Update the user's score by reducing it by the penalty amount
+      await storage.insertScore({ 
         userId: userId, 
-        score: -penalty, 
-        coins: 0, 
-        level: 1 // Level doesn't matter for penalties
+        score: newScore, 
+        coins: currentScore.coins, // Keep coins the same
+        level: currentScore.level  // Keep level the same
       });
       
       res.json({ 
         penalty: penalty,
+        oldScore: currentScore.score,
+        newScore: newScore,
         message: 'TNT penalty applied successfully' 
       });
     } catch (error) {
