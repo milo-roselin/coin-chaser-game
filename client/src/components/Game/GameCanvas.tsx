@@ -2,6 +2,8 @@ import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHand
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
+import { useAuth } from "@/lib/stores/useAuth";
+import { useGlobalLeaderboard } from "@/lib/stores/useGlobalLeaderboard";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { GameEngine } from "@/lib/gameEngine";
 
@@ -23,6 +25,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
+  const { user } = useAuth();
+  const { applyTNTPenalty } = useGlobalLeaderboard();
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -202,8 +206,22 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           updateCoinsCollected();
           playCoin();
         },
-        onObstacleHit: () => {
+        onObstacleHit: async () => {
           playExplosion();
+          
+          // Apply TNT penalty for logged-in users
+          if (user) {
+            console.log('TNT hit! Applying 500 point penalty for logged-in user:', user.username);
+            try {
+              await applyTNTPenalty(500);
+              console.log('500 point penalty applied successfully');
+            } catch (error) {
+              console.error('Failed to apply TNT penalty:', error);
+            }
+          } else {
+            console.log('TNT hit! Guest user - no penalty applied');
+          }
+          
           endGame();
         },
         onLevelComplete: () => {
@@ -263,7 +281,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
+  }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess, user, applyTNTPenalty]);
 
   // Update avatar when selection changes
   useEffect(() => {
