@@ -19,7 +19,13 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     winGame,
     playerPosition,
     setPlayerPosition,
-    currentLevel
+    currentLevel,
+    activateMagnet,
+    addExtraLife,
+    magnetActive,
+    updateMagnetTimer,
+    shieldActive,
+    extraLives
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
@@ -37,6 +43,14 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         } else {
+          // Update magnet timer
+          updateMagnetTimer();
+          
+          // Pass power-up states to game engine via window object (temporary solution)
+          (window as any).magnetActive = magnetActive;
+          (window as any).shieldActive = shieldActive;
+          (window as any).extraLives = extraLives;
+          
           gameEngineRef.current.update();
           gameEngineRef.current.render(ctx);
         }
@@ -211,6 +225,15 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onPlayerMove: (x: number, y: number) => {
           setPlayerPosition(x, y);
+        },
+        onPowerupCollected: (type: 'magnet' | 'extralife') => {
+          if (type === 'magnet') {
+            activateMagnet();
+            playSuccess();
+          } else if (type === 'extralife') {
+            addExtraLife();
+            playSuccess();
+          }
         }
       },
       currentLevel

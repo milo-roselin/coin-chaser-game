@@ -15,6 +15,11 @@ interface CoinGameState {
   totalScore: number;
   totalCoinsCollected: number;
   penaltyApplied: boolean;
+  // Power-up states
+  magnetActive: boolean;
+  magnetTimeLeft: number;
+  extraLives: number;
+  shieldActive: boolean;
   
   // Actions
   startGame: () => void;
@@ -30,6 +35,10 @@ interface CoinGameState {
   updateScore: (points: number) => void;
   updateCoinsCollected: () => void;
   setPlayerPosition: (x: number, y: number) => void;
+  activateMagnet: () => void;
+  addExtraLife: () => void;
+  useExtraLife: () => boolean;
+  updateMagnetTimer: () => void;
 }
 
 export const useCoinGame = create<CoinGameState>()(
@@ -44,6 +53,10 @@ export const useCoinGame = create<CoinGameState>()(
       totalScore: 0,
       totalCoinsCollected: 0,
       penaltyApplied: false,
+      magnetActive: false,
+      magnetTimeLeft: 0,
+      extraLives: 0,
+      shieldActive: false,
       
       startGame: () => {
         set({ 
@@ -52,7 +65,11 @@ export const useCoinGame = create<CoinGameState>()(
           coinsCollected: 0,
           playerPosition: { x: 50, y: 300 },
           currentLevel: 1,
-          penaltyApplied: false
+          penaltyApplied: false,
+          magnetActive: false,
+          magnetTimeLeft: 0,
+          extraLives: 0,
+          shieldActive: false
         });
       },
       
@@ -63,7 +80,11 @@ export const useCoinGame = create<CoinGameState>()(
           coinsCollected: 0,
           playerPosition: { x: 50, y: 300 },
           currentLevel: level,
-          penaltyApplied: false
+          penaltyApplied: false,
+          magnetActive: false,
+          magnetTimeLeft: 0,
+          // Keep extra lives between levels
+          shieldActive: get().extraLives > 0
         });
       },
       
@@ -99,6 +120,17 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       endGame: () => {
+        // Check if player has extra life
+        const state = get();
+        if (state.extraLives > 0) {
+          // Use extra life instead of ending game
+          set({ 
+            extraLives: state.extraLives - 1,
+            shieldActive: state.extraLives > 1 // Keep shield if more lives remain
+          });
+          return; // Don't end the game
+        }
+        
         set((state) => ({
           gameState: state.gameState === "playing" ? "gameOver" : state.gameState
         }));
@@ -194,6 +226,45 @@ export const useCoinGame = create<CoinGameState>()(
       
       setPlayerPosition: (x: number, y: number) => {
         set({ playerPosition: { x, y } });
+      },
+
+      activateMagnet: () => {
+        set({ 
+          magnetActive: true, 
+          magnetTimeLeft: 10000 // 10 seconds in milliseconds
+        });
+      },
+
+      addExtraLife: () => {
+        set((state) => ({ 
+          extraLives: state.extraLives + 1,
+          shieldActive: true
+        }));
+      },
+
+      useExtraLife: () => {
+        const state = get();
+        if (state.extraLives > 0) {
+          set({ 
+            extraLives: state.extraLives - 1,
+            shieldActive: state.extraLives > 1 // Keep shield if more lives remain
+          });
+          return true;
+        }
+        return false;
+      },
+
+      updateMagnetTimer: () => {
+        set((state) => {
+          if (state.magnetActive && state.magnetTimeLeft > 0) {
+            const newTimeLeft = Math.max(0, state.magnetTimeLeft - 16); // ~60fps
+            return {
+              magnetTimeLeft: newTimeLeft,
+              magnetActive: newTimeLeft > 0
+            };
+          }
+          return state;
+        });
       }
     })),
     {

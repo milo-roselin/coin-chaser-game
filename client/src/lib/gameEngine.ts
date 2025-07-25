@@ -6,13 +6,14 @@ export interface GameObject {
   width: number;
   height: number;
   color: string;
-  type: 'player' | 'coin' | 'obstacle' | 'goal';
+  type: 'player' | 'coin' | 'obstacle' | 'goal' | 'powerup';
   vx?: number; // velocity x
   vy?: number; // velocity y
   patrolStartX?: number; // patrol start position
   patrolEndX?: number; // patrol end position
   patrolStartY?: number; // patrol start position
   patrolEndY?: number; // patrol end position
+  powerupType?: 'magnet' | 'extralife'; // for powerup objects
 }
 
 export interface AvatarInfo {
@@ -26,6 +27,7 @@ export interface GameCallbacks {
   onObstacleHit: () => void;
   onLevelComplete: () => void;
   onPlayerMove: (x: number, y: number) => void;
+  onPowerupCollected: (type: 'magnet' | 'extralife') => void;
 }
 
 export class GameEngine {
@@ -33,6 +35,7 @@ export class GameEngine {
   private player: GameObject;
   private coins: GameObject[] = [];
   private obstacles: GameObject[] = [];
+  private powerups: GameObject[] = [];
   private goal: GameObject;
   private callbacks: GameCallbacks;
   private touchPosition: { x: number; y: number } | null = null;
@@ -196,6 +199,41 @@ export class GameEngine {
           height: 20,
           color: '#F59E0B',
           type: 'coin'
+        });
+      }
+    }
+
+    // Generate power-ups (very rare - 5% chance per cluster)
+    this.powerups = [];
+    for (let cluster = 0; cluster < numClusters; cluster++) {
+      if (Math.random() < 0.05) { // 5% chance per cluster
+        const clusterX = this.coinClusters[cluster].x;
+        const clusterY = this.coinClusters[cluster].y;
+        
+        // Choose random power-up type
+        const powerupTypes: ('magnet' | 'extralife')[] = ['magnet', 'extralife'];
+        const powerupType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+        
+        // Place power-up near cluster but not too close to coins
+        let powerupX = clusterX + (Math.random() - 0.5) * 200;
+        let powerupY = clusterY + (Math.random() - 0.5) * 150;
+        
+        // Ensure power-up is within bounds
+        const isMobileForPowerups = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const controlPanelWidthForPowerups = isMobileForPowerups ? 128 : 0;
+        const maxPowerupX = this.levelWidth - 200;
+        
+        powerupX = Math.max(50, Math.min(maxPowerupX, powerupX));
+        powerupY = Math.max(50, Math.min(this.canvasHeight - 50, powerupY));
+        
+        this.powerups.push({
+          x: powerupX,
+          y: powerupY,
+          width: 25,
+          height: 25,
+          color: powerupType === 'magnet' ? '#FF6B6B' : '#4ECDC4',
+          type: 'powerup',
+          powerupType: powerupType
         });
       }
     }
@@ -909,6 +947,26 @@ export class GameEngine {
 
     // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
+      // Apply magnet attraction if active (passed from game state)
+      const gameState = (window as any).magnetActive;
+      if (gameState) {
+        const distance = Math.sqrt(
+          Math.pow(coin.x - this.player.x, 2) + Math.pow(coin.y - this.player.y, 2)
+        );
+        
+        // Attract coins within 10 squares (200 pixels)
+        if (distance < 200 && distance > 30) { // Don't move coins that are already very close
+          const attractionSpeed = 3;
+          const dx = this.player.x - coin.x;
+          const dy = this.player.y - coin.y;
+          const normalizedDx = dx / distance;
+          const normalizedDy = dy / distance;
+          
+          coin.x += normalizedDx * attractionSpeed;
+          coin.y += normalizedDy * attractionSpeed;
+        }
+      }
+      
       if (checkCollision(this.player, coin)) {
         // Find which cluster this coin belongs to
         for (let i = 0; i < this.coinClusters.length; i++) {
@@ -928,6 +986,15 @@ export class GameEngine {
         this.score += 100;
         this.coinsCollected++;
         this.callbacks.onCoinCollected(100);
+        return false;
+      }
+      return true;
+    });
+
+    // Check power-up collisions
+    this.powerups = this.powerups.filter(powerup => {
+      if (checkCollision(this.player, powerup)) {
+        this.callbacks.onPowerupCollected(powerup.powerupType!);
         return false;
       }
       return true;
@@ -981,6 +1048,9 @@ export class GameEngine {
 
     // Draw coins
     this.coins.forEach(coin => this.drawCoin(ctx, coin));
+
+    // Draw power-ups
+    this.powerups.forEach(powerup => this.drawPowerup(ctx, powerup));
 
     // Draw obstacles
     this.obstacles.forEach(obstacle => this.drawObstacle(ctx, obstacle));
@@ -1086,8 +1156,81 @@ export class GameEngine {
     // Restore the transformation matrix
     ctx.restore();
     
+    // Draw power-up effects AFTER the avatar (so they appear on top)
+    this.drawPowerupEffects(ctx, x, y, w, h, centerX);
+    
     // Reset text alignment
     ctx.textAlign = 'left';
+  }
+
+  private drawPowerupEffects(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
+    const time = Date.now() * 0.005;
+    
+    // Get power-up states from window (temporary solution)
+    const magnetActive = (window as any).magnetActive;
+    const shieldActive = (window as any).shieldActive;
+    const extraLives = (window as any).extraLives || 0;
+    
+    // Draw shield effect
+    if (shieldActive && extraLives > 0) {
+      const shieldRadius = Math.max(w, h) / 2 + 8 + Math.sin(time * 3) * 2;
+      
+      // Draw pulsing shield circle
+      ctx.strokeStyle = '#4ECDC4';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([5, 5]);
+      ctx.lineDashOffset = time * 10;
+      ctx.beginPath();
+      ctx.arc(centerX, y + h / 2, shieldRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset dash
+      
+      // Draw shield sparkles
+      for (let i = 0; i < 6; i++) {
+        const angle = (time + i * Math.PI / 3) % (Math.PI * 2);
+        const sparkleX = centerX + Math.cos(angle) * (shieldRadius + 5);
+        const sparkleY = y + h / 2 + Math.sin(angle) * (shieldRadius + 5);
+        
+        ctx.fillStyle = '#4ECDC4';
+        ctx.beginPath();
+        ctx.arc(sparkleX, sparkleY, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Draw magnet effect
+    if (magnetActive) {
+      // Draw magnetic field lines
+      ctx.strokeStyle = '#FF6B6B';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 3]);
+      ctx.lineDashOffset = time * 8;
+      
+      for (let i = 0; i < 4; i++) {
+        const radius = 30 + i * 15 + Math.sin(time * 2 + i) * 5;
+        ctx.beginPath();
+        ctx.arc(centerX, y + h / 2, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]); // Reset dash
+      
+      // Draw floating magnet icon above player
+      ctx.fillStyle = '#FF6B6B';
+      const magnetY = y - 15 + Math.sin(time * 4) * 3;
+      ctx.fillRect(centerX - 6, magnetY, 12, 8);
+      
+      // Magnet poles
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(centerX - 6, magnetY, 12, 2);
+      ctx.fillRect(centerX - 6, magnetY + 6, 12, 2);
+      
+      // N and S labels
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 6px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', centerX, magnetY + 4);
+      ctx.fillText('S', centerX, magnetY + 7);
+    }
   }
 
   private drawTomNookAvatar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, centerX: number) {
@@ -1805,6 +1948,63 @@ export class GameEngine {
       } else if (obstacle.vy < 0) {
         ctx.fillText('↑', obstacle.x + obstacle.width / 2, obstacle.y - 2);
       }
+    }
+  }
+
+  private drawPowerup(ctx: CanvasRenderingContext2D, powerup: GameObject) {
+    const centerX = powerup.x + powerup.width / 2;
+    const centerY = powerup.y + powerup.height / 2;
+    const time = Date.now() * 0.004; // For animation
+    
+    // Add pulsing glow effect
+    const pulseRadius = powerup.width / 2 + Math.sin(time * 3) * 3;
+    
+    if (powerup.powerupType === 'magnet') {
+      // Draw magnet power-up
+      ctx.fillStyle = 'rgba(255, 107, 107, 0.3)'; // Glow
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw magnet body (red)
+      ctx.fillStyle = '#FF6B6B';
+      ctx.fillRect(powerup.x + 2, powerup.y + 2, powerup.width - 4, powerup.height - 4);
+      
+      // Draw magnet ends (white)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(powerup.x + 2, powerup.y + 2, powerup.width - 4, 4);
+      ctx.fillRect(powerup.x + 2, powerup.y + powerup.height - 6, powerup.width - 4, 4);
+      
+      // Draw N and S labels
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 8px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', centerX, centerY - 3);
+      ctx.fillText('S', centerX, centerY + 8);
+      
+    } else if (powerup.powerupType === 'extralife') {
+      // Draw shield power-up
+      ctx.fillStyle = 'rgba(78, 205, 196, 0.3)'; // Glow
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw shield shape
+      ctx.fillStyle = '#4ECDC4';
+      ctx.beginPath();
+      ctx.moveTo(centerX, powerup.y + 2);
+      ctx.lineTo(powerup.x + powerup.width - 3, powerup.y + 6);
+      ctx.lineTo(powerup.x + powerup.width - 3, powerup.y + powerup.height - 8);
+      ctx.lineTo(centerX, powerup.y + powerup.height - 2);
+      ctx.lineTo(powerup.x + 3, powerup.y + powerup.height - 8);
+      ctx.lineTo(powerup.x + 3, powerup.y + 6);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Draw shield cross
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(centerX - 1, powerup.y + 6, 2, powerup.height - 12);
+      ctx.fillRect(powerup.x + 6, centerY - 1, powerup.width - 12, 2);
     }
   }
 

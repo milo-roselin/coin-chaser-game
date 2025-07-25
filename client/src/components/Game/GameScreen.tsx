@@ -3,10 +3,16 @@ import GameCanvas from "./GameCanvas";
 import TouchControls from "./TouchControls";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { Button } from "@/components/ui/button";
-import { Pause, Home } from "lucide-react";
+import { Pause, Home, Magnet, Shield } from "lucide-react";
 
 export default function GameScreen() {
-  const { resetGame } = useCoinGame();
+  const { 
+    resetGame, 
+    magnetActive, 
+    magnetTimeLeft, 
+    extraLives, 
+    shieldActive 
+  } = useCoinGame();
   const gameCanvasRef = useRef<{ togglePause: () => void } | null>(null);
 
   const handlePause = () => {
@@ -39,7 +45,26 @@ export default function GameScreen() {
       {/* Game Canvas */}
       <GameCanvas ref={gameCanvasRef} />
 
-
+      {/* Power-up Status Display */}
+      <div className="absolute top-4 left-4 z-50 flex flex-col gap-2">
+        {magnetActive && (
+          <div className="bg-red-500/90 text-white px-3 py-2 rounded-lg flex items-center gap-2 animate-pulse">
+            <Magnet className="w-4 h-4" />
+            <span className="text-sm font-bold">
+              Magnet: {Math.ceil(magnetTimeLeft / 1000)}s
+            </span>
+          </div>
+        )}
+        
+        {shieldActive && extraLives > 0 && (
+          <div className="bg-teal-500/90 text-white px-3 py-2 rounded-lg flex items-center gap-2">
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-bold">
+              Shield: {extraLives} lives
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Touch Controls */}
       <TouchControls onPause={handlePause} onHome={handleHome} />
