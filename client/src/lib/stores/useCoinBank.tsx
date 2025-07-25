@@ -17,9 +17,6 @@ interface CoinBankState {
   initializeForUnauthenticated: () => void;
 }
 
-// Debounce timer for database sync
-let syncTimer: NodeJS.Timeout | null = null;
-
 export const useCoinBank = create<CoinBankState>()(
   persist(
     (set, get) => ({
@@ -35,16 +32,8 @@ export const useCoinBank = create<CoinBankState>()(
             totalCoins: state.totalCoins + amount,
             sessionCoins: state.sessionCoins + amount,
           }));
-          
-          // Debounced sync to database (longer debounce during gameplay)
-          if (syncTimer) {
-            clearTimeout(syncTimer);
-          }
-          syncTimer = setTimeout(() => {
-            // Use a non-blocking sync that won't interrupt gameplay
-            get().syncToDatabase().catch(err => console.error('Coin sync failed:', err));
-            syncTimer = null;
-          }, 2000); // 2 second debounce to prevent gameplay interruption
+          // Sync to database (debounced to avoid too many calls)
+          setTimeout(() => get().syncToDatabase(), 100);
         } else {
           // For unauthenticated users, only track session coins (don't persist total)
           set((state) => ({

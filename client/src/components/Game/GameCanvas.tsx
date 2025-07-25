@@ -1,77 +1,38 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle, useState } from "react";
-import { GameEngine } from "../../lib/gameEngine";
-import { useCoinGame } from "../../lib/stores/useCoinGame";
-import { useAudio } from "../../lib/stores/useAudio";
-import { useCoinBank } from "../../lib/stores/useCoinBank";
-import { useAuth } from "../../lib/stores/useAuth";
-import { useUserStats } from "../../lib/stores/useUserStats";
-import { useIsMobile } from "../../hooks/use-is-mobile";
+import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle } from "react";
+import { useCoinGame } from "@/lib/stores/useCoinGame";
+import { useAudio } from "@/lib/stores/useAudio";
+import { usePlayerAvatar } from "@/lib/stores/usePlayerAvatar";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import { GameEngine } from "@/lib/gameEngine";
 
 const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const gameStateRef = useRef<string>("start");
-  const isPausedRef = useRef<boolean>(false);
-  const penaltyAppliedRef = useRef<boolean>(false);
-  const [forceRerender, setForceRerender] = useState(0);
-  
-  // State update queue to batch updates and prevent flashing
-  const updateQueueRef = useRef<{
-    scoreUpdates: number[];
-    coinUpdates: number;
-    lastFlush: number;
-  }>({
-    scoreUpdates: [],
-    coinUpdates: 0,
-    lastFlush: Date.now()
-  });
-
+  const [isPaused, setIsPaused] = useState(false);
   const isMobile = useIsMobile();
-  const { playCoin, playExplosion } = useAudio();
-  const { user } = useAuth();
-  const { applyTNTPenalty, fetchUserStats } = useUserStats();
-  
-  // Get store actions without subscribing to state changes
-  const updateScore = useCoinGame.getState().updateScore;
-  const updateCoinsCollected = useCoinGame.getState().updateCoinsCollected;
-  const endGame = useCoinGame.getState().endGame;
-  const winGame = useCoinGame.getState().winGame;
-  const addCoins = useCoinBank.getState().addCoins;
 
-  // Batch state updates to prevent re-renders during gameplay
-  const flushUpdates = () => {
-    const queue = updateQueueRef.current;
-    if (queue.scoreUpdates.length > 0 || queue.coinUpdates > 0) {
-      // Apply all score updates at once
-      const totalScore = queue.scoreUpdates.reduce((sum, score) => sum + score, 0);
-      if (totalScore > 0) {
-        updateScore(totalScore);
-      }
-      
-      // Apply all coin updates at once
-      if (queue.coinUpdates > 0) {
-        for (let i = 0; i < queue.coinUpdates; i++) {
-          updateCoinsCollected();
-        }
-        addCoins(queue.coinUpdates);
-      }
-      
-      // Clear queue
-      queue.scoreUpdates = [];
-      queue.coinUpdates = 0;
-      queue.lastFlush = Date.now();
-    }
-  };
+  const { 
+    updateScore, 
+    updateCoinsCollected, 
+    endGame, 
+    winGame,
+    playerPosition,
+    setPlayerPosition,
+    currentLevel
+  } = useCoinGame();
+  const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
+  const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
 
-  // Game loop that runs independently of React
-  const gameLoop = () => {
+  const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
+        // Enable smoother rendering
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         
+        // Clear canvas to black while waiting for initialization
         if (!gameEngineRef.current.isReady()) {
           ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -81,139 +42,245 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         }
       }
     }
-    
-    // Batch flush updates every 500ms to prevent flashing
-    const now = Date.now();
-    if (now - updateQueueRef.current.lastFlush > 500) {
-      flushUpdates();
-    }
-    
     animationFrameRef.current = requestAnimationFrame(gameLoop);
-  };
+  }, []);
 
-  // Initialize canvas and game engine
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const resizeCanvas = () => {
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const dpr = window.devicePixelRatio || 1;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      canvas.width = viewportWidth * dpr;
-      canvas.height = viewportHeight * dpr;
-      canvas.style.width = `${viewportWidth}px`;
-      canvas.style.height = `${viewportHeight}px`;
-
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.scale(dpr, dpr);
-      }
-
-      // Recreate game engine with new dimensions
-      if (gameEngineRef.current) {
-        // GameEngine doesn't have destroy method, just replace it
-        gameEngineRef.current = null;
-      }
-
-      const engineWidth = viewportWidth;
-      const engineHeight = viewportHeight;
-
-      gameEngineRef.current = new GameEngine(
-        engineWidth,
-        engineHeight,
-        {
-          onCoinCollected: (score: number) => {
-            playCoin();
-            // Queue the update instead of applying immediately
-            updateQueueRef.current.scoreUpdates.push(score);
-            updateQueueRef.current.coinUpdates += 1;
-          },
-          onObstacleHit: () => {
-            // Flush any pending updates before ending game
-            flushUpdates();
-            
-            playExplosion();
-            endGame();
-            
-            if (user && !penaltyAppliedRef.current) {
-              penaltyAppliedRef.current = true;
-              console.log('TNT hit! Applying 500 point penalty for logged-in user:', user.username);
-              
-              setTimeout(async () => {
-                try {
-                  await applyTNTPenalty(500);
-                  await fetchUserStats();
-                  console.log('500 point penalty applied successfully - you lost 500 points but kept your coins!');
-                } catch (error) {
-                  console.error('Failed to apply TNT penalty:', error);
-                }
-              }, 100);
-            } else if (!user) {
-              console.log('TNT hit! Guest user - no penalty applied');
-            }
-          },
-          onLevelComplete: () => {
-            // Flush any pending updates before winning
-            flushUpdates();
-            winGame();
-          },
-          onPlayerMove: (x: number, y: number) => {
-            // Handle player movement if needed
+    // Force full page layout and scroll to top
+    const ensureFullViewport = () => {
+      // Scroll to top to ensure we're at the beginning of the page
+      window.scrollTo(0, 0);
+      
+      // For iPad, try to request fullscreen mode
+      const requestFullscreen = async () => {
+        try {
+          if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else if ((document.documentElement as any).webkitRequestFullscreen) {
+            await (document.documentElement as any).webkitRequestFullscreen();
           }
+        } catch (err) {
+          console.log('Fullscreen not available, using viewport approach');
         }
-      );
-
-      console.log(`Canvas stabilized to: ${canvas.width}x${canvas.height} (internal), ${canvas.style.width}x${canvas.style.height} (display), DPR: ${dpr}`);
+      };
+      
+      // Try fullscreen on iPad
+      const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIPad) {
+        requestFullscreen();
+      }
+      
+      // Force body to be exactly viewport size
+      document.body.style.margin = '0';
+      document.body.style.padding = '0';
+      document.body.style.width = '100vw';
+      document.body.style.height = '100vh';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = '0';
+      document.body.style.left = '0';
+      
+      // Force html to be exactly viewport size
+      document.documentElement.style.margin = '0';
+      document.documentElement.style.padding = '0';
+      document.documentElement.style.width = '100vw';
+      document.documentElement.style.height = '100vh';
+      document.documentElement.style.overflow = 'hidden';
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    // Debounce resize to prevent constant resizing
+    let resizeTimeout: NodeJS.Timeout | null = null;
+    
+    // Set canvas size using stable approach
+    const resizeCanvas = () => {
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+      
+      resizeTimeout = setTimeout(() => {
+        ensureFullViewport();
+        
+        // Use a more stable approach - detect device type once and stick with it
+        const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        let viewportWidth, viewportHeight;
+        
+        if (isIPad) {
+          // For iPad, use fixed dimensions based on screen once detected
+          viewportWidth = screen.width > screen.height ? screen.width : screen.height; // Use larger dimension
+          viewportHeight = screen.width < screen.height ? screen.width : screen.height; // Use smaller dimension
+          
+          // Force to common iPad size if screen detection fails
+          if (viewportWidth < 800) {
+            viewportWidth = 1024;
+            viewportHeight = 768;
+          }
+        } else {
+          // For desktop/other devices, use window dimensions
+          viewportWidth = window.innerWidth;
+          viewportHeight = window.innerHeight;
+        }
+        
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Only resize if dimensions actually changed significantly
+        const currentDisplayWidth = parseInt(canvas.style.width) || 0;
+        const currentDisplayHeight = parseInt(canvas.style.height) || 0;
+        
+        if (Math.abs(currentDisplayWidth - viewportWidth) > 10 || Math.abs(currentDisplayHeight - viewportHeight) > 10) {
+          // Set canvas internal resolution
+          canvas.width = viewportWidth * dpr;
+          canvas.height = viewportHeight * dpr;
+          
+          // Force canvas display size
+          canvas.style.width = viewportWidth + 'px';
+          canvas.style.height = viewportHeight + 'px';
+          canvas.style.position = 'fixed';
+          canvas.style.top = '0';
+          canvas.style.left = '0';
+          canvas.style.zIndex = '1';
+          
+          // Scale the context to match device pixel ratio
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.scale(dpr, dpr);
+          }
+          
+          console.log(`Canvas stabilized to: ${canvas.width}x${canvas.height} (internal), ${viewportWidth}x${viewportHeight} (display), DPR: ${dpr}`);
+        }
+      }, 250); // 250ms debounce
+    };
 
-    // Start game loop
+    // Initial resize only
+    resizeCanvas();
+    
+    // Add single resize listener with debouncing
+    window.addEventListener("resize", resizeCanvas);
+    
+    // Prevent scrolling entirely
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+      window.scrollTo(0, 0);
+    };
+    
+    window.addEventListener("scroll", preventScroll, { passive: false });
+    document.addEventListener("scroll", preventScroll, { passive: false });
+    
+    // Force initial state once
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+
+    // Initialize game engine with canvas dimensions
+    const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let engineWidth, engineHeight;
+    
+    if (isIPad) {
+      // Use same logic as canvas for consistency
+      engineWidth = screen.width > screen.height ? screen.width : screen.height;
+      engineHeight = screen.width < screen.height ? screen.width : screen.height;
+      if (engineWidth < 800) {
+        engineWidth = 1024;
+        engineHeight = 768;
+      }
+    } else {
+      engineWidth = window.innerWidth;
+      engineHeight = window.innerHeight;
+    }
+    
+    gameEngineRef.current = new GameEngine(
+      engineWidth,
+      engineHeight,
+      {
+        onCoinCollected: (score: number) => {
+          updateScore(score);
+          updateCoinsCollected();
+          playCoin();
+        },
+        onObstacleHit: () => {
+          playExplosion();
+          endGame();
+        },
+        onLevelComplete: () => {
+          winGame();
+        },
+        onPlayerMove: (x: number, y: number) => {
+          setPlayerPosition(x, y);
+        }
+      },
+      currentLevel
+    );
+
+    // Set the selected avatar
+    const selectedAvatar = getSelectedAvatar();
+    if (selectedAvatar) {
+      gameEngineRef.current.setAvatar({
+        id: selectedAvatar.id,
+        name: selectedAvatar.name,
+        image: selectedAvatar.image
+      });
+    }
+
+    // Add keyboard event listeners
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameEngineRef.current) {
+        gameEngineRef.current.handleKeyDown(e.code);
+        // Update pause state when space or escape is pressed
+        if (e.code === 'Space' || e.code === 'Escape') {
+          setIsPaused(prev => !prev);
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (gameEngineRef.current) {
+        gameEngineRef.current.handleKeyUp(e.code);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    // Start game loop immediately but with proper initialization checks
     animationFrameRef.current = requestAnimationFrame(gameLoop);
 
     return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("orientationchange", resizeCanvas);
+      window.removeEventListener("scroll", preventScroll);
+      document.removeEventListener("scroll", preventScroll);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", resizeCanvas);
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      if (gameEngineRef.current) {
-        // GameEngine doesn't have destroy method, just clear reference
-        gameEngineRef.current = null;
-      }
-      window.removeEventListener('resize', resizeCanvas);
     };
-  }, []);
+  }, [gameLoop, updateScore, updateCoinsCollected, endGame, winGame, setPlayerPosition, playHit, playSuccess]);
 
-  // Listen to game state changes from the store
+  // Update avatar when selection changes
   useEffect(() => {
-    const unsubscribe = useCoinGame.subscribe((state) => {
-      gameStateRef.current = state.gameState;
-      
-      if (state.gameState === "playing") {
-        penaltyAppliedRef.current = false;
-        // Clear update queue for new game
-        updateQueueRef.current = {
-          scoreUpdates: [],
-          coinUpdates: 0,
-          lastFlush: Date.now()
-        };
+    if (gameEngineRef.current) {
+      const selectedAvatarData = getSelectedAvatar();
+      if (selectedAvatarData) {
+        console.log('Setting avatar to:', selectedAvatarData.id);
+        gameEngineRef.current.setAvatar({
+          id: selectedAvatarData.id,
+          name: selectedAvatarData.name,
+          image: selectedAvatarData.image
+        });
       }
-      
-      if (gameEngineRef.current) {
-        if (state.gameState === "playing") {
-          gameEngineRef.current.startLevel(state.currentLevel, state.levelData);
-        } else {
-          // GameEngine doesn't have stopLevel method, just let it handle state internally
-        }
-      }
-    });
+    }
+  }, [selectedAvatar, getSelectedAvatar]);
 
-    return unsubscribe;
-  }, []);
-
-  // Touch event handlers
+  // Handle touch input - disabled for mobile devices (using arrow buttons instead)
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
     if (gameEngineRef.current && !isMobile) {
@@ -250,12 +317,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const handlePauseClick = () => {
     if (gameEngineRef.current) {
       gameEngineRef.current.togglePause();
-      isPausedRef.current = !isPausedRef.current;
-      // Force component re-render to show/hide pause overlay
-      setForceRerender(prev => prev + 1);
+      setIsPaused(!isPaused);
     }
   };
 
+  // Expose toggle pause function to parent component
   useImperativeHandle(ref, () => ({
     togglePause: handlePauseClick
   }));
@@ -271,8 +337,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         onTouchEnd={handleTouchEnd}
       />
       
-      {/* Pause overlay - show when paused */}
-      {isPausedRef.current && (
+      {/* Clickable pause overlay when paused */}
+      {isPaused && (
         <div
           onClick={handlePauseClick}
           className="absolute inset-0 flex items-center justify-center cursor-pointer z-20"

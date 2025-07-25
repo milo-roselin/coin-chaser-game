@@ -233,40 +233,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Apply TNT penalty (deduct points from user's total score)
-  app.post('/api/scores/penalty', requireAuth, async (req, res) => {
-    try {
-      const { penalty } = req.body;
-      const userId = req.session.userId!;
-      
-      if (typeof penalty !== 'number' || penalty <= 0) {
-        return res.status(400).json({ error: 'Invalid penalty value' });
-      }
-
-      // Get user's current score
-      const userScores = await storage.getUserScores(userId);
-      if (userScores.length === 0) {
-        return res.status(400).json({ error: 'No existing score to apply penalty to' });
-      }
-
-      const currentScore = userScores[0]; // Get the highest score
-      const newScore = Math.max(0, currentScore.score - penalty); // Don't allow negative total scores
-
-      // Update the user's score by reducing it by the penalty amount
-      await storage.updateUserScore(userId, newScore);
-      
-      res.json({ 
-        penalty: penalty,
-        oldScore: currentScore.score,
-        newScore: newScore,
-        message: 'TNT penalty applied successfully' 
-      });
-    } catch (error) {
-      console.error('TNT penalty error:', error);
-      res.status(500).json({ error: 'Failed to apply TNT penalty' });
-    }
-  });
-
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -16,7 +16,6 @@ interface GlobalLeaderboardStore {
   error: string | null;
   fetchLeaderboard: () => Promise<void>;
   submitScore: (score: number, coins: number, level: number) => Promise<boolean>;
-  applyTNTPenalty: (penalty: number) => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -75,39 +74,6 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
       }
     } catch (error) {
       console.error('Score submission network error:', error);
-      set({ error: 'Network error. Please try again.' });
-      return false;
-    }
-  },
-
-  applyTNTPenalty: async (penalty: number) => {
-    try {
-      console.log(`Applying TNT penalty: ${penalty} points deducted`);
-      
-      const response = await fetch('/api/scores/penalty', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ penalty }),
-      });
-
-      const responseData = await response.json();
-      console.log('TNT penalty response:', response.status, responseData);
-
-      if (response.ok) {
-        console.log('TNT penalty applied successfully, refreshing leaderboard');
-        // Refresh leaderboard after successful penalty application
-        await get().fetchLeaderboard();
-        return true;
-      } else {
-        console.error('TNT penalty failed:', responseData);
-        set({ error: responseData.error || 'Failed to apply TNT penalty' });
-        return false;
-      }
-    } catch (error) {
-      console.error('TNT penalty network error:', error);
       set({ error: 'Network error. Please try again.' });
       return false;
     }
