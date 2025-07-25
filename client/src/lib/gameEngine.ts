@@ -1202,52 +1202,82 @@ export class GameEngine {
     const shieldActive = (window as any).shieldActive;
     const extraLives = (window as any).extraLives || 0;
     
-    // Draw shield effect
+    // Draw shield effect with blue force field
     if (shieldActive && extraLives > 0) {
-      const shieldRadius = Math.max(w, h) / 2 + 8 + Math.sin(time * 3) * 2;
+      const forceFieldRadius = Math.max(w, h) / 2 + 15 + Math.sin(time * 2) * 3;
+      const playerCenterX = centerX;
+      const playerCenterY = y + h / 2;
       
-      // Draw pulsing shield circle around player
-      ctx.strokeStyle = '#4ECDC4';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([5, 5]);
-      ctx.lineDashOffset = time * 10;
+      // Create blue force field background circle with transparency
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = '#4A90E2'; // Blue force field
       ctx.beginPath();
-      ctx.arc(centerX, y + h / 2, shieldRadius, 0, Math.PI * 2);
+      ctx.arc(playerCenterX, playerCenterY, forceFieldRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0; // Reset transparency
+      
+      // Draw pulsing blue force field border
+      ctx.strokeStyle = '#4A90E2';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 4]);
+      ctx.lineDashOffset = time * 15;
+      ctx.beginPath();
+      ctx.arc(playerCenterX, playerCenterY, forceFieldRadius, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]); // Reset dash
       
-      // Draw shield held in left hand
+      // Add secondary inner force field ring
+      ctx.strokeStyle = '#87CEEB'; // Light blue
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 3]);
+      ctx.lineDashOffset = -time * 10;
+      ctx.beginPath();
+      ctx.arc(playerCenterX, playerCenterY, forceFieldRadius - 8, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset dash
+      
+      // Draw proper shield icon held in left hand
       const shieldX = centerX - w / 2 - 12; // Left side of player
       const shieldY = y + h / 2;
-      const shieldSize = 10;
+      const shieldSize = 12;
       
-      // Draw shield shape
-      ctx.fillStyle = '#4ECDC4';
+      // Draw traditional medieval shield shape
+      ctx.fillStyle = '#2C5AA0'; // Deep blue shield
       ctx.beginPath();
-      ctx.moveTo(shieldX, shieldY - shieldSize/2);
-      ctx.lineTo(shieldX + shieldSize * 0.7, shieldY - shieldSize/2);
-      ctx.lineTo(shieldX + shieldSize, shieldY);
-      ctx.lineTo(shieldX + shieldSize * 0.7, shieldY + shieldSize/2);
-      ctx.lineTo(shieldX, shieldY + shieldSize/2);
-      ctx.lineTo(shieldX - shieldSize * 0.3, shieldY);
+      ctx.moveTo(shieldX, shieldY - shieldSize/2); // Top center
+      ctx.lineTo(shieldX - shieldSize/3, shieldY - shieldSize/2); // Top left
+      ctx.lineTo(shieldX - shieldSize/2, shieldY - shieldSize/4); // Left curve
+      ctx.lineTo(shieldX - shieldSize/2, shieldY + shieldSize/4); // Left bottom curve
+      ctx.lineTo(shieldX, shieldY + shieldSize/2); // Bottom point
+      ctx.lineTo(shieldX + shieldSize/2, shieldY + shieldSize/4); // Right bottom curve
+      ctx.lineTo(shieldX + shieldSize/2, shieldY - shieldSize/4); // Right curve
+      ctx.lineTo(shieldX + shieldSize/3, shieldY - shieldSize/2); // Top right
       ctx.closePath();
       ctx.fill();
       
-      // Draw shield cross
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(shieldX + shieldSize/2 - 1, shieldY - shieldSize/2 + 2, 2, shieldSize - 4);
-      ctx.fillRect(shieldX + 2, shieldY - 1, shieldSize - 4, 2);
+      // Add shield rim
+      ctx.strokeStyle = '#1A365D'; // Darker blue rim
+      ctx.lineWidth = 1;
+      ctx.stroke();
       
-      // Draw shield sparkles around held shield
-      for (let i = 0; i < 4; i++) {
-        const angle = (time * 2 + i * Math.PI / 2) % (Math.PI * 2);
-        const sparkleX = shieldX + shieldSize/2 + Math.cos(angle) * (shieldSize + 3);
-        const sparkleY = shieldY + Math.sin(angle) * (shieldSize + 3);
+      // Draw shield emblem (plus/cross)
+      ctx.fillStyle = '#E2E8F0'; // Light silver emblem
+      ctx.fillRect(shieldX - 1, shieldY - shieldSize/3, 2, shieldSize*2/3);
+      ctx.fillRect(shieldX - shieldSize/4, shieldY - 1, shieldSize/2, 2);
+      
+      // Draw force field energy particles
+      for (let i = 0; i < 8; i++) {
+        const angle = (time * 1.5 + i * Math.PI / 4) % (Math.PI * 2);
+        const particleRadius = forceFieldRadius - 5 + Math.sin(time * 3 + i) * 3;
+        const particleX = playerCenterX + Math.cos(angle) * particleRadius;
+        const particleY = playerCenterY + Math.sin(angle) * particleRadius;
         
-        ctx.fillStyle = '#4ECDC4';
+        ctx.fillStyle = '#87CEEB';
+        ctx.globalAlpha = 0.8;
         ctx.beginPath();
-        ctx.arc(sparkleX, sparkleY, 1.5, 0, Math.PI * 2);
+        ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
         ctx.fill();
+        ctx.globalAlpha = 1.0;
       }
     }
     
