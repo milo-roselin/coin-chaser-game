@@ -13,6 +13,7 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const gameEngineRef = useRef<GameEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [penaltyApplied, setPenaltyApplied] = useState(false);
   const isMobile = useIsMobile();
 
   const { 
@@ -199,6 +200,9 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       engineHeight = window.innerHeight;
     }
     
+    // Reset penalty flag for new game
+    setPenaltyApplied(false);
+    
     gameEngineRef.current = new GameEngine(
       engineWidth,
       engineHeight,
@@ -208,25 +212,28 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           updateCoinsCollected();
           playCoin();
         },
-        onObstacleHit: async () => {
+        onObstacleHit: () => {
           playExplosion();
+          endGame();
           
-          // Apply TNT penalty for logged-in users
-          if (user) {
+          // Apply TNT penalty for logged-in users AFTER game ends to prevent multiple calls
+          if (user && !penaltyApplied) {
+            setPenaltyApplied(true);
             console.log('TNT hit! Applying 500 point penalty for logged-in user:', user.username);
-            try {
-              await applyTNTPenalty(500);
-              // Refresh user stats to show updated score
-              await fetchUserStats();
-              console.log('500 point penalty applied successfully - you lost 500 points but kept your coins!');
-            } catch (error) {
-              console.error('Failed to apply TNT penalty:', error);
-            }
-          } else {
+            // Use setTimeout to ensure this runs after the game has ended
+            setTimeout(async () => {
+              try {
+                await applyTNTPenalty(500);
+                // Refresh user stats to show updated score
+                await fetchUserStats();
+                console.log('500 point penalty applied successfully - you lost 500 points but kept your coins!');
+              } catch (error) {
+                console.error('Failed to apply TNT penalty:', error);
+              }
+            }, 100);
+          } else if (!user) {
             console.log('TNT hit! Guest user - no penalty applied');
           }
-          
-          endGame();
         },
         onLevelComplete: () => {
           winGame();
