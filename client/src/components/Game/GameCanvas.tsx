@@ -46,14 +46,19 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           // Update magnet timer
           updateMagnetTimer();
           
-          // Pass power-up states to game engine via window object (temporary solution)
-          (window as any).magnetActive = magnetActive;
-          (window as any).shieldActive = shieldActive;
-          (window as any).extraLives = extraLives;
+          // Pass power-up states to game engine via window object (force fresh values)
+          const currentState = useCoinGame.getState();
+          (window as any).magnetActive = currentState.magnetActive;
+          (window as any).shieldActive = currentState.shieldActive;
+          (window as any).extraLives = currentState.extraLives;
           
           // Debug logging for power-up states
-          if (magnetActive || extraLives > 0) {
-            console.log('Power-up states:', { magnetActive, shieldActive, extraLives });
+          if (currentState.magnetActive || currentState.extraLives > 0) {
+            console.log('Power-up states passed to engine:', { 
+              magnetActive: currentState.magnetActive, 
+              shieldActive: currentState.shieldActive, 
+              extraLives: currentState.extraLives 
+            });
           }
           
           gameEngineRef.current.update();
@@ -227,8 +232,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onShieldUsed: () => {
           console.log('Shield used callback triggered');
-          const { useShield } = useCoinGame.getState();
-          useShield();
+          const { useExtraLife } = useCoinGame.getState();
+          useExtraLife();
           playHit(); // Sound effect for shield block
         },
         onLevelComplete: () => {

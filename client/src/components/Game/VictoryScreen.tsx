@@ -44,7 +44,7 @@ export default function VictoryScreen() {
       // First sync coin bank to ensure database has latest coin count
       await useCoinBank.getState().syncToDatabase();
       
-      const success = await submitScore(totalScore, coinsCollected, currentLevel);
+      const success = await submitScore(totalScore, coinsCollected, currentLevel, currentLevel); // Pass currentLevel as highestLevelCompleted
       if (success) {
         console.log('Score submission successful');
       } else {

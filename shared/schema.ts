@@ -16,6 +16,7 @@ export const scores = pgTable("scores", {
   score: integer("score").notNull(),
   coins: integer("coins").notNull(),
   level: integer("level").notNull(),
+  highestLevelCompleted: integer("highest_level_completed").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -29,6 +30,7 @@ export const insertScoreSchema = createInsertSchema(scores).pick({
   score: true,
   coins: true,
   level: true,
+  highestLevelCompleted: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

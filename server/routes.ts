@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit score (requires authentication)
   app.post('/api/scores', requireAuth, async (req, res) => {
     try {
-      const { score, coins, level } = req.body;
+      const { score, coins, level, highestLevelCompleted } = req.body;
       const userId = req.session.userId;
 
       if (typeof score !== 'number' || typeof coins !== 'number' || typeof level !== 'number') {
@@ -149,7 +149,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userId!, 
         score, 
         coins, 
-        level 
+        level,
+        highestLevelCompleted: highestLevelCompleted || level // Default to current level if not provided
       });
       
       res.json({ 
