@@ -28,6 +28,7 @@ export interface GameCallbacks {
   onLevelComplete: () => void;
   onPlayerMove: (x: number, y: number) => void;
   onPowerupCollected: (type: 'magnet' | 'extralife') => void;
+  onShieldUsed: () => void;
 }
 
 export class GameEngine {
@@ -203,10 +204,10 @@ export class GameEngine {
       }
     }
 
-    // Generate power-ups (very rare - 5% chance per cluster)
+    // Generate power-ups (40% chance per cluster)
     this.powerups = [];
     for (let cluster = 0; cluster < numClusters; cluster++) {
-      if (Math.random() < 0.05) { // 5% chance per cluster
+      if (Math.random() < 0.40) { // 40% chance per cluster
         const clusterX = this.coinClusters[cluster].x;
         const clusterY = this.coinClusters[cluster].y;
         
@@ -947,23 +948,29 @@ export class GameEngine {
 
     // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
-      // Apply magnet attraction if active (passed from game state)
-      const gameState = (window as any).magnetActive;
-      if (gameState) {
+      // Apply magnet attraction if active (10 squares = 500 pixels)
+      const magnetActive = (window as any).magnetActive;
+      if (magnetActive) {
+        const playerCenterX = this.player.x + this.player.width / 2;
+        const playerCenterY = this.player.y + this.player.height / 2;
+        const coinCenterX = coin.x + coin.width / 2;
+        const coinCenterY = coin.y + coin.height / 2;
+        
         const distance = Math.sqrt(
-          Math.pow(coin.x - this.player.x, 2) + Math.pow(coin.y - this.player.y, 2)
+          Math.pow(coinCenterX - playerCenterX, 2) + Math.pow(coinCenterY - playerCenterY, 2)
         );
         
-        // Attract coins within 10 squares (200 pixels)
-        if (distance < 200 && distance > 30) { // Don't move coins that are already very close
-          const attractionSpeed = 3;
-          const dx = this.player.x - coin.x;
-          const dy = this.player.y - coin.y;
-          const normalizedDx = dx / distance;
-          const normalizedDy = dy / distance;
+        // 10 squares = 10 * 50 pixels = 500 pixels range (much stronger attraction)
+        if (distance < 500 && distance > 5) {
+          const attractionSpeed = Math.min(distance * 0.15, 10); // Speed scales with distance
+          const normalizedDx = (playerCenterX - coinCenterX) / distance;
+          const normalizedDy = (playerCenterY - coinCenterY) / distance;
           
           coin.x += normalizedDx * attractionSpeed;
           coin.y += normalizedDy * attractionSpeed;
+          
+          // Visual effect for attracted coins
+          coin.color = '#FFD700'; // Golden glow when being attracted
         }
       }
       
@@ -1000,11 +1007,22 @@ export class GameEngine {
       return true;
     });
 
-    // Check obstacle collisions
+    // Check obstacle collisions (with shield protection)
     for (const obstacle of this.obstacles) {
       if (checkCollision(this.player, obstacle)) {
-        this.callbacks.onObstacleHit();
-        return;
+        // Check if shield is active
+        const shieldActive = (window as any).shieldActive;
+        const extraLives = (window as any).extraLives || 0;
+        
+        if (shieldActive && extraLives > 0) {
+          // Shield blocks the hit - consume one shield
+          console.log('Shield blocked TNT hit! Lives remaining:', extraLives - 1);
+          this.callbacks.onShieldUsed();
+          return; // Skip the hit
+        } else {
+          this.callbacks.onObstacleHit();
+          return;
+        }
       }
     }
 
@@ -1175,7 +1193,7 @@ export class GameEngine {
     if (shieldActive && extraLives > 0) {
       const shieldRadius = Math.max(w, h) / 2 + 8 + Math.sin(time * 3) * 2;
       
-      // Draw pulsing shield circle
+      // Draw pulsing shield circle around player
       ctx.strokeStyle = '#4ECDC4';
       ctx.lineWidth = 3;
       ctx.setLineDash([5, 5]);
@@ -1185,22 +1203,44 @@ export class GameEngine {
       ctx.stroke();
       ctx.setLineDash([]); // Reset dash
       
-      // Draw shield sparkles
-      for (let i = 0; i < 6; i++) {
-        const angle = (time + i * Math.PI / 3) % (Math.PI * 2);
-        const sparkleX = centerX + Math.cos(angle) * (shieldRadius + 5);
-        const sparkleY = y + h / 2 + Math.sin(angle) * (shieldRadius + 5);
+      // Draw shield held in left hand
+      const shieldX = centerX - w / 2 - 12; // Left side of player
+      const shieldY = y + h / 2;
+      const shieldSize = 10;
+      
+      // Draw shield shape
+      ctx.fillStyle = '#4ECDC4';
+      ctx.beginPath();
+      ctx.moveTo(shieldX, shieldY - shieldSize/2);
+      ctx.lineTo(shieldX + shieldSize * 0.7, shieldY - shieldSize/2);
+      ctx.lineTo(shieldX + shieldSize, shieldY);
+      ctx.lineTo(shieldX + shieldSize * 0.7, shieldY + shieldSize/2);
+      ctx.lineTo(shieldX, shieldY + shieldSize/2);
+      ctx.lineTo(shieldX - shieldSize * 0.3, shieldY);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Draw shield cross
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(shieldX + shieldSize/2 - 1, shieldY - shieldSize/2 + 2, 2, shieldSize - 4);
+      ctx.fillRect(shieldX + 2, shieldY - 1, shieldSize - 4, 2);
+      
+      // Draw shield sparkles around held shield
+      for (let i = 0; i < 4; i++) {
+        const angle = (time * 2 + i * Math.PI / 2) % (Math.PI * 2);
+        const sparkleX = shieldX + shieldSize/2 + Math.cos(angle) * (shieldSize + 3);
+        const sparkleY = shieldY + Math.sin(angle) * (shieldSize + 3);
         
         ctx.fillStyle = '#4ECDC4';
         ctx.beginPath();
-        ctx.arc(sparkleX, sparkleY, 2, 0, Math.PI * 2);
+        ctx.arc(sparkleX, sparkleY, 1.5, 0, Math.PI * 2);
         ctx.fill();
       }
     }
     
     // Draw magnet effect
     if (magnetActive) {
-      // Draw magnetic field lines
+      // Draw magnetic field lines around player
       ctx.strokeStyle = '#FF6B6B';
       ctx.lineWidth = 2;
       ctx.setLineDash([3, 3]);
@@ -1214,22 +1254,31 @@ export class GameEngine {
       }
       ctx.setLineDash([]); // Reset dash
       
-      // Draw floating magnet icon above player
-      ctx.fillStyle = '#FF6B6B';
-      const magnetY = y - 15 + Math.sin(time * 4) * 3;
-      ctx.fillRect(centerX - 6, magnetY, 12, 8);
+      // Draw U-shaped magnet held in right hand
+      const handX = centerX + w / 2 + 8; // Right side of player
+      const handY = y + h / 2;
+      const magnetSize = 8;
       
-      // Magnet poles
+      // Draw U-shaped magnet body
+      ctx.fillStyle = '#C0C0C0'; // Silver magnet body
+      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 3, magnetSize * 1.5);
+      ctx.fillRect(handX + magnetSize/2 - 3, handY - magnetSize, 3, magnetSize * 1.5);
+      ctx.fillRect(handX - magnetSize/2, handY + magnetSize/2, magnetSize, 3);
+      
+      // Draw red pole (N)
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(handX - magnetSize/2, handY - magnetSize, 3, 4);
+      
+      // Draw blue pole (S)
+      ctx.fillStyle = '#0000FF';
+      ctx.fillRect(handX + magnetSize/2 - 3, handY - magnetSize, 3, 4);
+      
+      // Draw N and S labels
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(centerX - 6, magnetY, 12, 2);
-      ctx.fillRect(centerX - 6, magnetY + 6, 12, 2);
-      
-      // N and S labels
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 6px Arial';
+      ctx.font = 'bold 5px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('N', centerX, magnetY + 4);
-      ctx.fillText('S', centerX, magnetY + 7);
+      ctx.fillText('N', handX - magnetSize/2 + 1.5, handY - magnetSize + 3);
+      ctx.fillText('S', handX + magnetSize/2 - 1.5, handY - magnetSize + 3);
     }
   }
 

@@ -234,6 +234,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
             addExtraLife();
             playSuccess();
           }
+        },
+        onShieldUsed: () => {
+          // Shield was used to block TNT hit
+          const { useExtraLife } = useCoinGame.getState();
+          useExtraLife();
         }
       },
       currentLevel

@@ -265,6 +265,11 @@ export const useCoinGame = create<CoinGameState>()(
           }
           return state;
         });
+      },
+
+      // Alias for useExtraLife for consistency with callback naming
+      useShield: () => {
+        return get().useExtraLife();
       }
     })),
     {
