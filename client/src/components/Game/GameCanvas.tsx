@@ -213,11 +213,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
       {
         onCoinCollected: (score: number) => {
           playCoin();
-          // Defer state updates to prevent render interruption
-          Promise.resolve().then(() => {
+          // Use a simple timeout to prevent blocking the render thread
+          setTimeout(() => {
             updateScore(score);
             updateCoinsCollected();
-          });
+          }, 16); // One frame delay (16ms at 60fps)
         },
         onObstacleHit: () => {
           playExplosion();
