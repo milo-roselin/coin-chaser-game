@@ -96,12 +96,13 @@ The application is architected for scalability with clear separation between fro
 
 # Recent Changes
 
-## July 24, 2025 - Simplified Single Global Leaderboard System
-- **Eliminated Local Leaderboard**: Removed dual leaderboard system in favor of single global leaderboard
-- **Streamlined UI**: StartScreen now has single "Leaderboard" button instead of separate Local/Global buttons
-- **Updated Keyboard Shortcuts**: "L" key now opens global leaderboard (removed "G" shortcut)
-- **Simplified Victory Screen**: Removed local leaderboard references and addScore functionality
-- **Cleaner User Experience**: Players now interact with just one leaderboard system for consistency
+## July 24, 2025 - TNT Penalty System and UI Improvements
+- **TNT Collision Penalty**: Implemented 500-point deduction for logged-in users when hitting TNT/obstacles
+- **Database-Integrated Penalties**: Penalty system updates user scores in database with automatic refresh
+- **User Score Display**: Added compact score display for logged-in users on StartScreen showing username and total points
+- **Real-time Score Updates**: All score displays now reflect database values immediately after penalties or wins
+- **Streamlined UI**: Simplified single global leaderboard system with cleaner Victory Screen
+- **API Enhancement**: Added `/api/scores/penalty` endpoint for secure server-side score deductions
 
 ## July 23, 2025 - Enhanced Authentication with Password Visibility Toggle
 - **Password Visibility Toggle**: Added eye/eye-off icon to login form allowing users to show/hide password while typing

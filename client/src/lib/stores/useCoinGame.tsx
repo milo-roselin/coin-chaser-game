@@ -93,7 +93,34 @@ export const useCoinGame = create<CoinGameState>()(
         });
       },
       
-      endGame: () => {
+      endGame: async () => {
+        // Check if user is authenticated and apply penalty
+        const { user } = (await import('./useAuth')).useAuth.getState();
+        if (user) {
+          try {
+            const response = await fetch('/api/scores/penalty', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log(`TNT Penalty Applied: ${result.message}`);
+              
+              // Refresh user stats to reflect the new score
+              const { useUserStats } = await import('./useUserStats');
+              useUserStats.getState().fetchUserStats();
+            } else {
+              console.error('Failed to apply TNT penalty');
+            }
+          } catch (error) {
+            console.error('Error applying TNT penalty:', error);
+          }
+        }
+        
         set((state) => ({
           gameState: state.gameState === "playing" ? "gameOver" : state.gameState
         }));
