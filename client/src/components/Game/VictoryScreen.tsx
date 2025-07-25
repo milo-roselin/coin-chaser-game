@@ -39,14 +39,36 @@ export default function VictoryScreen() {
       // Set flag immediately to prevent multiple submissions
       setGlobalScoreSubmitted(true);
       
-      console.log(`Attempting score submission: Score=${totalScore}, Coins=${coinsCollected}, Level=${currentLevel}, User=${user.username}`);
+      const highestCompleted = Math.max(currentLevel, highestLevelUnlocked);
+      console.log(`Attempting score submission: Score=${totalScore}, Coins=${coinsCollected}, HighestLevel=${highestCompleted}, User=${user.username}`);
       
       // First sync coin bank to ensure database has latest coin count
       await useCoinBank.getState().syncToDatabase();
       
-      const success = await submitScore(totalScore, coinsCollected, currentLevel, Math.max(currentLevel, highestLevelUnlocked)); // Pass highest level completed
+      const success = await submitScore(totalScore, coinsCollected, highestCompleted); // Pass highest level completed as level
       if (success) {
-        console.log('Score submission successful');
+        console.log('Score submission successful, syncing local state with database');
+        
+        // Sync local game state with database after successful submission
+        try {
+          const statsResponse = await fetch('/api/user/stats', {
+            credentials: 'include'
+          });
+          
+          if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            console.log('Database stats:', stats);
+            
+            // Update local game state to match database
+            const { setHighestLevelUnlocked } = useCoinGame.getState();
+            if (stats.highestLevel > highestLevelUnlocked) {
+              useCoinGame.setState({ highestLevelUnlocked: stats.highestLevel });
+              console.log(`Updated local highest level to: ${stats.highestLevel}`);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to sync stats after score submission:', error);
+        }
       } else {
         console.log('Score submission failed, resetting flag');
         // Reset flag if submission failed

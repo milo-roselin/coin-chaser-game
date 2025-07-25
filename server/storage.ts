@@ -53,8 +53,7 @@ export class DatabaseStorage implements IStorage {
           .set({
             score: insertScore.score,
             coins: insertScore.coins,
-            level: insertScore.level,
-            highestLevelCompleted: Math.max(existingScore[0].highestLevelCompleted || 1, insertScore.highestLevelCompleted || 1),
+            level: Math.max(existingScore[0].level || 1, insertScore.level), // Level represents highest completed
             createdAt: new Date()
           })
           .where(eq(scores.userId, insertScore.userId))
@@ -88,8 +87,7 @@ export class DatabaseStorage implements IStorage {
             .set({
               score: insertScore.score,
               coins: insertScore.coins,
-              level: insertScore.level,
-              highestLevelCompleted: Math.max(existingScore[0].highestLevelCompleted || 1, insertScore.highestLevelCompleted || 1),
+              level: Math.max(existingScore[0].level || 1, insertScore.level), // Level represents highest completed
               createdAt: new Date()
             })
             .where(eq(scores.userId, insertScore.userId))
@@ -108,7 +106,7 @@ export class DatabaseStorage implements IStorage {
     // Since each user now has only one score, we can simplify the query
     const result = await db.execute(sql`
       SELECT s.id, s.user_id as "userId", s.score, u.coin_bank as "coins", 
-             s.level, s.highest_level_completed as "highestLevelCompleted", s.created_at as "createdAt", u.username
+             s.level, s.created_at as "createdAt", u.username
       FROM scores s
       JOIN users u ON s.user_id = u.id
       ORDER BY s.score DESC
@@ -121,7 +119,6 @@ export class DatabaseStorage implements IStorage {
       score: row.score,
       coins: row.coins,
       level: row.level || 1,
-      highestLevelCompleted: row.highestLevelCompleted || 1,
       createdAt: new Date(row.createdAt),
       username: row.username
     }));

@@ -15,7 +15,7 @@ interface GlobalLeaderboardStore {
   isLoading: boolean;
   error: string | null;
   fetchLeaderboard: () => Promise<void>;
-  submitScore: (score: number, coins: number, level: number, highestLevelCompleted?: number) => Promise<boolean>;
+  submitScore: (score: number, coins: number, level: number) => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -46,9 +46,9 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
     }
   },
 
-  submitScore: async (score: number, coins: number, level: number, highestLevelCompleted?: number) => {
+  submitScore: async (score: number, coins: number, level: number) => {
     try {
-      console.log(`Submitting score to API: ${score} points, ${coins} coins, level ${level}, highest completed: ${highestLevelCompleted || level}`);
+      console.log(`Submitting score to API: ${score} points, ${coins} coins, highest level completed: ${level}`);
       
       const response = await fetch('/api/scores', {
         method: 'POST',
@@ -56,7 +56,7 @@ export const useGlobalLeaderboard = create<GlobalLeaderboardStore>()((set, get) 
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ score, coins, level, highestLevelCompleted: highestLevelCompleted || level }),
+        body: JSON.stringify({ score, coins, level }),
       });
 
       const responseData = await response.json();

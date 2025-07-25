@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit score (requires authentication)
   app.post('/api/scores', requireAuth, async (req, res) => {
     try {
-      const { score, coins, level, highestLevelCompleted } = req.body;
+      const { score, coins, level } = req.body;
       const userId = req.session.userId;
 
       if (typeof score !== 'number' || typeof coins !== 'number' || typeof level !== 'number') {
@@ -149,8 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userId!, 
         score, 
         coins, 
-        level,
-        highestLevelCompleted: highestLevelCompleted || level // Default to current level if not provided
+        level // Level field now represents the highest level completed
       });
       
       res.json({ 
@@ -184,6 +183,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Personal scores error:', error);
       res.status(500).json({ error: 'Failed to fetch personal scores' });
+    }
+  });
+
+  // Get user stats (highest level, score, etc.)
+  app.get('/api/user/stats', requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const scores = await storage.getUserScores(userId);
+      const user = await storage.getUser(userId);
+      
+      if (scores.length > 0) {
+        const userScore = scores[0]; // Get the first (and only) score record
+        res.json({
+          highestLevel: userScore.level, // Level field now represents highest completed
+          totalScore: userScore.score,
+          coinBank: user?.coinBank || 0
+        });
+      } else {
+        res.json({
+          highestLevel: 1,
+          totalScore: 0,
+          coinBank: user?.coinBank || 0
+        });
+      }
+    } catch (error) {
+      console.error('User stats error:', error);
+      res.status(500).json({ error: 'Failed to fetch user stats' });
     }
   });
 

@@ -39,6 +39,7 @@ interface CoinGameState {
   addExtraLife: () => void;
   useExtraLife: () => boolean;
   updateMagnetTimer: () => void;
+  setHighestLevelUnlocked: (level: number) => void;
 }
 
 export const useCoinGame = create<CoinGameState>()(
@@ -262,6 +263,10 @@ export const useCoinGame = create<CoinGameState>()(
       // Alias for useExtraLife for consistency with callback naming
       useShield: () => {
         return get().useExtraLife();
+      },
+
+      setHighestLevelUnlocked: (level: number) => {
+        set({ highestLevelUnlocked: level });
       }
     })),
     {
