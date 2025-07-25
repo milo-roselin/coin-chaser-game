@@ -51,6 +51,11 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           (window as any).shieldActive = shieldActive;
           (window as any).extraLives = extraLives;
           
+          // Debug logging for power-up states
+          if (magnetActive || extraLives > 0) {
+            console.log('Power-up states:', { magnetActive, shieldActive, extraLives });
+          }
+          
           gameEngineRef.current.update();
           gameEngineRef.current.render(ctx);
         }
@@ -220,6 +225,12 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           playExplosion();
           endGame();
         },
+        onShieldUsed: () => {
+          console.log('Shield used callback triggered');
+          const { useShield } = useCoinGame.getState();
+          useShield();
+          playHit(); // Sound effect for shield block
+        },
         onLevelComplete: () => {
           winGame();
         },
@@ -227,19 +238,28 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           setPlayerPosition(x, y);
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
+          console.log('Power-up collected:', type);
           if (type === 'magnet') {
+            console.log('Activating magnet...');
             activateMagnet();
             playSuccess();
           } else if (type === 'extralife') {
+            console.log('Adding extra life...');
             addExtraLife();
             playSuccess();
           }
+          
+          // Force immediate state update
+          setTimeout(() => {
+            const state = useCoinGame.getState();
+            console.log('State after power-up collection:', {
+              magnetActive: state.magnetActive,
+              shieldActive: state.shieldActive,
+              extraLives: state.extraLives
+            });
+          }, 100);
         },
-        onShieldUsed: () => {
-          // Shield was used to block TNT hit
-          const { useExtraLife } = useCoinGame.getState();
-          useExtraLife();
-        }
+
       },
       currentLevel
     );

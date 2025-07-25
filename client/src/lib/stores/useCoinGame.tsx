@@ -120,17 +120,7 @@ export const useCoinGame = create<CoinGameState>()(
       },
       
       endGame: () => {
-        // Check if player has extra life
-        const state = get();
-        if (state.extraLives > 0) {
-          // Use extra life instead of ending game
-          set({ 
-            extraLives: state.extraLives - 1,
-            shieldActive: state.extraLives > 1 // Keep shield if more lives remain
-          });
-          return; // Don't end the game
-        }
-        
+        // No longer check for extra lives here - let the game engine handle shield protection
         set((state) => ({
           gameState: state.gameState === "playing" ? "gameOver" : state.gameState
         }));
@@ -229,6 +219,7 @@ export const useCoinGame = create<CoinGameState>()(
       },
 
       activateMagnet: () => {
+        console.log('Store: Activating magnet for 10 seconds');
         set({ 
           magnetActive: true, 
           magnetTimeLeft: 10000 // 10 seconds in milliseconds
@@ -236,6 +227,7 @@ export const useCoinGame = create<CoinGameState>()(
       },
 
       addExtraLife: () => {
+        console.log('Store: Adding extra life and activating shield');
         set((state) => ({ 
           extraLives: state.extraLives + 1,
           shieldActive: true
