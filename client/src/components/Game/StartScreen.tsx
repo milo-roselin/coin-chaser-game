@@ -232,16 +232,6 @@ export default function StartScreen() {
         </div>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">Coin Rush</h1>
         <p className="text-sm sm:text-base text-gray-600">Collect coins, avoid obstacles and more!</p>
-        {displayLevel > 1 && (
-          <div className="mt-4 p-3 bg-purple-100 rounded-lg">
-            <p className="text-sm font-semibold text-purple-700">
-              Checkpoint: Level {displayLevel} Unlocked
-            </p>
-            <p className="text-xs text-purple-600">
-              Highest Score: {displayScore.toLocaleString()}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* User Score Display for Logged-in Users */}

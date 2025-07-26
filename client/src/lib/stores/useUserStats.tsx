@@ -38,20 +38,20 @@ export const useUserStats = create<UserStatsStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await fetch('/api/scores/me', {
+      // Use the new user stats endpoint that gets data directly from database
+      const response = await fetch('/api/user/stats', {
         credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        const scores = data.scores || [];
         
-        // Calculate stats from user's scores
+        // Use database values directly
         const stats: UserStats = {
-          highestScore: scores.length > 0 ? Math.max(...scores.map((s: any) => s.score)) : 0,
-          totalCoins: scores.reduce((sum: number, s: any) => sum + s.coins, 0),
-          highestLevel: scores.length > 0 ? Math.max(...scores.map((s: any) => s.level)) : 1,
-          recentScores: scores.slice(0, 10),
+          highestScore: data.totalScore || 0,
+          totalCoins: data.coinBank || 0,
+          highestLevel: data.highestLevel || 1,
+          recentScores: [], // Not needed for display
         };
 
         set({ stats, isLoading: false, error: null });
