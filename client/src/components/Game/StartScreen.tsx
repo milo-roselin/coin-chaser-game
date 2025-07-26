@@ -52,12 +52,7 @@ export default function StartScreen() {
     startGame();
   };
 
-  const handleContinue = () => {
-    // Start background music
-    startBackgroundMusic();
-    
-    startFromLevel(displayLevel);
-  };
+
 
 
 
@@ -101,11 +96,7 @@ export default function StartScreen() {
         return;
       }
       
-      if ((key === 'c' || code === 'KeyC') && highestLevelUnlocked > 1) {
-        e.preventDefault();
-        handleContinue();
-        return;
-      }
+
       
       if (key === 'l' || code === 'KeyL') {
         e.preventDefault();
@@ -131,7 +122,7 @@ export default function StartScreen() {
         return;
       }
       
-      if ((key === 'r' || code === 'KeyR') && highestLevelUnlocked > 1) {
+      if ((key === 'r' || code === 'KeyR') && displayLevel > 1) {
         e.preventDefault();
         handleResetProgress();
         return;
@@ -194,7 +185,7 @@ export default function StartScreen() {
         clearTimeout(inputTimeout);
       }
     };
-  }, [handleStartGame, handleContinue, toggleMute, handleResetProgress, handleLogout, displayLevel, startFromLevel, levelInput, inputTimeout, user]);
+  }, [handleStartGame, toggleMute, handleResetProgress, handleLogout, displayLevel, startFromLevel, levelInput, inputTimeout, user]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full p-2 sm:p-4 relative overflow-y-auto min-h-screen pt-24 pb-16 sm:pt-8 sm:pb-8 md:pt-12 md:pb-12">
@@ -260,16 +251,7 @@ export default function StartScreen() {
             <span className="ml-auto text-xs sm:text-sm opacity-75">[N]</span>
           </Button>
 
-          {displayLevel > 1 && (
-            <Button 
-              onClick={handleContinue}
-              size="lg"
-              className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg"
-            >
-              🌀 Continue from Level {displayLevel}
-              <span className="ml-auto text-xs sm:text-sm opacity-75">[C]</span>
-            </Button>
-          )}
+
 
           <Button 
             onClick={() => setShowGlobalLeaderboard(true)}
@@ -345,16 +327,16 @@ export default function StartScreen() {
         </CardContent>
       </Card>
 
-      {/* Level Selection Grid */}
-      {highestLevelUnlocked > 1 && (
+      {/* Level Selection Grid - Show if user has unlocked higher levels */}
+      {displayLevel > 1 && (
         <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mt-3 sm:mt-6 mx-2">
           <CardContent className="p-3 sm:p-6">
             <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-4 text-center">🎯 Level Select</h3>
             <div className="overflow-x-auto">
               <div className="flex flex-wrap gap-2 sm:gap-3 mb-2 sm:mb-4 justify-center min-h-[40px] sm:min-h-[60px]">
-                {Array.from({ length: highestLevelUnlocked }, (_, i) => {
+                {Array.from({ length: displayLevel }, (_, i) => {
                   const level = i + 1;
-                  const isUnlocked = level <= highestLevelUnlocked;
+                  const isUnlocked = level <= displayLevel;
                   return (
                     <Button
                       key={level}
