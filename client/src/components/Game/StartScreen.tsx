@@ -271,6 +271,7 @@ export default function StartScreen() {
               variant="outline"
               size="lg"
               className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold rounded-xl"
+              title="Login / Sign Up [I]"
             >
               <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Login / Sign Up
