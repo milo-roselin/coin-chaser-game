@@ -57,12 +57,20 @@ export const useAuth = create<AuthStore>()(
             import('./useCoinBank').then(({ useCoinBank }) => {
               useCoinBank.getState().initializeForUnauthenticated();
             });
+            // Reset game progress to level 1 for unauthenticated users
+            import('./useCoinGame').then(({ useCoinGame }) => {
+              useCoinGame.getState().setHighestLevelUnlocked(1);
+            });
           }
         } catch (error) {
           set({ user: null });
           // Initialize coin bank for unauthenticated users on error
           import('./useCoinBank').then(({ useCoinBank }) => {
             useCoinBank.getState().initializeForUnauthenticated();
+          });
+          // Reset game progress to level 1 for unauthenticated users
+          import('./useCoinGame').then(({ useCoinGame }) => {
+            useCoinGame.getState().setHighestLevelUnlocked(1);
           });
         }
       },
@@ -193,6 +201,11 @@ export const useAuth = create<AuthStore>()(
           
           import('./useCoinBank').then(({ useCoinBank }) => {
             useCoinBank.getState().clearForUnauthenticated();
+          });
+          
+          // Reset game progress to level 1 for unauthenticated users
+          import('./useCoinGame').then(({ useCoinGame }) => {
+            useCoinGame.getState().setHighestLevelUnlocked(1);
           });
         }
       },
