@@ -205,10 +205,11 @@ export default function StartScreen() {
                 onClick={handleLogout}
                 size="sm"
                 variant="ghost"
-                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 relative group"
                 title="Logout [X]"
               >
                 <LogOut className="h-3 w-3" />
+                <span className="absolute -bottom-1 -right-1 text-[8px] font-bold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">X</span>
               </Button>
             </div>
           </div>
