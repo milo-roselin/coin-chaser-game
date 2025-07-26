@@ -64,6 +64,33 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
     }
   };
 
+  // Add keyboard shortcuts for the form
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if typing in input fields
+      if (e.target instanceof HTMLInputElement) return;
+      
+      const key = e.key.toLowerCase();
+      
+      // Tab or T to switch between login/register
+      if ((key === 'tab' || key === 't') && !isLoading) {
+        e.preventDefault();
+        switchMode();
+        return;
+      }
+      
+      // Escape to cancel/close
+      if (key === 'escape' && !isLoading) {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLoading, switchMode, onClose]);
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-xl">
@@ -161,8 +188,10 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
                 className="w-full"
                 onClick={switchMode}
                 disabled={isLoading}
+                title={isLogin ? 'Switch to Sign Up [T]' : 'Switch to Login [T]'}
               >
                 {isLogin ? 'Need an account? Sign up' : 'Already have an account? Login'}
+                <span className="ml-auto text-xs opacity-75">[T]</span>
               </Button>
               
               <Button
@@ -171,8 +200,10 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
                 className="w-full text-gray-500"
                 onClick={onClose}
                 disabled={isLoading}
+                title="Cancel [Esc]"
               >
                 Cancel
+                <span className="ml-auto text-xs opacity-75">[Esc]</span>
               </Button>
             </div>
           </form>
