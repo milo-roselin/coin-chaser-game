@@ -7,6 +7,7 @@ import { useCoinGame } from "@/lib/stores/useCoinGame";
 import { useCoinBank } from "@/lib/stores/useCoinBank";
 import { useAuth } from "@/lib/stores/useAuth";
 import { useGlobalLeaderboard } from "@/lib/stores/useGlobalLeaderboard";
+import { useUserStats } from "@/lib/stores/useUserStats";
 import { Trophy, Home, Upload, Lock, Coins, Globe, LogIn } from "lucide-react";
 import CoinBankDisplay from "./CoinBankDisplay";
 import MobileFullscreenButton from "../ui/MobileFullscreenButton";
@@ -18,6 +19,7 @@ export default function VictoryScreen() {
   const { totalCoins, sessionCoins } = useCoinBank();
   const { user } = useAuth();
   const { submitScore } = useGlobalLeaderboard();
+  const { getHighestScore } = useUserStats();
   const [globalScoreSubmitted, setGlobalScoreSubmitted] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [levelInput, setLevelInput] = useState("");
@@ -186,7 +188,7 @@ export default function VictoryScreen() {
               Level Coins: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
             <div className="text-sm text-gray-500 border-t pt-2">
-              Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
+              Total Progress: <span className="font-semibold text-purple-600">{getHighestScore().toLocaleString()}</span>
             </div>
 
             <div className="text-sm text-gray-500 border-t pt-2">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,8 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, register, isLoading, error, clearError } = useAuth();
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +41,27 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
     setUsername('');
     setPassword('');
     setShowPassword(false);
+    // Focus username field when switching modes
+    setTimeout(() => usernameRef.current?.focus(), 100);
+  };
+
+  // Auto-focus username field when component mounts
+  useEffect(() => {
+    setTimeout(() => usernameRef.current?.focus(), 100);
+  }, []);
+
+  const handleUsernameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && username.trim()) {
+      e.preventDefault();
+      passwordRef.current?.focus();
+    }
+  };
+
+  const handlePasswordKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && password.trim()) {
+      e.preventDefault();
+      handleSubmit(e as any);
+    }
   };
 
   return (
@@ -67,10 +90,12 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
             
             <div>
               <Input
+                ref={usernameRef}
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={handleUsernameKeyDown}
                 className="text-center"
                 maxLength={20}
                 required
@@ -80,10 +105,12 @@ export default function LoginForm({ onSuccess, onClose }: LoginFormProps) {
             
             <div className="relative">
               <Input
+                ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handlePasswordKeyDown}
                 className="text-center pr-10"
                 minLength={6}
                 required

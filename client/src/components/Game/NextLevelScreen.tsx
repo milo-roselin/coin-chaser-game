@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCoinGame } from "@/lib/stores/useCoinGame";
+import { useUserStats } from "@/lib/stores/useUserStats";
 import { ArrowRight, Home } from "lucide-react";
 
 export default function NextLevelScreen() {
   const { score, coinsCollected, resetGame, nextLevel, currentLevel, totalScore } = useCoinGame();
+  const { getHighestScore } = useUserStats();
 
   const handleNextLevel = () => {
     nextLevel();
@@ -33,7 +35,7 @@ export default function NextLevelScreen() {
               Coins Collected: <span className="font-semibold text-yellow-600">{coinsCollected}</span>
             </div>
             <div className="text-sm text-gray-500 border-t pt-2">
-              Total Progress: <span className="font-semibold text-purple-600">{totalScore.toLocaleString()}</span>
+              Total Progress: <span className="font-semibold text-purple-600">{getHighestScore().toLocaleString()}</span>
             </div>
           </div>
           
