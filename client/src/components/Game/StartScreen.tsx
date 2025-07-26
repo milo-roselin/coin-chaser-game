@@ -356,15 +356,15 @@ export default function StartScreen() {
       </Card>
 
       {/* Level Selection Grid */}
-      {displayLevel > 1 && (
+      {highestLevelUnlocked > 1 && (
         <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl mt-3 sm:mt-6 mx-2">
           <CardContent className="p-3 sm:p-6">
             <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-4 text-center">🎯 Level Select</h3>
             <div className="overflow-x-auto">
               <div className="flex flex-wrap gap-2 sm:gap-3 mb-2 sm:mb-4 justify-center min-h-[40px] sm:min-h-[60px]">
-                {Array.from({ length: displayLevel }, (_, i) => {
+                {Array.from({ length: highestLevelUnlocked }, (_, i) => {
                   const level = i + 1;
-                  const isUnlocked = level <= displayLevel;
+                  const isUnlocked = level <= highestLevelUnlocked;
                   return (
                     <Button
                       key={level}
@@ -385,7 +385,7 @@ export default function StartScreen() {
               </div>
             </div>
             <p className="text-xs text-gray-500 text-center px-2">
-              Jump to any unlocked level • Highest: Level {displayLevel}
+              Jump to any unlocked level • Highest: Level {highestLevelUnlocked}
               <br />
               <span className="text-xs opacity-75">
                 Type level number (e.g., press 1 then 7 for Level 17)
