@@ -48,19 +48,35 @@ export class DatabaseStorage implements IStorage {
     if (existingScore.length > 0) {
       // User has existing score - update if new score is higher
       if (insertScore.score > existingScore[0].score) {
+        const newLevel = Math.max(existingScore[0].level || 1, insertScore.level);
         const result = await db
           .update(scores)
           .set({
             score: insertScore.score,
             coins: insertScore.coins,
-            level: Math.max(existingScore[0].level || 1, insertScore.level), // Level represents highest completed
+            level: newLevel, // Level represents highest completed
             createdAt: new Date()
           })
           .where(eq(scores.userId, insertScore.userId))
           .returning();
+        
+        console.log(`Updated user ${insertScore.userId} highest level from ${existingScore[0].level} to ${newLevel}`);
         return result[0];
       } else {
-        // Return existing score if new score is not higher
+        // New score is not higher, but check if level should be updated
+        const newLevel = Math.max(existingScore[0].level || 1, insertScore.level);
+        if (newLevel > (existingScore[0].level || 1)) {
+          console.log(`Updating level only for user ${insertScore.userId}: ${existingScore[0].level} -> ${newLevel}`);
+          const result = await db
+            .update(scores)
+            .set({
+              level: newLevel
+            })
+            .where(eq(scores.userId, insertScore.userId))
+            .returning();
+          return result[0];
+        }
+        // Return existing score if no updates needed
         return existingScore[0];
       }
     } else {
@@ -82,16 +98,19 @@ export class DatabaseStorage implements IStorage {
           
         if (existingScore.length > 0 && insertScore.score > existingScore[0].score) {
           // Update with higher score
+          const newLevel = Math.max(existingScore[0].level || 1, insertScore.level);
           const result = await db
             .update(scores)
             .set({
               score: insertScore.score,
               coins: insertScore.coins,
-              level: Math.max(existingScore[0].level || 1, insertScore.level), // Level represents highest completed
+              level: newLevel, // Level represents highest completed
               createdAt: new Date()
             })
             .where(eq(scores.userId, insertScore.userId))
             .returning();
+          
+          console.log(`Updated user ${insertScore.userId} highest level from ${existingScore[0].level} to ${newLevel} (higher score case)`);
           return result[0];
         } else {
           // Return existing score

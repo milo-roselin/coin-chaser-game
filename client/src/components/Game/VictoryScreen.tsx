@@ -60,9 +60,8 @@ export default function VictoryScreen() {
             console.log('Database stats:', stats);
             
             // Update local game state to match database
-            const { setHighestLevelUnlocked } = useCoinGame.getState();
             if (stats.highestLevel > highestLevelUnlocked) {
-              useCoinGame.setState({ highestLevelUnlocked: stats.highestLevel });
+              useCoinGame.getState().setHighestLevelUnlocked(stats.highestLevel);
               console.log(`Updated local highest level to: ${stats.highestLevel}`);
             }
           }
