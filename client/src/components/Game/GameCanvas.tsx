@@ -52,8 +52,8 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           (window as any).shieldActive = currentState.shieldActive;
           (window as any).extraLives = currentState.extraLives;
           
-          // Debug logging for power-up states
-          if (currentState.magnetActive || currentState.extraLives > 0) {
+          // Reduced debug logging frequency to prevent mobile performance issues
+          if ((currentState.magnetActive || currentState.extraLives > 0) && Math.random() < 0.01) {
             console.log('Power-up states passed to engine:', { 
               magnetActive: currentState.magnetActive, 
               shieldActive: currentState.shieldActive, 
