@@ -858,8 +858,8 @@ export class GameEngine {
     const rightBoundary = this.cameraX + this.canvasWidth - controlPanelWidth;
     const maxPlayerX = Math.min(this.levelWidth - this.player.width, rightBoundary - this.player.width);
     
-    // Debug logging for player boundaries
-    if (this.player.x > maxPlayerX - 100) { // Only log when near the boundary
+    // Minimal boundary logging for mobile performance
+    if (this.player.x > maxPlayerX - 50 && Math.random() < 0.001) { // Only log 0.1% when very close to boundary
       console.log(`Player boundary: cameraX=${this.cameraX}, canvasWidth=${this.canvasWidth}, controlPanelWidth=${controlPanelWidth}, rightBoundary=${rightBoundary}, maxPlayerX=${maxPlayerX}, playerX=${this.player.x}`);
     }
     
@@ -948,51 +948,27 @@ export class GameEngine {
 
     // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
-      // Apply magnet attraction if active (10 squares = 500 pixels)
+      // Apply magnet attraction if active (simpler approach for better mobile performance)
       const magnetActive = (window as any).magnetActive;
       if (magnetActive) {
-        // Mobile performance optimization: only calculate magnet attraction every few frames
-        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const frameCounter = this.renderFrameCount || 0;
+        const playerCenterX = this.player.x + this.player.width / 2;
+        const playerCenterY = this.player.y + this.player.height / 2;
+        const coinCenterX = coin.x + coin.width / 2;
+        const coinCenterY = coin.y + coin.height / 2;
         
-        // On mobile: only calculate magnet every 3rd frame (20fps instead of 60fps for magnet)
-        // On desktop: calculate every frame for smooth experience
-        if (!isMobile || frameCounter % 3 === 0) {
-          // Optimize magnet calculations for mobile performance
-          const playerCenterX = this.player.x + this.player.width / 2;
-          const playerCenterY = this.player.y + this.player.height / 2;
-          const coinCenterX = coin.x + coin.width / 2;
-          const coinCenterY = coin.y + coin.height / 2;
+        // Simple distance check - 300px range (6 squares)
+        const dx = playerCenterX - coinCenterX;
+        const dy = playerCenterY - coinCenterY;
+        const distance = Math.abs(dx) + Math.abs(dy); // Manhattan distance for performance
+        
+        if (distance < 300 && distance > 30) {
+          // Simple linear attraction towards player (fixed direction)
+          const attractionForce = 0.08; // Gentle attraction
+          coin.x += dx > 0 ? attractionForce * 8 : -attractionForce * 8;
+          coin.y += dy > 0 ? attractionForce * 8 : -attractionForce * 8;
           
-          // Use faster distance calculation for initial check
-          const dx = coinCenterX - playerCenterX;
-          const dy = coinCenterY - playerCenterY;
-          const distanceSquared = dx * dx + dy * dy;
-          
-          // 10 squares = 10 * 50 pixels = 500 pixels range (check squared distance first)
-          if (distanceSquared < 250000 && distanceSquared > 25) { // 500^2 = 250000, 5^2 = 25
-            const distance = Math.sqrt(distanceSquared);
-            
-            // Minimal logging to prevent mobile performance issues
-            if (Math.random() < 0.002) { // Only log 0.2% of attraction events
-              console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
-            }
-            
-            // Adjust attraction speed based on device performance
-            const baseSpeed = isMobile ? 0.12 : 0.15;
-            const maxSpeed = isMobile ? 10 : 12;
-            const attractionSpeed = Math.min(distance * baseSpeed, maxSpeed);
-            const normalizedDx = dx / distance;
-            const normalizedDy = dy / distance;
-            
-            coin.x += normalizedDx * attractionSpeed;
-            coin.y += normalizedDy * attractionSpeed;
-            
-            // Visual effect for attracted coins (only set once)
-            if (!coin.color || coin.color !== '#FFD700') {
-              coin.color = '#FFD700'; // Golden glow when being attracted
-            }
-          }
+          // Visual effect
+          coin.color = '#FFD700';
         }
       }
       
