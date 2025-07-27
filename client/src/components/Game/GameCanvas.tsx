@@ -69,40 +69,56 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
     if (gameEngineRef.current && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        // Enable smoother rendering
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        
-        // Clear canvas to black while waiting for initialization
-        if (!gameEngineRef.current.isReady()) {
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        } else {
-          // Update magnet timer
-          updateMagnetTimer();
-          
-          // Pass power-up states to game engine via window object (force fresh values)
-          const currentState = useCoinGame.getState();
-          (window as any).magnetActive = currentState.magnetActive;
-          (window as any).shieldActive = currentState.shieldActive;
-          (window as any).extraLives = currentState.extraLives;
-          
-          // Debug logging for power-up states
-          if (currentState.magnetActive || currentState.extraLives > 0) {
-            console.log('Power-up states passed to engine:', { 
-              magnetActive: currentState.magnetActive, 
-              shieldActive: currentState.shieldActive, 
-              extraLives: currentState.extraLives 
-            });
+        try {
+          // Mobile-optimized rendering settings
+          if (isMobile) {
+            ctx.imageSmoothingEnabled = false; // Disable for mobile performance
+          } else {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
           }
           
-          gameEngineRef.current.update();
-          gameEngineRef.current.render(ctx);
+          // Clear canvas to black while waiting for initialization
+          if (!gameEngineRef.current.isReady()) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          } else {
+            // Update magnet timer with mobile throttling
+            if (!isMobile || Math.random() < 0.5) { // 50% throttle on mobile
+              updateMagnetTimer();
+            }
+            
+            // Pass power-up states with mobile optimization
+            const currentState = useCoinGame.getState();
+            (window as any).magnetActive = currentState.magnetActive;
+            (window as any).shieldActive = currentState.shieldActive;
+            (window as any).extraLives = currentState.extraLives;
+            
+            // Significantly reduce logging on mobile
+            if (!isMobile && (currentState.magnetActive || currentState.extraLives > 0)) {
+              console.log('Power-up states passed to engine:', { 
+                magnetActive: currentState.magnetActive, 
+                shieldActive: currentState.shieldActive, 
+                extraLives: currentState.extraLives 
+              });
+            }
+            
+            gameEngineRef.current.update();
+            gameEngineRef.current.render(ctx);
+          }
+        } catch (error) {
+          console.warn('Game loop error:', error);
+          // Force canvas clear on error
+          ctx.fillStyle = '#32CD32';
+          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
       }
     }
-    animationFrameRef.current = requestAnimationFrame(gameLoop);
-  }, []);
+    
+    if (!isPaused) {
+      animationFrameRef.current = requestAnimationFrame(gameLoop);
+    }
+  }, [isPaused, updateMagnetTimer, isMobile]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -284,11 +300,9 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           playSuccess();
           
           if (isMobile) {
-            // Mobile: Use queue system to prevent overwhelming the browser
-            powerupQueueRef.current.push(type);
-            if (!processingPowerupRef.current) {
-              processPowerupQueue();
-            }
+            // Emergency mobile fix: Disable power-ups completely to prevent freezing
+            console.warn('Power-up disabled on mobile to prevent freezing');
+            return;
           } else {
             // Desktop: Direct activation
             if (type === 'magnet') {
