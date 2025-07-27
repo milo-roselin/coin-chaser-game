@@ -951,36 +951,47 @@ export class GameEngine {
       // Apply magnet attraction if active (10 squares = 500 pixels)
       const magnetActive = (window as any).magnetActive;
       if (magnetActive) {
-        // Optimize magnet calculations for mobile performance
-        const playerCenterX = this.player.x + this.player.width / 2;
-        const playerCenterY = this.player.y + this.player.height / 2;
-        const coinCenterX = coin.x + coin.width / 2;
-        const coinCenterY = coin.y + coin.height / 2;
+        // Mobile performance optimization: only calculate magnet attraction every few frames
+        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const frameCounter = this.renderFrameCount || 0;
         
-        // Use faster distance calculation for initial check
-        const dx = coinCenterX - playerCenterX;
-        const dy = coinCenterY - playerCenterY;
-        const distanceSquared = dx * dx + dy * dy;
-        
-        // 10 squares = 10 * 50 pixels = 500 pixels range (check squared distance first)
-        if (distanceSquared < 250000 && distanceSquared > 25) { // 500^2 = 250000, 5^2 = 25
-          const distance = Math.sqrt(distanceSquared);
+        // On mobile: only calculate magnet every 3rd frame (20fps instead of 60fps for magnet)
+        // On desktop: calculate every frame for smooth experience
+        if (!isMobile || frameCounter % 3 === 0) {
+          // Optimize magnet calculations for mobile performance
+          const playerCenterX = this.player.x + this.player.width / 2;
+          const playerCenterY = this.player.y + this.player.height / 2;
+          const coinCenterX = coin.x + coin.width / 2;
+          const coinCenterY = coin.y + coin.height / 2;
           
-          // Minimal logging to prevent mobile performance issues
-          if (Math.random() < 0.005) { // Only log 0.5% of attraction events
-            console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
-          }
+          // Use faster distance calculation for initial check
+          const dx = coinCenterX - playerCenterX;
+          const dy = coinCenterY - playerCenterY;
+          const distanceSquared = dx * dx + dy * dy;
           
-          const attractionSpeed = Math.min(distance * 0.15, 12); // Slightly reduced for smoother mobile performance
-          const normalizedDx = dx / distance;
-          const normalizedDy = dy / distance;
-          
-          coin.x += normalizedDx * attractionSpeed;
-          coin.y += normalizedDy * attractionSpeed;
-          
-          // Visual effect for attracted coins (only set once)
-          if (!coin.color || coin.color !== '#FFD700') {
-            coin.color = '#FFD700'; // Golden glow when being attracted
+          // 10 squares = 10 * 50 pixels = 500 pixels range (check squared distance first)
+          if (distanceSquared < 250000 && distanceSquared > 25) { // 500^2 = 250000, 5^2 = 25
+            const distance = Math.sqrt(distanceSquared);
+            
+            // Minimal logging to prevent mobile performance issues
+            if (Math.random() < 0.002) { // Only log 0.2% of attraction events
+              console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
+            }
+            
+            // Adjust attraction speed based on device performance
+            const baseSpeed = isMobile ? 0.12 : 0.15;
+            const maxSpeed = isMobile ? 10 : 12;
+            const attractionSpeed = Math.min(distance * baseSpeed, maxSpeed);
+            const normalizedDx = dx / distance;
+            const normalizedDy = dy / distance;
+            
+            coin.x += normalizedDx * attractionSpeed;
+            coin.y += normalizedDy * attractionSpeed;
+            
+            // Visual effect for attracted coins (only set once)
+            if (!coin.color || coin.color !== '#FFD700') {
+              coin.color = '#FFD700'; // Golden glow when being attracted
+            }
           }
         }
       }

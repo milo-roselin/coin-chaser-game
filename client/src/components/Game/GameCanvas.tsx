@@ -29,6 +29,13 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
+  
+  // Track previous states to avoid unnecessary updates and mobile freezing
+  const previousStatesRef = useRef<{
+    magnetActive: boolean;
+    shieldActive: boolean;
+    extraLives: number;
+  }>({ magnetActive: false, shieldActive: false, extraLives: 0 });
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -46,19 +53,33 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           // Update magnet timer
           updateMagnetTimer();
           
-          // Pass power-up states to game engine via window object (force fresh values)
+          // Only update power-up states when they actually change to prevent mobile freezing
           const currentState = useCoinGame.getState();
-          (window as any).magnetActive = currentState.magnetActive;
-          (window as any).shieldActive = currentState.shieldActive;
-          (window as any).extraLives = currentState.extraLives;
+          const previousStates = previousStatesRef.current;
           
-          // Reduced debug logging frequency to prevent mobile performance issues
-          if ((currentState.magnetActive || currentState.extraLives > 0) && Math.random() < 0.01) {
-            console.log('Power-up states passed to engine:', { 
-              magnetActive: currentState.magnetActive, 
-              shieldActive: currentState.shieldActive, 
-              extraLives: currentState.extraLives 
-            });
+          if (currentState.magnetActive !== previousStates.magnetActive ||
+              currentState.shieldActive !== previousStates.shieldActive ||
+              currentState.extraLives !== previousStates.extraLives) {
+            
+            (window as any).magnetActive = currentState.magnetActive;
+            (window as any).shieldActive = currentState.shieldActive;
+            (window as any).extraLives = currentState.extraLives;
+            
+            // Update previous states
+            previousStatesRef.current = {
+              magnetActive: currentState.magnetActive,
+              shieldActive: currentState.shieldActive,
+              extraLives: currentState.extraLives
+            };
+            
+            // Minimal logging only on state changes
+            if (Math.random() < 0.2) { // Only log 20% of state changes
+              console.log('Power-up states passed to engine:', { 
+                magnetActive: currentState.magnetActive, 
+                shieldActive: currentState.shieldActive, 
+                extraLives: currentState.extraLives 
+              });
+            }
           }
           
           gameEngineRef.current.update();
@@ -244,25 +265,31 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
           console.log('Power-up collected:', type);
-          if (type === 'magnet') {
-            console.log('Activating magnet...');
-            activateMagnet();
-            playSuccess();
-          } else if (type === 'extralife') {
-            console.log('Adding extra life...');
-            addExtraLife();
-            playSuccess();
-          }
           
-          // Force immediate state update
-          setTimeout(() => {
-            const state = useCoinGame.getState();
-            console.log('State after power-up collection:', {
-              magnetActive: state.magnetActive,
-              shieldActive: state.shieldActive,
-              extraLives: state.extraLives
-            });
-          }, 100);
+          // Use requestAnimationFrame to defer state updates and prevent blocking
+          requestAnimationFrame(() => {
+            if (type === 'magnet') {
+              console.log('Activating magnet...');
+              activateMagnet();
+              playSuccess();
+            } else if (type === 'extralife') {
+              console.log('Adding extra life...');
+              addExtraLife();
+              playSuccess();
+            }
+            
+            // Minimal logging for mobile performance
+            if (Math.random() < 0.1) { // Only log 10% of power-up collections
+              setTimeout(() => {
+                const state = useCoinGame.getState();
+                console.log('State after power-up collection:', {
+                  magnetActive: state.magnetActive,
+                  shieldActive: state.shieldActive,
+                  extraLives: state.extraLives
+                });
+              }, 50);
+            }
+          });
         },
 
       },
