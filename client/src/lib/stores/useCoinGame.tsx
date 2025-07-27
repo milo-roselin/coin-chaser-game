@@ -221,7 +221,6 @@ export const useCoinGame = create<CoinGameState>()(
 
       activateMagnet: () => {
         console.log('Store: Activating magnet for 10 seconds');
-        // Mobile-optimized simple state update
         set({ 
           magnetActive: true, 
           magnetTimeLeft: 10000 // 10 seconds in milliseconds
@@ -230,12 +229,10 @@ export const useCoinGame = create<CoinGameState>()(
 
       addExtraLife: () => {
         console.log('Store: Adding extra life and activating shield');
-        // Mobile-optimized simple state update
-        const { extraLives } = get();
-        set({ 
-          extraLives: extraLives + 1,
+        set((state) => ({ 
+          extraLives: state.extraLives + 1,
           shieldActive: true
-        });
+        }));
       },
 
       useExtraLife: () => {

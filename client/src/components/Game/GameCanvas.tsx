@@ -11,10 +11,6 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const animationFrameRef = useRef<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const isMobile = useIsMobile();
-  
-  // Mobile-specific power-up queue to prevent freezing
-  const powerupQueueRef = useRef<Array<'magnet' | 'extralife'>>([]);
-  const processingPowerupRef = useRef(false);
 
   const { 
     updateScore, 
@@ -34,91 +30,44 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
 
-  // Mobile-specific power-up queue processor
-  const processPowerupQueue = useCallback(() => {
-    if (powerupQueueRef.current.length === 0) {
-      processingPowerupRef.current = false;
-      return;
-    }
-    
-    processingPowerupRef.current = true;
-    const type = powerupQueueRef.current.shift();
-    
-    if (type) {
-      // Process one power-up with delay for mobile stability
-      setTimeout(() => {
-        try {
-          if (type === 'magnet') {
-            console.log('Activating magnet (mobile queue)...');
-            activateMagnet();
-          } else if (type === 'extralife') {
-            console.log('Adding extra life (mobile queue)...');
-            addExtraLife();
-          }
-        } catch (error) {
-          console.warn('Power-up activation error:', error);
-        }
-        
-        // Process next item in queue after delay
-        setTimeout(() => processPowerupQueue(), 200);
-      }, 100);
-    }
-  }, [activateMagnet, addExtraLife]);
-
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        try {
-          // Mobile-optimized rendering settings
-          if (isMobile) {
-            ctx.imageSmoothingEnabled = false; // Disable for mobile performance
-          } else {
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+        // Enable smoother rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Clear canvas to black while waiting for initialization
+        if (!gameEngineRef.current.isReady()) {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        } else {
+          // Update magnet timer
+          updateMagnetTimer();
+          
+          // Pass power-up states to game engine via window object (force fresh values)
+          const currentState = useCoinGame.getState();
+          (window as any).magnetActive = currentState.magnetActive;
+          (window as any).shieldActive = currentState.shieldActive;
+          (window as any).extraLives = currentState.extraLives;
+          
+          // Debug logging for power-up states
+          if (currentState.magnetActive || currentState.extraLives > 0) {
+            console.log('Power-up states passed to engine:', { 
+              magnetActive: currentState.magnetActive, 
+              shieldActive: currentState.shieldActive, 
+              extraLives: currentState.extraLives 
+            });
           }
           
-          // Clear canvas to black while waiting for initialization
-          if (!gameEngineRef.current.isReady()) {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-          } else {
-            // Update magnet timer with mobile throttling
-            if (!isMobile || Math.random() < 0.5) { // 50% throttle on mobile
-              updateMagnetTimer();
-            }
-            
-            // Pass power-up states with mobile optimization
-            const currentState = useCoinGame.getState();
-            (window as any).magnetActive = currentState.magnetActive;
-            (window as any).shieldActive = currentState.shieldActive;
-            (window as any).extraLives = currentState.extraLives;
-            
-            // Significantly reduce logging on mobile
-            if (!isMobile && (currentState.magnetActive || currentState.extraLives > 0)) {
-              console.log('Power-up states passed to engine:', { 
-                magnetActive: currentState.magnetActive, 
-                shieldActive: currentState.shieldActive, 
-                extraLives: currentState.extraLives 
-              });
-            }
-            
-            gameEngineRef.current.update();
-            gameEngineRef.current.render(ctx);
-          }
-        } catch (error) {
-          console.warn('Game loop error:', error);
-          // Force canvas clear on error
-          ctx.fillStyle = '#32CD32';
-          ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          gameEngineRef.current.update();
+          gameEngineRef.current.render(ctx);
         }
       }
     }
-    
-    if (!isPaused) {
-      animationFrameRef.current = requestAnimationFrame(gameLoop);
-    }
-  }, [isPaused, updateMagnetTimer, isMobile]);
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -295,22 +244,25 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
           console.log('Power-up collected:', type);
-          
-          // Immediate audio feedback
-          playSuccess();
-          
-          if (isMobile) {
-            // Emergency mobile fix: Disable power-ups completely to prevent freezing
-            console.warn('Power-up disabled on mobile to prevent freezing');
-            return;
-          } else {
-            // Desktop: Direct activation
-            if (type === 'magnet') {
-              activateMagnet();
-            } else if (type === 'extralife') {
-              addExtraLife();
-            }
+          if (type === 'magnet') {
+            console.log('Activating magnet...');
+            activateMagnet();
+            playSuccess();
+          } else if (type === 'extralife') {
+            console.log('Adding extra life...');
+            addExtraLife();
+            playSuccess();
           }
+          
+          // Force immediate state update
+          setTimeout(() => {
+            const state = useCoinGame.getState();
+            console.log('State after power-up collection:', {
+              magnetActive: state.magnetActive,
+              shieldActive: state.shieldActive,
+              extraLives: state.extraLives
+            });
+          }, 100);
         },
 
       },

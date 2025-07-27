@@ -61,15 +61,6 @@ export class GameEngine {
   private playerVelocity = { x: 0, y: 0 }; // Player velocity for smoother movement
   private isInitialized = false; // Flag to prevent rendering before proper initialization
   private renderFrameCount = 0; // Count frames to ensure stability before rendering
-  
-  // Mobile optimization - throttle power-up callbacks to prevent freezing
-  private lastPowerupCollectionTime = 0;
-  private readonly POWERUP_COOLDOWN = 3000; // 3000ms cooldown between power-up collections (emergency mobile protection)
-  
-  // Mobile frame throttling
-  private frameThrottleCounter = 0;
-  private isMobileDevice = false;
-  private disableMagnetLogging = false;
 
   constructor(
     private canvasWidth: number, 
@@ -784,30 +775,6 @@ export class GameEngine {
       return;
     }
     
-    // Aggressive mobile throttling - skip most frames to prevent freezing
-    this.frameThrottleCounter++;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Emergency mobile mode: Skip power-up updates completely and reduce complexity
-      if (this.frameThrottleCounter % 4 !== 0) {
-        // Only essential updates every 4th frame
-        this.updatePlayerMovement();
-        this.updateCameraPosition();
-        return;
-      }
-      // Disable all logging and complex features on mobile
-      this.disableMagnetLogging = true;
-    }
-    
-    this.updatePlayerMovement();
-    this.updateObstacles();
-    this.updateCoins();
-    this.updatePowerups();
-    this.checkCollisions();
-  }
-
-  private updatePlayerMovement() {
     const baseSpeed = 5;
     const acceleration = 0.8; // How quickly player accelerates
     const deceleration = 0.85; // How quickly player decelerates (higher = faster stop)
@@ -883,8 +850,8 @@ export class GameEngine {
     this.updateCameraPosition();
 
     // Keep player in bounds - account for control panel on mobile
-    const isMobileForBounds = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const controlPanelWidth = isMobileForBounds ? 128 : 0; // 128px control panel on mobile/iPad
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const controlPanelWidth = isMobile ? 128 : 0; // 128px control panel on mobile/iPad
     
     // The player should be able to move through the level but stop when they would go under the control panel
     // This means the rightmost position should be relative to the current camera position + canvas width - control panel width
@@ -973,9 +940,12 @@ export class GameEngine {
         }
       }
     });
-  }
 
-  private updateCoins() {
+    // Camera position already updated above
+
+    // Notify callback of player movement
+    this.callbacks.onPlayerMove(this.player.x, this.player.y);
+
     // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
       // Apply magnet attraction if active (10 squares = 500 pixels)
@@ -992,9 +962,7 @@ export class GameEngine {
         
         // 10 squares = 10 * 50 pixels = 500 pixels range (much stronger attraction)
         if (distance < 500 && distance > 5) {
-          if (!this.disableMagnetLogging) {
-            console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
-          }
+          console.log('Magnet attracting coin! Distance:', Math.floor(distance), 'px');
           const attractionSpeed = Math.min(distance * 0.2, 15); // Increased speed
           const normalizedDx = (playerCenterX - coinCenterX) / distance;
           const normalizedDy = (playerCenterY - coinCenterY) / distance;
@@ -1030,32 +998,11 @@ export class GameEngine {
       }
       return true;
     });
-  }
 
-  private updatePowerups() {
-    // Power-ups don't move, just exist
-  }
-
-  private checkCollisions() {
-    // Check power-up collisions with enhanced mobile protection
-    const currentTime = Date.now();
+    // Check power-up collisions
     this.powerups = this.powerups.filter(powerup => {
       if (checkCollision(this.player, powerup)) {
-        // Enhanced mobile protection with longer cooldown and simpler callback
-        if (currentTime - this.lastPowerupCollectionTime >= this.POWERUP_COOLDOWN) {
-          this.lastPowerupCollectionTime = currentTime;
-          console.log('Power-up collected:', powerup.powerupType);
-          
-          // Use try-catch to prevent any callback errors from freezing the game
-          try {
-            this.callbacks.onPowerupCollected(powerup.powerupType!);
-          } catch (error) {
-            console.warn('Power-up callback error (continuing game):', error);
-          }
-        } else {
-          console.log('Power-up collection throttled');
-          return true; // Keep the power-up if throttled
-        }
+        this.callbacks.onPowerupCollected(powerup.powerupType!);
         return false;
       }
       return true;
