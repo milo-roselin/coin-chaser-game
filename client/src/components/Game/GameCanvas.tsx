@@ -244,25 +244,19 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
           console.log('Power-up collected:', type);
-          if (type === 'magnet') {
-            console.log('Activating magnet...');
-            activateMagnet();
-            playSuccess();
-          } else if (type === 'extralife') {
-            console.log('Adding extra life...');
-            addExtraLife();
-            playSuccess();
-          }
           
-          // Force immediate state update
-          setTimeout(() => {
-            const state = useCoinGame.getState();
-            console.log('State after power-up collection:', {
-              magnetActive: state.magnetActive,
-              shieldActive: state.shieldActive,
-              extraLives: state.extraLives
-            });
-          }, 100);
+          // Use requestAnimationFrame instead of setTimeout for better mobile performance
+          requestAnimationFrame(() => {
+            if (type === 'magnet') {
+              console.log('Activating magnet...');
+              activateMagnet();
+              playSuccess();
+            } else if (type === 'extralife') {
+              console.log('Adding extra life...');
+              addExtraLife();
+              playSuccess();
+            }
+          });
         },
 
       },

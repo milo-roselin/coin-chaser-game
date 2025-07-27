@@ -61,6 +61,10 @@ export class GameEngine {
   private playerVelocity = { x: 0, y: 0 }; // Player velocity for smoother movement
   private isInitialized = false; // Flag to prevent rendering before proper initialization
   private renderFrameCount = 0; // Count frames to ensure stability before rendering
+  
+  // Mobile optimization - throttle power-up callbacks to prevent freezing
+  private lastPowerupCollectionTime = 0;
+  private readonly POWERUP_COOLDOWN = 300; // 300ms cooldown between power-up collections
 
   constructor(
     private canvasWidth: number, 
@@ -999,10 +1003,18 @@ export class GameEngine {
       return true;
     });
 
-    // Check power-up collisions
+    // Check power-up collisions with mobile throttling
+    const currentTime = Date.now();
     this.powerups = this.powerups.filter(powerup => {
       if (checkCollision(this.player, powerup)) {
-        this.callbacks.onPowerupCollected(powerup.powerupType!);
+        // Throttle power-up collection to prevent mobile freezing
+        if (currentTime - this.lastPowerupCollectionTime >= this.POWERUP_COOLDOWN) {
+          this.lastPowerupCollectionTime = currentTime;
+          console.log('Power-up collected with throttling:', powerup.powerupType);
+          this.callbacks.onPowerupCollected(powerup.powerupType!);
+        } else {
+          console.log('Power-up collection throttled, waiting for cooldown');
+        }
         return false;
       }
       return true;
