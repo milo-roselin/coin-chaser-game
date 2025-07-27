@@ -2058,27 +2058,44 @@ export class GameEngine {
     const pulseRadius = powerup.width / 2 + Math.sin(time * 3) * 3;
     
     if (powerup.powerupType === 'magnet') {
-      // Draw magnet power-up
+      // Draw magnet power-up glow
       ctx.fillStyle = 'rgba(255, 107, 107, 0.3)'; // Glow
       ctx.beginPath();
       ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
       ctx.fill();
       
-      // Draw magnet body (red)
-      ctx.fillStyle = '#FF6B6B';
-      ctx.fillRect(powerup.x + 2, powerup.y + 2, powerup.width - 4, powerup.height - 4);
+      // Draw U-shaped horseshoe magnet
+      const magnetSize = Math.min(powerup.width - 4, powerup.height - 4);
+      const armWidth = magnetSize * 0.25;
+      const armHeight = magnetSize * 0.8;
+      const baseHeight = magnetSize * 0.2;
       
-      // Draw magnet ends (white)
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(powerup.x + 2, powerup.y + 2, powerup.width - 4, 4);
-      ctx.fillRect(powerup.x + 2, powerup.y + powerup.height - 6, powerup.width - 4, 4);
+      // Draw magnet body (silver/gray)
+      ctx.fillStyle = '#C0C0C0';
+      
+      // Draw left arm of U
+      ctx.fillRect(centerX - magnetSize/2, centerY - armHeight/2, armWidth, armHeight);
+      
+      // Draw right arm of U  
+      ctx.fillRect(centerX + magnetSize/2 - armWidth, centerY - armHeight/2, armWidth, armHeight);
+      
+      // Draw bottom of U (connecting the arms)
+      ctx.fillRect(centerX - magnetSize/2, centerY + armHeight/2 - baseHeight, magnetSize, baseHeight);
+      
+      // Draw red pole (N) on left arm
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(centerX - magnetSize/2, centerY - armHeight/2, armWidth, armWidth);
+      
+      // Draw blue pole (S) on right arm
+      ctx.fillStyle = '#0000FF';
+      ctx.fillRect(centerX + magnetSize/2 - armWidth, centerY - armHeight/2, armWidth, armWidth);
       
       // Draw N and S labels
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 8px Arial';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 6px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('N', centerX, centerY - 3);
-      ctx.fillText('S', centerX, centerY + 8);
+      ctx.fillText('N', centerX - magnetSize/2 + armWidth/2, centerY - armHeight/2 + armWidth/2 + 2);
+      ctx.fillText('S', centerX + magnetSize/2 - armWidth/2, centerY - armHeight/2 + armWidth/2 + 2);
       
     } else if (powerup.powerupType === 'extralife') {
       // Draw shield power-up
