@@ -732,13 +732,11 @@ export class GameEngine {
       return;
     }
     
-    // Handle speed adjustment keys
+    // Handle speed adjustment keys (no logging for mobile performance)
     if (key === 'Equal' || key === 'NumpadAdd') { // Plus key (= key without shift, or numpad +)
       this.gameSpeed = Math.min(this.gameSpeed + 0.25, 3); // Max speed of 3x
-      console.log(`Game speed increased to ${this.gameSpeed}x`);
     } else if (key === 'Minus' || key === 'NumpadSubtract') { // Minus key (- key or numpad -)
       this.gameSpeed = Math.max(this.gameSpeed - 0.25, 0.25); // Min speed of 0.25x
-      console.log(`Game speed decreased to ${this.gameSpeed}x`);
     }
     
     this.keys[key] = true;
@@ -948,27 +946,32 @@ export class GameEngine {
 
     // Check coin collisions and track cluster completion
     this.coins = this.coins.filter(coin => {
-      // Apply magnet attraction if active (simpler approach for better mobile performance)
+      // Apply magnet attraction if active - desktop only for performance
       const magnetActive = (window as any).magnetActive;
       if (magnetActive) {
-        const playerCenterX = this.player.x + this.player.width / 2;
-        const playerCenterY = this.player.y + this.player.height / 2;
-        const coinCenterX = coin.x + coin.width / 2;
-        const coinCenterY = coin.y + coin.height / 2;
+        // Check if mobile - completely skip magnet calculations on mobile to prevent freezing
+        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
-        // Simple distance check - 300px range (6 squares)
-        const dx = playerCenterX - coinCenterX;
-        const dy = playerCenterY - coinCenterY;
-        const distance = Math.abs(dx) + Math.abs(dy); // Manhattan distance for performance
-        
-        if (distance < 300 && distance > 30) {
-          // Simple linear attraction towards player (fixed direction)
-          const attractionForce = 0.08; // Gentle attraction
-          coin.x += dx > 0 ? attractionForce * 8 : -attractionForce * 8;
-          coin.y += dy > 0 ? attractionForce * 8 : -attractionForce * 8;
+        if (!isMobile) {
+          // Desktop-only magnet attraction with strong pull
+          const playerCenterX = this.player.x + this.player.width / 2;
+          const playerCenterY = this.player.y + this.player.height / 2;
+          const coinCenterX = coin.x + coin.width / 2;
+          const coinCenterY = coin.y + coin.height / 2;
           
-          // Visual effect
-          coin.color = '#FFD700';
+          const dx = playerCenterX - coinCenterX;
+          const dy = playerCenterY - coinCenterY;
+          const distance = Math.abs(dx) + Math.abs(dy);
+          
+          if (distance < 500 && distance > 25) {
+            // Strong desktop attraction
+            const moveX = dx > 0 ? 4 : -4;
+            const moveY = dy > 0 ? 4 : -4;
+            
+            coin.x += moveX;
+            coin.y += moveY;
+            coin.color = '#FFD700';
+          }
         }
       }
       

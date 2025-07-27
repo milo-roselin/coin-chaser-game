@@ -53,11 +53,22 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           // Update magnet timer
           updateMagnetTimer();
           
-          // Simple direct state updates to prevent mobile performance issues
-          const currentState = useCoinGame.getState();
-          (window as any).magnetActive = currentState.magnetActive;
-          (window as any).shieldActive = currentState.shieldActive;
-          (window as any).extraLives = currentState.extraLives;
+          // Mobile-optimized state updates with minimal processing
+          const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          
+          if (!isMobile) {
+            // Full state updates on desktop
+            const currentState = useCoinGame.getState();
+            (window as any).magnetActive = currentState.magnetActive;
+            (window as any).shieldActive = currentState.shieldActive;
+            (window as any).extraLives = currentState.extraLives;
+          } else {
+            // Minimal state updates on mobile - only update when necessary
+            const { magnetActive, shieldActive, extraLives } = useCoinGame.getState();
+            (window as any).magnetActive = magnetActive;
+            (window as any).shieldActive = shieldActive;
+            (window as any).extraLives = extraLives;
+          }
           
           gameEngineRef.current.update();
           gameEngineRef.current.render(ctx);
@@ -241,13 +252,20 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           setPlayerPosition(x, y);
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
-          // Immediate, simple state update to prevent mobile freezing
+          // Ultra-minimal power-up handling for mobile performance
+          const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          
           if (type === 'magnet') {
             activateMagnet();
-            playSuccess();
+            // Skip sound on mobile to prevent audio processing delays
+            if (!isMobile) {
+              playSuccess();
+            }
           } else if (type === 'extralife') {
             addExtraLife();
-            playSuccess();
+            if (!isMobile) {
+              playSuccess();
+            }
           }
         },
 
