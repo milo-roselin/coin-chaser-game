@@ -64,7 +64,7 @@ export class GameEngine {
   
   // Mobile optimization - throttle power-up callbacks to prevent freezing
   private lastPowerupCollectionTime = 0;
-  private readonly POWERUP_COOLDOWN = 300; // 300ms cooldown between power-up collections
+  private readonly POWERUP_COOLDOWN = 800; // 800ms cooldown between power-up collections (mobile protection)
 
   constructor(
     private canvasWidth: number, 
@@ -1003,17 +1003,24 @@ export class GameEngine {
       return true;
     });
 
-    // Check power-up collisions with mobile throttling
+    // Check power-up collisions with enhanced mobile protection
     const currentTime = Date.now();
     this.powerups = this.powerups.filter(powerup => {
       if (checkCollision(this.player, powerup)) {
-        // Throttle power-up collection to prevent mobile freezing
+        // Enhanced mobile protection with longer cooldown and simpler callback
         if (currentTime - this.lastPowerupCollectionTime >= this.POWERUP_COOLDOWN) {
           this.lastPowerupCollectionTime = currentTime;
-          console.log('Power-up collected with throttling:', powerup.powerupType);
-          this.callbacks.onPowerupCollected(powerup.powerupType!);
+          console.log('Power-up collected:', powerup.powerupType);
+          
+          // Use try-catch to prevent any callback errors from freezing the game
+          try {
+            this.callbacks.onPowerupCollected(powerup.powerupType!);
+          } catch (error) {
+            console.warn('Power-up callback error (continuing game):', error);
+          }
         } else {
-          console.log('Power-up collection throttled, waiting for cooldown');
+          console.log('Power-up collection throttled');
+          return true; // Keep the power-up if throttled
         }
         return false;
       }

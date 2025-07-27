@@ -245,17 +245,23 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
           console.log('Power-up collected:', type);
           
-          // Use requestAnimationFrame instead of setTimeout for better mobile performance
+          // Immediate audio feedback only
+          playSuccess();
+          
+          // Defer state updates to prevent mobile freezing
+          // Use multiple RAF calls to ensure smooth execution
           requestAnimationFrame(() => {
-            if (type === 'magnet') {
-              console.log('Activating magnet...');
-              activateMagnet();
-              playSuccess();
-            } else if (type === 'extralife') {
-              console.log('Adding extra life...');
-              addExtraLife();
-              playSuccess();
-            }
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (type === 'magnet') {
+                  console.log('Activating magnet...');
+                  activateMagnet();
+                } else if (type === 'extralife') {
+                  console.log('Adding extra life...');
+                  addExtraLife();
+                }
+              });
+            });
           });
         },
 
