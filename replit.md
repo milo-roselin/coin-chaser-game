@@ -97,7 +97,7 @@ The application is architected for scalability with clear separation between fro
 # Recent Changes
 
 ## July 27, 2025 - Progressive Power-up System and Mobile Performance Optimization
-- **Level-Based Power-up Likelihood**: Power-up generation probability increases 15% per level (max 2.5x multiplier, capped at 85%)
+- **Minimal Level-Based Power-up Likelihood**: Power-up generation probability increases 2% per level (max 1.5x multiplier, capped at 60%)
 - **Complete Mobile Performance Solution**: Power-ups entirely disabled on mobile devices to eliminate freezing issues
 - **Desktop-Only Power-ups**: Full magnet and shield functionality preserved on desktop with proper coin attraction
 - **Simplified Mobile Gameplay**: Mobile users get smooth coin collection without power-up processing overhead
