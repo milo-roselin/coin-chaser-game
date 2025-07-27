@@ -209,9 +209,13 @@ export class GameEngine {
     const isMobileForPowerups = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (!isMobileForPowerups) {
-      // Desktop-only power-up generation
+      // Desktop-only power-up generation with level-based likelihood
+      const baseProbability = 0.40; // 40% base chance
+      const levelMultiplier = Math.min(1 + (level - 1) * 0.15, 2.5); // Increase 15% per level, max 2.5x
+      const adjustedProbability = Math.min(baseProbability * levelMultiplier, 0.85); // Cap at 85%
+      
       for (let cluster = 0; cluster < numClusters; cluster++) {
-        if (Math.random() < 0.40) { // 40% chance per cluster
+        if (Math.random() < adjustedProbability) { // Level-scaled chance per cluster
           const clusterX = this.coinClusters[cluster].x;
           const clusterY = this.coinClusters[cluster].y;
           
