@@ -11,6 +11,10 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   const animationFrameRef = useRef<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Mobile-specific power-up queue to prevent freezing
+  const powerupQueueRef = useRef<Array<'magnet' | 'extralife'>>([]);
+  const processingPowerupRef = useRef(false);
 
   const { 
     updateScore, 
@@ -29,6 +33,37 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
   } = useCoinGame();
   const { playHit, playSuccess, playExplosion, playCoin } = useAudio();
   const { getSelectedAvatar, selectedAvatar } = usePlayerAvatar();
+
+  // Mobile-specific power-up queue processor
+  const processPowerupQueue = useCallback(() => {
+    if (powerupQueueRef.current.length === 0) {
+      processingPowerupRef.current = false;
+      return;
+    }
+    
+    processingPowerupRef.current = true;
+    const type = powerupQueueRef.current.shift();
+    
+    if (type) {
+      // Process one power-up with delay for mobile stability
+      setTimeout(() => {
+        try {
+          if (type === 'magnet') {
+            console.log('Activating magnet (mobile queue)...');
+            activateMagnet();
+          } else if (type === 'extralife') {
+            console.log('Adding extra life (mobile queue)...');
+            addExtraLife();
+          }
+        } catch (error) {
+          console.warn('Power-up activation error:', error);
+        }
+        
+        // Process next item in queue after delay
+        setTimeout(() => processPowerupQueue(), 200);
+      }, 100);
+    }
+  }, [activateMagnet, addExtraLife]);
 
   const gameLoop = useCallback(() => {
     if (gameEngineRef.current && canvasRef.current) {
@@ -245,24 +280,23 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
           console.log('Power-up collected:', type);
           
-          // Immediate audio feedback only
+          // Immediate audio feedback
           playSuccess();
           
-          // Defer state updates to prevent mobile freezing
-          // Use multiple RAF calls to ensure smooth execution
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                if (type === 'magnet') {
-                  console.log('Activating magnet...');
-                  activateMagnet();
-                } else if (type === 'extralife') {
-                  console.log('Adding extra life...');
-                  addExtraLife();
-                }
-              });
-            });
-          });
+          if (isMobile) {
+            // Mobile: Use queue system to prevent overwhelming the browser
+            powerupQueueRef.current.push(type);
+            if (!processingPowerupRef.current) {
+              processPowerupQueue();
+            }
+          } else {
+            // Desktop: Direct activation
+            if (type === 'magnet') {
+              activateMagnet();
+            } else if (type === 'extralife') {
+              addExtraLife();
+            }
+          }
         },
 
       },
