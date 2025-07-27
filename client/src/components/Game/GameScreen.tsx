@@ -49,7 +49,7 @@ export default function GameScreen() {
       <div className="absolute top-4 left-4 z-50 flex flex-col gap-2">
         {magnetActive && (
           <div className="bg-red-500/90 text-white px-3 py-2 rounded-lg flex items-center gap-2 animate-pulse">
-            <span className="w-4 h-4 flex items-center justify-center text-white font-bold text-lg">U</span>
+            <Magnet className="w-4 h-4" />
             <span className="text-sm font-bold">
               Magnet: {Math.ceil(magnetTimeLeft / 1000)}s
             </span>
