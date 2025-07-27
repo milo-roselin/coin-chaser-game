@@ -204,38 +204,40 @@ export class GameEngine {
       }
     }
 
-    // Generate power-ups (40% chance per cluster)
+    // Generate power-ups (40% chance per cluster) - DESKTOP ONLY to prevent mobile freezing
     this.powerups = [];
-    for (let cluster = 0; cluster < numClusters; cluster++) {
-      if (Math.random() < 0.40) { // 40% chance per cluster
-        const clusterX = this.coinClusters[cluster].x;
-        const clusterY = this.coinClusters[cluster].y;
-        
-        // Choose random power-up type
-        const powerupTypes: ('magnet' | 'extralife')[] = ['magnet', 'extralife'];
-        const powerupType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
-        
-        // Place power-up near cluster but not too close to coins
-        let powerupX = clusterX + (Math.random() - 0.5) * 200;
-        let powerupY = clusterY + (Math.random() - 0.5) * 150;
-        
-        // Ensure power-up is within bounds
-        const isMobileForPowerups = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const controlPanelWidthForPowerups = isMobileForPowerups ? 128 : 0;
-        const maxPowerupX = this.levelWidth - 200;
-        
-        powerupX = Math.max(50, Math.min(maxPowerupX, powerupX));
-        powerupY = Math.max(50, Math.min(this.canvasHeight - 50, powerupY));
-        
-        this.powerups.push({
-          x: powerupX,
-          y: powerupY,
-          width: 25,
-          height: 25,
-          color: powerupType === 'magnet' ? '#FF6B6B' : '#4ECDC4',
-          type: 'powerup',
-          powerupType: powerupType
-        });
+    const isMobileForPowerups = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (!isMobileForPowerups) {
+      // Desktop-only power-up generation
+      for (let cluster = 0; cluster < numClusters; cluster++) {
+        if (Math.random() < 0.40) { // 40% chance per cluster
+          const clusterX = this.coinClusters[cluster].x;
+          const clusterY = this.coinClusters[cluster].y;
+          
+          // Choose random power-up type
+          const powerupTypes: ('magnet' | 'extralife')[] = ['magnet', 'extralife'];
+          const powerupType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+          
+          // Place power-up near cluster but not too close to coins
+          let powerupX = clusterX + (Math.random() - 0.5) * 200;
+          let powerupY = clusterY + (Math.random() - 0.5) * 150;
+          
+          const maxPowerupX = this.levelWidth - 200;
+          
+          powerupX = Math.max(50, Math.min(maxPowerupX, powerupX));
+          powerupY = Math.max(50, Math.min(this.canvasHeight - 50, powerupY));
+          
+          this.powerups.push({
+            x: powerupX,
+            y: powerupY,
+            width: 25,
+            height: 25,
+            color: powerupType === 'magnet' ? '#FF6B6B' : '#4ECDC4',
+            type: 'powerup',
+            powerupType: powerupType
+          });
+        }
       }
     }
 

@@ -53,21 +53,20 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           // Update magnet timer
           updateMagnetTimer();
           
-          // Mobile-optimized state updates with minimal processing
+          // Check device type for power-up state management
           const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
           
           if (!isMobile) {
-            // Full state updates on desktop
+            // Desktop: Full power-up functionality
             const currentState = useCoinGame.getState();
             (window as any).magnetActive = currentState.magnetActive;
             (window as any).shieldActive = currentState.shieldActive;
             (window as any).extraLives = currentState.extraLives;
           } else {
-            // Minimal state updates on mobile - only update when necessary
-            const { magnetActive, shieldActive, extraLives } = useCoinGame.getState();
-            (window as any).magnetActive = magnetActive;
-            (window as any).shieldActive = shieldActive;
-            (window as any).extraLives = extraLives;
+            // Mobile: Disable all power-up states to prevent freezing
+            (window as any).magnetActive = false;
+            (window as any).shieldActive = false;
+            (window as any).extraLives = 0;
           }
           
           gameEngineRef.current.update();
@@ -252,21 +251,20 @@ const GameCanvas = forwardRef<{ togglePause: () => void }, {}>((props, ref) => {
           setPlayerPosition(x, y);
         },
         onPowerupCollected: (type: 'magnet' | 'extralife') => {
-          // Ultra-minimal power-up handling for mobile performance
+          // Check if mobile - completely skip power-up processing on mobile
           const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
           
-          if (type === 'magnet') {
-            activateMagnet();
-            // Skip sound on mobile to prevent audio processing delays
-            if (!isMobile) {
+          if (!isMobile) {
+            // Desktop-only power-up processing
+            if (type === 'magnet') {
+              activateMagnet();
               playSuccess();
-            }
-          } else if (type === 'extralife') {
-            addExtraLife();
-            if (!isMobile) {
+            } else if (type === 'extralife') {
+              addExtraLife();
               playSuccess();
             }
           }
+          // Mobile devices: power-ups are collected but do nothing (no state changes, no freezing)
         },
 
       },
