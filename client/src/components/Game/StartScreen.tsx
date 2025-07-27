@@ -246,6 +246,7 @@ export default function StartScreen() {
             onClick={handleStartGame}
             size="lg"
             className="w-full text-lg sm:text-xl py-4 sm:py-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg"
+            title="Start New Game [N] or [Enter]"
           >
             <Play className="mr-2 h-4 w-4 sm:h-6 sm:w-6" />
             New Game
@@ -259,6 +260,7 @@ export default function StartScreen() {
             variant="outline"
             size="lg"
             className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold rounded-xl"
+            title="View Global Leaderboard [L]"
           >
             <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             Leaderboard
@@ -284,6 +286,7 @@ export default function StartScreen() {
             variant="outline"
             size="lg"
             className="w-full text-base sm:text-lg py-3 sm:py-4 border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 font-semibold rounded-xl"
+            title="Choose Your Avatar [A]"
           >
             <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             Choose Avatar
@@ -297,6 +300,7 @@ export default function StartScreen() {
               variant="outline"
               size="lg"
               className="flex-1 text-sm sm:text-lg py-3 sm:py-4 border-2 border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold rounded-xl"
+              title={isMuted ? "Unmute Audio [M]" : "Mute Audio [M]"}
             >
               {isMuted ? <VolumeX className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />}
               {isMuted ? "Unmute" : "Mute"}
@@ -321,6 +325,7 @@ export default function StartScreen() {
               variant="outline"
               size="sm"
               className="w-full text-sm py-2 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg"
+              title="Reset All Progress [R]"
             >
               Reset Progress
               <span className="ml-auto text-xs opacity-75">[R]</span>
